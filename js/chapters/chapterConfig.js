@@ -2,53 +2,46 @@
 export const chapters = [
     {
         id: 1,
-        title: '第一章：初入徽州',
+        title: '第一章：寄命于商',
         description: '主角来到徽州，开始经商之路',
         unlocked: true,
         background: 'images/chapters/ch1_bg.png'
     },
     {
         id: 2,
-        title: '第二章：盐商之路',
+        title: '第二章：盐引争锋',
         description: '逐步涉足盐业贸易',
         unlocked: false,
         background: 'images/chapters/ch2_bg.png'
     },
     {
         id: 3,
-        title: '第三章：茶叶经营',
+        title: '第三章：儒贾之道',
         description: '拓展茶叶贸易版图',
         unlocked: false,
         background: 'images/chapters/ch3_bg.png'
     },
     {
         id: 4,
-        title: '第四章：徽商联盟',
+        title: '第四章：无徽不成镇',
         description: '与其他商家建立联盟',
         unlocked: false,
         background: 'images/chapters/ch4_bg.png'
     },
     {
         id: 5,
-        title: '第五章：漕运兴衰',
+        title: '第五章：风雨飘摇',
         description: '参与漕运贸易的机遇与挑战',
         unlocked: false,
         background: 'images/chapters/ch5_bg.png'
     },
     {
         id: 6,
-        title: '第六章：会馆兴建',
+        title: '第六章：红顶落幕',
         description: '建立徽商会馆，扩大影响力',
         unlocked: false,
         background: 'images/chapters/ch6_bg.png'
     },
-    {
-        id: 7,
-        title: '第七章：徽商传奇',
-        description: '成为徽商领袖，书写传奇',
-        unlocked: false,
-        background: 'images/chapters/ch7_bg.png'
-    }
 ]
 
 // 获取章节信息

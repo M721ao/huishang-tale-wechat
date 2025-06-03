@@ -1,6 +1,9 @@
-import { chapters, loadProgress, saveProgress } from './js/chapters/chapterConfig.js'
-import { ChapterScene } from './js/chapters/ChapterScene.js'
+import { loadProgress, saveProgress } from './js/chapters/chapterConfig.js'
 import { PrologueScene } from './js/scenes/PrologueScene.js'
+import { ChapterTitleScene } from './js/scenes/ChapterTitleScene.js'
+import { StoryScene } from './js/scenes/StoryScene.js'
+import { CardScene } from './js/scenes/CardScene.js'
+import { chapter1Events, initialState, saveGameState } from './js/events/EventConfig.js'
 
 // 初始化游戏画布
 const canvas = wx.createCanvas()
@@ -12,15 +15,23 @@ canvas.width = windowWidth
 canvas.height = windowHeight
 
 // 游戏状态
-let currentScene = 'title' // title, prologue, chapters, game
+let currentSceneType = 'title' // title, prologue, chapterTitle, story
+let currentScene = null
+let gameProgress = wx.getStorageSync('gameProgress') || {
+    currentChapter: 1,
+    currentScene: 'title',
+    storyProgress: 0
+}
 
 // 加载封面图片
 const coverImage = wx.createImage()
 coverImage.src = 'images/cover.png'
 
 // 初始化场景
-const chapterScene = new ChapterScene(ctx, windowWidth, windowHeight)
 const prologueScene = new PrologueScene(ctx, windowWidth, windowHeight)
+const chapterTitleScene = new ChapterTitleScene(ctx, windowWidth, windowHeight)
+const storyScene = new StoryScene(ctx, windowWidth, windowHeight)
+const cardScene = new CardScene(ctx, windowWidth, windowHeight)
 
 // 按钮动画状态
 const buttonAnimation = {
@@ -171,24 +182,199 @@ function drawTitleScene() {
     }
 }
 
-// 游戏主循环
-function gameLoop() {
-    if (currentScene === 'title') {
-        drawTitleScene()
-    } else if (currentScene === 'prologue') {
-        prologueScene.draw()
-    } else if (currentScene === 'chapters') {
-        chapterScene.draw()
+// 开始新游戏
+function startNewGame() {
+    // 初始化游戏进度
+    gameProgress = {
+        currentChapter: 1,
+        currentScene: 'prologue'
     }
     
-    // 继续下一帧
+    // 显示引子
+    currentSceneType = 'prologue'
+    currentScene = prologueScene
+    
+    // 设置引子剧情
+    const prologueText = '前世不修，生在徽州。十三四岁，往外一丢。'
+    prologueScene.setText(prologueText)
+    prologueScene.setOnFinish(() => {
+        showChapterTitle(1)
+    })
+    
+    // 保存进度
+    saveProgress(gameProgress)
+}
+
+// 继续游戏
+function continueGame() {
+    const savedProgress = wx.getStorageSync('gameProgress')
+    if (savedProgress) {
+        gameProgress = savedProgress
+        if (gameProgress.currentScene === 'story') {
+            startChapterStory(gameProgress.currentChapter)
+        } else {
+            showChapterTitle(gameProgress.currentChapter)
+        }
+    } else {
+        startNewGame()
+    }
+}
+
+// 显示章节标题
+function showChapterTitle(chapter) {
+    currentSceneType = 'chapterTitle'
+    currentScene = chapterTitleScene
+    
+    // 设置章节标题
+    let title = ''
+    if (chapter === 1) {
+        title = '第一章：出师'
+    }
+    
+    chapterTitleScene.setTitle(title)
+    chapterTitleScene.setOnFinish(() => {
+        startChapterStory(chapter)
+    })
+}
+
+// 开始章节剧情
+function startChapterStory(chapter) {
+    currentSceneType = 'story'
+    currentScene = storyScene
+    
+    // 设置第一章的剧情
+    if (chapter === 1) {
+        const script = [
+            {
+                text: '年幼丧父家中贫寒，16岁你刚完婚，便带着家中的最后一枚铜钱外出谋求生路；',
+                background: 'images/backgrounds/default.png',
+                character: null,
+                position: 'center'
+            },
+            {
+                text: '你背着行囊走过村口的石桥，回头望了一眼家乡，又低头看了一眼手里的铜钱，踏上了徽杭古道。',
+                background: 'images/backgrounds/default.png',
+                character: null,
+                position: 'center'
+            }
+        ]
+        storyScene.loadScript(script)
+        
+        // 设置故事场景结束后的回调
+        storyScene.setOnFinish(() => {
+            startCardGame()
+        })
+    }
+    
+    // 保存进度
+    gameProgress.currentChapter = chapter
+    gameProgress.currentScene = 'story'
+    saveProgress(gameProgress)
+}
+
+// 开始卡牌游戏
+function startCardGame() {
+    currentSceneType = 'card'
+    currentScene = cardScene
+    
+    // 初始化卡牌场景
+    cardScene.init(chapter1Events, initialState, (state, event, choice, choiceData) => {
+        // 状态更新回调
+        saveGameState(state)
+        
+        // 显示选择结果
+        console.log(`选择了${choice === 'left' ? '左' : '右'}边选项：${choiceData.text}`)
+        console.log(`结果：${choiceData.result}`)
+    })
+    
+    // 保存进度
+    gameProgress.currentScene = 'card'
+    saveProgress(gameProgress)
+}
+
+// 游戏主循环
+function gameLoop() {
+    ctx.clearRect(0, 0, windowWidth, windowHeight)
+
+    if (currentSceneType === 'title') {
+        drawTitleScene()
+    } else if (currentScene) {
+        currentScene.draw()
+    }
+    
     requestAnimationFrame(gameLoop)
 }
 
+// 触摸事件处理
+wx.onTouchStart(e => {
+    if (currentSceneType === 'title') {
+        handleTitleTouch(e)
+    } else if (currentSceneType === 'card') {
+        cardScene.handleTouchStart(e)
+    }
+})
+
+wx.onTouchMove(e => {
+    if (currentSceneType === 'card') {
+        cardScene.handleTouchMove(e)
+    }
+})
+
+wx.onTouchEnd(e => {
+    if (currentSceneType === 'title') {
+        handleTitleTouchEnd(e)
+    } else if (currentSceneType === 'story') {
+        storyScene.handleTap()
+    } else if (currentSceneType === 'card') {
+        cardScene.handleTouchEnd()
+    }
+})
+
+// 标题页触摸处理
+function handleTitleTouch(e) {
+    const touch = e.touches[0]
+    const x = touch.clientX
+    const y = touch.clientY
+
+    titleButtons.forEach((button, index) => {
+        if (x >= button.x - button.width/2 &&
+            x <= button.x + button.width/2 &&
+            y >= button.y - button.height/2 &&
+            y <= button.y + button.height/2) {
+            buttonAnimation.activeButton = index
+            button.scale = 0.95
+        }
+    })
+}
+
+function handleTitleTouchEnd(e) {
+    if (buttonAnimation.activeButton === null) return
+    
+    const touch = e.changedTouches[0]
+    const x = touch.clientX
+    const y = touch.clientY
+    const button = titleButtons[buttonAnimation.activeButton]
+    
+    if (x >= button.x - button.width/2 &&
+        x <= button.x + button.width/2 &&
+        y >= button.y - button.height/2 &&
+        y <= button.y + button.height/2) {
+        
+        if (buttonAnimation.activeButton === 0) {
+            startNewGame()
+        } else {
+            continueGame()
+        }
+    }
+    
+    button.scale = 1
+    buttonAnimation.activeButton = null
+}
+
 // 监听触摸事件
-wx.onTouchStart(res => {
-    if (currentScene === 'title') {
-        const touch = res.touches[0]
+wx.onTouchStart(e => {
+    if (currentSceneType === 'title') {
+        const touch = e.touches[0]
         const x = touch.clientX
         const y = touch.clientY
 
@@ -197,31 +383,36 @@ wx.onTouchStart(res => {
                 x <= button.x + button.width/2 &&
                 y >= button.y - button.height/2 &&
                 y <= button.y + button.height/2) {
-                // 设置按钮动画
                 buttonAnimation.activeButton = index
-                buttonAnimation.scale = 1
-                buttonAnimation.scaleDirection = -1
-                
-                // 0.3秒后执行场景切换
-                setTimeout(() => {
-                    buttonAnimation.activeButton = null
-                    if (index === 0) {
-                        // 开始新游戏，先进入引子
-                        currentScene = 'prologue'
-                        prologueScene.setOnFinish(() => {
-                            loadProgress()
-                            currentScene = 'chapters'
-                            chapterScene.init(chapters)
-                        })
-                    } else {
-                        // 继续游戏
-                        loadProgress()
-                        currentScene = 'chapters'
-                        chapterScene.init(chapters)
-                    }
-                }, 300)
+                button.scale = 0.95 // 按下缩放
             }
         })
+    }
+})
+
+wx.onTouchEnd(e => {
+    if (currentSceneType === 'title' && buttonAnimation.activeButton !== null) {
+        const touch = e.changedTouches[0]
+        const x = touch.clientX
+        const y = touch.clientY
+        const button = titleButtons[buttonAnimation.activeButton]
+        
+        if (x >= button.x - button.width/2 &&
+            x <= button.x + button.width/2 &&
+            y >= button.y - button.height/2 &&
+            y <= button.y + button.height/2) {
+            
+            if (buttonAnimation.activeButton === 0) {
+                startNewGame()
+            } else {
+                continueGame()
+            }
+        }
+        
+        button.scale = 1 // 恢复原始大小
+        buttonAnimation.activeButton = null
+    } else if (currentSceneType === 'story') {
+        storyScene.handleTap()
     }
 })
 
