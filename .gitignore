@@ -1,0 +1,22 @@
+# IDE和编辑器文件
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 微信开发者工具本地配置
+project.private.config.json
+
+# 依赖目录
+node_modules/
+
+# 日志文件
+*.log
+
+# 临时文件
+temp/
+.temp/
