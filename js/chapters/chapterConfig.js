@@ -72,12 +72,21 @@ export function saveProgress() {
 // 加载游戏进度
 export function loadProgress() {
     const progress = wx.getStorageSync('gameProgress')
-    if (progress && progress.chapters) {
-        progress.chapters.forEach(({id, unlocked}) => {
-            const chapter = getChapter(id)
-            if (chapter) {
-                chapter.unlocked = unlocked
+    if (progress) {
+        // 加载已解锁的章节
+        for (const chapter of chapters) {
+            if (progress.unlockedChapters.includes(chapter.id)) {
+                chapter.unlocked = true
             }
-        })
+        }
     }
+    return progress
+}
+
+// 初始游戏状态
+export const initialState = {
+    money: 10,      // 初始10两银子
+    reputation: 0,  // 声望
+    relations: {},  // 人际关系
+    inventory: {}   // 库存
 }

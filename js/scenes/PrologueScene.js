@@ -7,6 +7,10 @@ export class PrologueScene {
         this.scrollY = this.height * 0.7 // 从底部1/3位置开始
         this.scrollSpeed = 1 // 滚动速度
         
+        // 加载背景图片
+        this.backgroundImage = wx.createImage()
+        this.backgroundImage.src = 'images/backgrounds/prologue.png'
+        
         // 滚动的文字
         this.scrollingLines = [
             
@@ -49,6 +53,15 @@ export class PrologueScene {
         // 清空画布
         ctx.clearRect(0, 0, width, height)
         
+        // 绘制背景图片
+        if (this.backgroundImage) {
+            ctx.drawImage(this.backgroundImage, 0, 0, width, height)
+        }
+        
+        // 添加半透明黑色遮罩
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'
+        ctx.fillRect(0, 0, width, height)
+        
         // 设置文字样式
         ctx.save()
         ctx.fillStyle = '#F4ECE4' // 粉红色
@@ -74,8 +87,8 @@ export class PrologueScene {
         ctx.fillRect(0, this.footerY - 20, width, height - this.footerY + 20)
         
         // 绘制底部说明文字
-        ctx.fillStyle = '#8B4513' // 深棕色
-        ctx.strokeStyle = '#F4ECE4' // 浅棕色
+        ctx.fillStyle = '#F4ECE4' // 浅棕色
+        ctx.strokeStyle = '#8B4513' // 深棕色
         ctx.lineWidth = 1
         ctx.font = '20px FangSong'
         this.footerText.forEach((line, index) => {
@@ -86,13 +99,22 @@ export class PrologueScene {
         
         ctx.restore()
         
-        // 更新滚动位置
-        this.scrollY -= this.scrollSpeed
+        this.update()
+    }
+
+    update() {
+        // 记录开始时间
+        if (!this.startTime) {
+            this.startTime = Date.now()
+        }
         
-        // 检查是否滚动完成
-        if (this.scrollY + this.totalHeight < height * 0.3) {
-            if (!this.finished && this.onFinishCallback) {
-                this.finished = true
+        // 更新滚动位置
+        this.scrollY -= 1.0 // 增加滚动速度
+        
+        // 5秒后结束
+        if (Date.now() - this.startTime >= 5000 && !this.finished) {
+            this.finished = true
+            if (this.onFinishCallback) {
                 this.onFinishCallback()
             }
         }
