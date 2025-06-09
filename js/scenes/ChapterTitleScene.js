@@ -11,7 +11,9 @@ export class ChapterTitleScene {
         
         // 加载背景图片
         this.backgroundImage = wx.createImage();
-        this.backgroundImage.src = 'images/backgrounds/chapter1/cha1-1.png';
+        this.backgroundImage.onload = () => {
+            this.draw();
+        }
     }
 
     // 设置章节标题
@@ -22,21 +24,27 @@ export class ChapterTitleScene {
         switch(chapterNum) {
             case 1:
                 this.subtitle = '徽商缘起';
+                this.backgroundImage.src = 'images/backgrounds/chapter1/cha1-1.png';
                 break;
             case 2:
                 this.subtitle = '盐引之争';
+                this.backgroundImage.src = 'images/backgrounds/chapter2/cha2-1.png';
                 break;
             case 3:
                 this.subtitle = '诗书商道';
+                this.backgroundImage.src = 'images/backgrounds/chapter2/cha2-1.png';
                 break;
             case 4:
                 this.subtitle = '无徽不成镇';
+                this.backgroundImage.src = 'images/backgrounds/chapter2/cha2-1.png';
                 break;
             case 5:
                 this.subtitle = '风雨飘摇';
+                this.backgroundImage.src = 'images/backgrounds/chapter2/cha2-1.png';
                 break;
             case 6:
                 this.subtitle = '红顶落幕';
+                this.backgroundImage.src = 'images/backgrounds/chapter2/cha2-1.png';
                 break;
             default:
                 this.subtitle = '';

@@ -5,7 +5,6 @@ import { chapter3 } from './chapter3.js'
 import { chapter4 } from './chapter4.js'
 import { chapter5 } from './chapter5.js'
 import { chapter6 } from './chapter6.js'
-import { Dialog } from '../components/Dialog.js'
 
 export class ChapterManager {
     constructor(game) {
@@ -24,24 +23,31 @@ export class ChapterManager {
         this.endings = [
             {
                 id: 'ending-1',
-                title: '红顶商人',
-                condition: (attributes) => {
-                    return attributes.wealth >= 1000 && attributes.reputation >= 80
-                }
+                title: '安心茶商',
+                description: '你成功经营了茶商，过上了安稳的生活',
+                image: 'images/backgrounds/endings/ending-1.png'
             },
             {
                 id: 'ending-2',
-                title: '普通商人',
-                condition: (attributes) => {
-                    return attributes.wealth >= 500 && attributes.reputation >= 50
-                }
+                title: '落寞回乡',
+                description: '没能在扬州立足，最终落寞回乡',
+                image: 'images/backgrounds/endings/ending-2.png'
             },
             {
                 id: 'ending-3',
+                title: '急流勇退',
+                description: '奋斗一生，选择急流勇退',
+                image: 'images/backgrounds/endings/ending-1.png'
+            },
+            {
+                id: 'ending-4',
+                title: '普通商人',
+               
+            },
+            {
+                id: 'ending-5',
                 title: '落魄商人',
-                condition: (attributes) => {
-                    return true // 默认结局
-                }
+               
             }
         ]
     }
@@ -75,7 +81,7 @@ export class ChapterManager {
     checkEnding() {
         const attributes = this.game.progress.attributes[this.currentChapter] || {}
         for (const ending of this.endings) {
-            if (ending.condition(attributes)) {
+            if (ending.condition && ending.condition(attributes)) {
                 return ending
             }
         }
@@ -84,9 +90,44 @@ export class ChapterManager {
 
     // 显示结局
     showEnding(ending) {
-        // TODO: 显示结局场景
-        console.log('触发结局：', ending.title)
-        this.game.setScene(this.game.titleScene, 'title')
+        console.log('显示结局:', ending)
+        this.game.endingScene.init(ending.title, ending.description, ending.image, () => {
+            // 结局后返回标题场景
+            this.game.setScene(this.game.titleScene, 'title')
+        })
+        this.game.setScene(this.game.endingScene, 'ending')
+    }
+
+    // 获取章节属性
+    getChapterAttributes() {
+        return this.game.progress.attributes[this.currentChapter] || {}
+    }
+
+    // 更新章节属性
+    updateAttributes(state) {
+        this.game.progress.attributes[this.currentChapter] = state
+    }
+
+    // 检查第二章监测点
+    checkChapter2Progress(eventIndex, attributes) {
+        if (eventIndex === 9) { // 第10个选择后检查
+            if (attributes.saltProgress < 5) {
+                return this.endings.find(e => e.id === 'ending-2') // 监测点结局
+            }
+        }
+        return null
+    }
+
+    // 检查是否需要显示弹窗
+    shouldShowDialog(chapterNum, eventIndex) {
+        switch(chapterNum) {
+            case 1:
+                return true // 第一章总是显示弹窗
+            case 2:
+                return eventIndex >= 10 // 第二章从第11个选择开始显示弹窗
+            default:
+                return false
+        }
     }
 
     // 开始章节卡牌
@@ -111,25 +152,34 @@ export class ChapterManager {
         }
         
         // 初始化卡牌场景
-        this.game.cardScene.init(cardEvents, this.getChapterAttributes(), (state, event, choice, choiceData) => {
-            // 更新状态
+        this.game.cardScene.init(cardEvents, this.getChapterAttributes(), (state, event, choice, choiceData, eventIndex) => {
             this.updateAttributes(state)
-            
-            // 特殊处理第一章的选择结果
-            if (this.currentChapter === 1 && choiceData.result) {
+
+            // 检查章节特殊监测点
+            let ending = null
+            if (this.currentChapter === 2) {
+                ending = this.checkChapter2Progress(eventIndex, state)
+            }
+
+            // 如果需要显示弹窗
+            if (this.shouldShowDialog(this.currentChapter, eventIndex) && choiceData.result) {
                 console.log('显示选择结果:', choiceData.result)
                 this.game.dialog.show(choiceData.result, () => {
                     // 处理结果
-                    if (choiceData.ending) {
-                        const ending = this.endings.find(e => e.id === choiceData.ending)
-                        if (ending) {
-                            this.showEnding(ending)
+                    if (ending) {
+                        this.showEnding(ending)
+                    } else if (choiceData.ending) {
+                        const choiceEnding = this.endings.find(e => e.id === choiceData.ending)
+                        if (choiceEnding) {
+                            this.showEnding(choiceEnding)
                         }
                     } else if (choiceData.nextChapter) {
                         this.currentChapter++
                         this.startChapterTitle()
                     }
                 })
+            } else if (ending) { // 监测点结局直接显示
+                this.showEnding(ending)
             }
         }, chapterInfo)
         

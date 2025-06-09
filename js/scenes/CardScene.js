@@ -48,11 +48,22 @@ export class CardScene {
         this.loadEventImages()
     }
     
+    // 获取章节默认卡牌图片
+    getDefaultCardImage() {
+        const defaultImages = {
+            1: 'images/card_events/one.png',
+            2: 'images/card_events/two.png',
+            3: 'images/card_events/three.png',
+            4: 'images/card_events/four.png',
+        }
+        return defaultImages[this.chapterNumber] || 'images/card_events/one.png'
+    }
+
     // 加载事件图片
     loadEventImages() {
         // 创建默认图片
         const defaultImage = wx.createImage()
-        defaultImage.src = 'images/card_events/one.png'
+        defaultImage.src = this.getDefaultCardImage()
         
         this.events.forEach(event => {
             if (event.image) {
@@ -112,26 +123,46 @@ export class CardScene {
     
     // 做出选择
     makeChoice(event, choice) {
-        // 根据选择更新游戏状态
         const choiceObj = choice === 'right' ? event.choices[1] : event.choices[0]
-        // console.log('选择对象:', choiceObj)
-        
-        // 更新状态并调用回调
+        console.log('选择对象:', choiceObj)
+
+        // 更新游戏状态
+        if (choiceObj.effects) {
+            Object.entries(choiceObj.effects).forEach(([key, value]) => {
+                this.gameState[key] = (this.gameState[key] || 0) + value
+            })
+        }
+
+        // 特殊处理第二章的监测点
+        if (this.chapterNumber === 2 && this.currentEventIndex < 10) {
+            // 记录盐引变化
+            if (typeof choiceObj.saltChange !== 'undefined') {
+                // 初始化盐引变化数组
+                if (!this.gameState.saltChanges) {
+                    this.gameState.saltChanges = []
+                }
+                // 记录每次的变化量
+                this.gameState.saltChanges.push(choiceObj.saltChange)
+                
+                // 如果是第10个选择，计算总进度
+                if (this.currentEventIndex === 9) {
+                    const totalProgress = this.gameState.saltChanges.reduce((sum, change) => sum + change, 0)
+                    this.gameState.saltProgress = totalProgress
+                    console.log('盐引最终进度:', totalProgress)
+                } else {
+                    console.log('盐引变化:', choiceObj.saltChange)
+                }
+            }
+        }
+
         if (this.onStateChange) {
             const choiceData = {
                 result: choiceObj.result,
                 ending: choiceObj.ending,
                 nextChapter: choiceObj.nextChapter
             }
-            // console.log('传递给回调的数据:', choiceData)
-            this.onStateChange(this.gameState, event, choice, choiceData)
-        }
-        
-        // 如果有属性效果，更新属性
-        if (choiceObj.effects) {
-            Object.entries(choiceObj.effects).forEach(([key, value]) => {
-                this.gameState[key] += value
-            })
+            console.log('传递给回调的数据:', choiceData)
+            this.onStateChange(this.gameState, event, choice, choiceData, this.currentEventIndex)
         }
         
         // 检查是否需要结束章节
@@ -369,12 +400,12 @@ export class CardScene {
         ctx.fillStyle = '#F4ECE4'
         ctx.fillRect(0, 0, this.width, this.height)
         
-        ctx.fillStyle = '#5C3317'
-        ctx.font = 'bold 30px FangSong'
-        ctx.textAlign = 'center'
-        ctx.fillText('第一章完成', this.width/2, this.height*0.4)
+        // ctx.fillStyle = '#5C3317'
+        // ctx.font = 'bold 30px FangSong'
+        // ctx.textAlign = 'center'
+        // ctx.fillText('第一章完成', this.width/2, this.height*0.4)
         
         ctx.font = '20px FangSong'
-        ctx.fillText('点击继续...', this.width/2, this.height*0.6)
+        ctx.fillText('点击继续...', this.width/2, this.height*0.8)
     }
 }

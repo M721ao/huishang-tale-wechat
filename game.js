@@ -3,6 +3,7 @@ import { TitleScene } from './js/scenes/TitleScene.js'
 import { PrologueScene } from './js/scenes/PrologueScene.js'
 import { StoryScene } from './js/scenes/StoryScene.js'
 import { CardScene } from './js/scenes/CardScene.js'
+import { EndingScene } from './js/scenes/EndingScene.js'
 import { Dialog } from './js/components/Dialog.js'
 import { ChapterTitleScene } from './js/scenes/ChapterTitleScene.js'
 import { ChapterManager } from './js/chapters/ChapterManager.js'
@@ -34,6 +35,7 @@ class Game {
         this.chapterTitleScene = new ChapterTitleScene(ctx, windowWidth, windowHeight)
         this.storyScene = new StoryScene(ctx, windowWidth, windowHeight)
         this.cardScene = new CardScene(ctx, windowWidth, windowHeight)
+        this.endingScene = new EndingScene(ctx, windowWidth, windowHeight)
         
         // 初始化弹窗
         this.dialog = new Dialog(ctx, windowWidth, windowHeight)
