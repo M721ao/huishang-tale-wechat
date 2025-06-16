@@ -1,6 +1,7 @@
 // 卡牌场景
 export class CardScene {
-    constructor(ctx, width, height) {
+    constructor(game, ctx, width, height) {
+        this.game = game;
         this.ctx = ctx
         this.width = width
         this.height = height
@@ -111,9 +112,11 @@ export class CardScene {
             if (Math.abs(this.dragOffset) > 100) {
                 const event = this.events[this.currentEventIndex]
                 console.log('当前事件:', event)
-                const choice = this.dragOffset > 0 ? 'right' : 'left'
-                this.makeChoice(event, choice)
-                this.currentEventIndex++
+                const choice = this.dragOffset > 0 ? 'right' : 'left';
+                const shouldAdvance = this.makeChoice(event, choice);
+                if (shouldAdvance) {
+                    this.currentEventIndex++;
+                }
             }
         }
         
@@ -124,118 +127,94 @@ export class CardScene {
     
     // 做出选择
     makeChoice(event, choice) {
+        let shouldAdvance = true; // 默认推进事件
+
         // 第二章 event3 特殊分支处理
         if (this.chapterNumber === 2 && event.id === 'event3') {
             this.loanBranch = (choice === 'left') ? 'wife' : 'loan';
-            console.log('第二章选择分支:', this.loanBranch);
-            
-            // 只保留对应分支
             if (this.loanBranch === 'wife') {
-                console.log('过滤前事件数:', this.events.length);
                 this.events = this.events.filter(ev => ev.id !== 'event14');
-                console.log('过滤后事件数:', this.events.length);
-                console.log('保留 event13, 移除 event14');
             } else {
-                console.log('过滤前事件数:', this.events.length);
                 this.events = this.events.filter(ev => ev.id !== 'event13');
-                console.log('过滤后事件数:', this.events.length);
-                console.log('保留 event14, 移除 event13');
             }
-            
-            // 打印剩余事件ID列表以便调试
             console.log('剩余事件ID:', this.events.map(e => e.id).join(', '));
         }
-        
-        // 第三章 event1 抽周仪式特殊处理
-        if (this.chapterNumber === 3 && event.id === 'event1') {
-            // 初始化抽周计数
-            if (this.grabZhouCount === undefined) {
-                this.grabZhouCount = 0;
-            }
-            
-            // 如果选择算盘（左边选项）
+
+        // 第三章 抓周仪式特殊处理
+        if (this.chapterNumber === 3 && ['event1', 'event2', 'event3', 'event4', 'event5'].includes(event.id)) {
             if (choice === 'left') {
-                this.grabZhouCount++;
-                console.log('抽周选择算盘次数:', this.grabZhouCount);
-                
-                // 获取全局 Dialog 实例
-                const dialog = this.onStateChange ? this.onStateChange('getDialog') : null;
-                
-                // 保存 this 引用，防止在回调函数中丢失
-                const self = this;
-                
-                if (this.grabZhouCount < 5) {
-                    // 弹窗提示父亲温柔地把算盘放回地上
-                    if (dialog) {
-                        // 不要在弹窗回调中调用 loadEvent，而是什么都不做
-                        dialog.show('父亲温柔地把算盘放回地上，请你再选一次', () => {});
-                    } else {
-                        console.error('无法获取 Dialog 实例');
-                    }
-                    return; // 阻止事件推进，保持在当前事件
+                if (this.game && this.game.dialog) {
+                    const message = (event.id !== 'event5')
+                        ? '父亲温柔地把算盘放回地上，请你再选一次'
+                        : '父亲一声叹气：为夫盼你不复贾竖子之道';
+                    this.game.dialog.show(message, () => {});
                 } else {
-                    // 第5次还选算盘，父亲叹气
-                    if (dialog) {
-                        dialog.show('父亲一声叹气：为夫盼你不复贾竹子之道', () => {
-                            // 使用保存的 self 引用
-                            self.grabZhouCount = 0;
-                            self.currentEventIndex++;
-                            // 不在回调中调用 loadEvent，而是让正常流程处理
-                        });
-                    } else {
-                        console.error('无法获取 Dialog 实例');
-                        // 即使没有 Dialog 也要推进事件
-                        this.grabZhouCount = 0;
-                        this.currentEventIndex++;
-                    }
-                    // 不返回，允许正常流程处理下一个事件
+                    console.error('无法获取 Dialog 实例');
                 }
             } else {
-                // 选择了朱子，重置计数
-                this.grabZhouCount = 0;
+                // 如果选择朱子，则直接跳到 event6
+                const nextEventIndex = this.events.findIndex(ev => ev.id === 'event6');
+                if (nextEventIndex !== -1) {
+                    this.currentEventIndex = nextEventIndex - 1; // 设置为目标索引前一个，因为 handleTouchEnd 会自增
+                }
             }
         }
-        const choiceObj = choice === 'right' ? event.choices[1] : event.choices[0]
-        console.log('选择对象:', choiceObj)
+
+        const choiceObj = choice === 'right' ? event.choices[1] : event.choices[0];
+        if (!choiceObj) return shouldAdvance; // 如果没有选择对象，则直接返回
 
         // 更新游戏状态
         if (choiceObj.effects) {
             Object.entries(choiceObj.effects).forEach(([key, value]) => {
-                this.gameState[key] = (this.gameState[key] || 0) + value
-            })
+                this.gameState[key] = (this.gameState[key] || 0) + value;
+            });
         }
 
         // 特殊处理第二章的监测点
         if (this.chapterNumber === 2 && this.currentEventIndex < 10) {
-            // 记录盐引变化
             if (typeof choiceObj.saltChange !== 'undefined') {
-                // 初始化盐引变化数组
                 if (!this.gameState.saltChanges) {
-                    this.gameState.saltChanges = []
+                    this.gameState.saltChanges = [];
                 }
-                // 记录每次的变化量
-                this.gameState.saltChanges.push(choiceObj.saltChange)
-                
-                // 如果是第10个选择，计算总进度
+                this.gameState.saltChanges.push(choiceObj.saltChange);
                 if (this.currentEventIndex === 9) {
-                    const totalProgress = this.gameState.saltChanges.reduce((sum, change) => sum + change, 0)
-                    this.gameState.saltProgress = totalProgress
-                    console.log('盐引最终进度:', totalProgress)
-                } else {
-                    console.log('盐引变化:', choiceObj.saltChange)
+                    const totalProgress = this.gameState.saltChanges.reduce((sum, change) => sum + change, 0);
+                    this.gameState.saltProgress = totalProgress;
                 }
+            }
+        }
+        
+        // 特殊处理第三章的学力进度
+        if (this.chapterNumber === 3) {
+            if (typeof choiceObj.learningProgress !== 'undefined') {
+                // 初始化学力进度
+                if (!this.gameState.learningProgress) {
+                    this.gameState.learningProgress = 0;
+                }
+                // 累加学力进度
+                this.gameState.learningProgress += choiceObj.learningProgress;
+                console.log('更新学力进度:', this.gameState.learningProgress);
+            }
+        }
+        
+        // 特殊处理第四章的政府关系
+        if (this.chapterNumber === 4) {
+            if (typeof choiceObj.governmentRelation !== 'undefined') {
+                // 初始化政府关系
+                if (!this.gameState.governmentRelation) {
+                    this.gameState.governmentRelation = 0;
+                }
+                // 累加政府关系值
+                this.gameState.governmentRelation += choiceObj.governmentRelation;
+                console.log('更新政府关系:', this.gameState.governmentRelation);
             }
         }
 
         if (this.onStateChange) {
-            const choiceData = {
-                result: choiceObj.result,
-                ending: choiceObj.ending,
-                nextChapter: choiceObj.nextChapter
-            }
-            console.log('传递给回调的数据:', choiceData)
-            this.onStateChange(this.gameState, event, choice, choiceData, this.currentEventIndex)
+            this.onStateChange(this.gameState, event, choice, choiceObj, this.currentEventIndex);
         }
+
+        return shouldAdvance;
         
         // 检查是否需要结束章节
         if (choiceObj.ending) {

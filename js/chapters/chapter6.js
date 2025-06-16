@@ -1,4 +1,4 @@
-export const chapter3 = {
+export const chapter6 = {
     title: '第六章 红顶落幕',
     
     // 故事场景脚本

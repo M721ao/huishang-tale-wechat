@@ -1,5 +1,5 @@
 export const chapter3 = {
-    title: '第三章 儒贾之道',
+    title: '第三章 诗书商道',
     
     // 故事场景脚本
     storyScript: [
@@ -13,7 +13,6 @@ export const chapter3 = {
     
     // 卡牌事件配置
     cardEvents: [
-        
             {
               id: 'event1',
               title: '抓周仪式',
@@ -30,7 +29,66 @@ export const chapter3 = {
               ]
             },
             {
-              id: 'event2',
+                id: 'event2',
+                title: '抓周仪式',
+                description: '母亲抱着你举办抓周仪式，你选',
+                choices: [
+                  {
+                    text: '算盘',
+                    learningProgress: 0,
+                  },
+                  {
+                    text: '朱子',
+                    learningProgress: 0,
+                  }
+                ]
+              },  {
+                id: 'event3',
+                title: '抓周仪式',
+                description: '母亲抱着你举办抓周仪式，你选',
+                choices: [
+                  {
+                    text: '算盘',
+                    learningProgress: 0,
+                  },
+                  {
+                    text: '朱子',
+                    learningProgress: 0,
+                  }
+                ]
+              },  {
+                id: 'event4',
+                title: '抓周仪式',
+                description: '母亲抱着你举办抓周仪式，你选',
+                choices: [
+                  {
+                    text: '算盘',
+                    learningProgress: 0,
+                  },
+                  {
+                    text: '朱子',
+                    learningProgress: 0,
+                  }
+                ]
+              },
+              {
+                id: 'event5',
+                title: '抓周仪式',
+                description: '母亲抱着你举办抓周仪式，你选',
+                choices: [
+                  {
+                    text: '算盘',
+                    learningProgress: 0,
+                  },
+                  {
+                    text: '朱子',
+                    learningProgress: 0,
+                  }
+                ]
+              },
+            
+            {
+              id: 'event6',
               title: '竹山书院',
               description: '进了这么厉害的书院，你决定花几分力气读书？',
               choices: [
@@ -45,7 +103,7 @@ export const chapter3 = {
               ]
             },
             {
-              id: 'event3',
+              id: 'event7',
               title: '朱子语类',
               description: '父亲决定效仿吴珮，你觉得',
               choices: [
@@ -60,7 +118,7 @@ export const chapter3 = {
               ]
             },
             {
-              id: 'event4',
+              id: 'event8',
               title: '黄牡丹雅集',
               description: '作诗好无聊，我只想看金杯，还是专心听他们说话学习？',
               choices: [
@@ -75,7 +133,7 @@ export const chapter3 = {
               ]
             },
             {
-              id: 'event5',
+              id: 'event9',
               title: '父亲教诲',
               description: '在父亲身边这两年，这句训诫便昼夜叩在耳畔',
               choices: [
@@ -90,7 +148,7 @@ export const chapter3 = {
               ]
             },
             {
-              id: 'event6',
+              id: 'event10',
               title: '好友备考',
               description: '回乡后，好友找你习举文汇备考县试',
               choices: [
@@ -105,7 +163,7 @@ export const chapter3 = {
               ]
             },
             {
-              id: 'event7',
+              id: 'event11',
               title: '中了秀才',
               description: '母亲问你想要什么',
               choices: [
@@ -120,7 +178,7 @@ export const chapter3 = {
               ]
             },
             {
-              id: 'event8',
+              id: 'event12',
               title: '中了举人',
               description: '父亲已然年老，你要继续读书还是接管家业？',
               choices: [
@@ -135,7 +193,7 @@ export const chapter3 = {
               ]
             },
             {
-              id: 'event9',
+              id: 'event13',
               title: '前往会试',
               description: '前往中央参与会试',
               choices: [
@@ -150,7 +208,7 @@ export const chapter3 = {
               ]
             },
             {
-              id: 'event10',
+              id: 'event14',
               title: '诱惑当前',
               description: '住地遇到几位公子邀请你去勾栏听曲',
               choices: [
@@ -165,7 +223,7 @@ export const chapter3 = {
               ]
             },
             {
-              id: 'event11',
+              id: 'event15',
               title: '徽州同乡',
               description: '遇到徽州同乡被欺',
               choices: [
@@ -180,7 +238,7 @@ export const chapter3 = {
               ]
             },
             {
-              id: 'event12',
+              id: 'event16',
               title: '打点之路',
               description: '那几位公子告诉你有一条打点的路子',
               choices: [
@@ -195,7 +253,7 @@ export const chapter3 = {
               ]
             },
             {
-              id: 'event13',
+              id: 'event17',
               title: '会试前夜',
               description: '会试前夜，你打算',
               choices: [

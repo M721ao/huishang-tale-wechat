@@ -34,7 +34,7 @@ class Game {
         this.prologueScene = new PrologueScene(ctx, windowWidth, windowHeight)
         this.chapterTitleScene = new ChapterTitleScene(ctx, windowWidth, windowHeight)
         this.storyScene = new StoryScene(ctx, windowWidth, windowHeight)
-        this.cardScene = new CardScene(ctx, windowWidth, windowHeight)
+        this.cardScene = new CardScene(this, ctx, windowWidth, windowHeight)
         this.endingScene = new EndingScene(ctx, windowWidth, windowHeight)
         
         // 初始化弹窗

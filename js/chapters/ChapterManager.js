@@ -41,7 +41,9 @@ export class ChapterManager {
             },
             {
                 id: 'ending-4',
-                title: '普通商人',
+                title: '朱楼塌陷',
+                description: '无力支撑，朱楼塌陷',
+                image: 'images/backgrounds/endings/ending-1.png'
                
             },
             {
@@ -119,30 +121,32 @@ export class ChapterManager {
     }
 
 // 检查第三章监测点
-checkChapter3Progress(eventIndex, attributes, lastChoice, grabZhouCount) {
-    // 抓周仪式特殊处理
-    if (eventIndex === 0) { // 第一个事件
-        if (lastChoice === 'left') { // 假设左边是算盘
-            if (grabZhouCount < 4) {
-                // 弹窗提示父亲温柔劝说
-                this.game.dialog.show('父亲温柔地把算盘放回地上，请你再选一次', () => {});
-                return { special: true, holdEvent: true }; // 不推进事件
-            } else if (grabZhouCount === 4) {
-                // 第5次还选算盘，弹窗父亲叹气并推进
-                this.game.dialog.show('父亲一声叹气：为夫盼你不复贾竖子之道', () => {
-                    // 推进到下一个事件
-                    this.game.cardScene.currentEventIndex++;
-                    this.game.cardScene.nextEvent && this.game.cardScene.nextEvent();
-                });
-                return { special: true, holdEvent: false }; // 推进事件
-            }
+checkChapter3Progress(eventIndex, attributes) {
+    // 普通学力结局判定
+    if (eventIndex === 16) {
+        console.log('检查第三章监测点', attributes.learningProgress)
+        if (attributes.learningProgress < 20) {
+            return this.endings.find(e => e.id === 'ending-3'); // 学力不足结局
+        }
+        else {
+            // 创建一个特殊对象来标记需要进入下一章
+            return { nextChapter: true };
         }
     }
+    return null;
+}
 
-    // 普通学力结局判定
-    if (eventIndex === 14) { // 第15个选择后检查
-        if (attributes.learningProgress < 7) {
-            return this.endings.find(e => e.id === 'ending-3'); // 学力不足结局
+// 检查第四章监测点
+checkChapter4Progress(eventIndex, attributes) {
+    // 政府关系结局判定
+    if (eventIndex === 19) { // 第20个选择后检查
+        console.log('检查第四章监测点', attributes.governmentRelation)
+        if (attributes.governmentRelation < 50) {
+            return this.endings.find(e => e.id === 'ending-4'); // 政府关系不足结局（抄家）
+        }
+        else {
+            // 创建一个特殊对象来标记需要进入下一章
+            return { nextChapter: true };
         }
     }
     return null;
@@ -189,6 +193,8 @@ checkChapter3Progress(eventIndex, attributes, lastChoice, grabZhouCount) {
                 ending = this.checkChapter2Progress(eventIndex, state)
             } else if (this.currentChapter === 3) {
                 ending = this.checkChapter3Progress(eventIndex, state)
+            } else if (this.currentChapter === 4) {
+                ending = this.checkChapter4Progress(eventIndex, state)
             }
 
             // 如果需要显示弹窗
@@ -208,7 +214,13 @@ checkChapter3Progress(eventIndex, attributes, lastChoice, grabZhouCount) {
                     }
                 })
             } else if (ending) {
-                this.showEnding(ending)
+                // 检查是否是进入下一章节的信号
+                if (ending.nextChapter) {
+                    this.currentChapter++
+                    this.startChapterTitle()
+                } else {
+                    this.showEnding(ending)
+                }
             } else if (choiceData && choiceData.ending) {
                 const choiceEnding = this.endings.find(e => e.id === choiceData.ending)
                 if (choiceEnding) {
