@@ -44,7 +44,8 @@ export class CardScene {
         this.onStateChange = onStateChange
         this.currentEventIndex = 0
         this.chapterTitle = chapterInfo.title
-        this.chapterNumber = chapterInfo.number
+        this.chapterNumber = chapterInfo.chapterNumber || chapterInfo.number // 兼容两种命名方式
+        console.log('初始化章节号:', this.chapterNumber)
         this.loadEventImages()
     }
     
@@ -123,6 +124,77 @@ export class CardScene {
     
     // 做出选择
     makeChoice(event, choice) {
+        // 第二章 event3 特殊分支处理
+        if (this.chapterNumber === 2 && event.id === 'event3') {
+            this.loanBranch = (choice === 'left') ? 'wife' : 'loan';
+            console.log('第二章选择分支:', this.loanBranch);
+            
+            // 只保留对应分支
+            if (this.loanBranch === 'wife') {
+                console.log('过滤前事件数:', this.events.length);
+                this.events = this.events.filter(ev => ev.id !== 'event14');
+                console.log('过滤后事件数:', this.events.length);
+                console.log('保留 event13, 移除 event14');
+            } else {
+                console.log('过滤前事件数:', this.events.length);
+                this.events = this.events.filter(ev => ev.id !== 'event13');
+                console.log('过滤后事件数:', this.events.length);
+                console.log('保留 event14, 移除 event13');
+            }
+            
+            // 打印剩余事件ID列表以便调试
+            console.log('剩余事件ID:', this.events.map(e => e.id).join(', '));
+        }
+        
+        // 第三章 event1 抽周仪式特殊处理
+        if (this.chapterNumber === 3 && event.id === 'event1') {
+            // 初始化抽周计数
+            if (this.grabZhouCount === undefined) {
+                this.grabZhouCount = 0;
+            }
+            
+            // 如果选择算盘（左边选项）
+            if (choice === 'left') {
+                this.grabZhouCount++;
+                console.log('抽周选择算盘次数:', this.grabZhouCount);
+                
+                // 获取全局 Dialog 实例
+                const dialog = this.onStateChange ? this.onStateChange('getDialog') : null;
+                
+                // 保存 this 引用，防止在回调函数中丢失
+                const self = this;
+                
+                if (this.grabZhouCount < 5) {
+                    // 弹窗提示父亲温柔地把算盘放回地上
+                    if (dialog) {
+                        // 不要在弹窗回调中调用 loadEvent，而是什么都不做
+                        dialog.show('父亲温柔地把算盘放回地上，请你再选一次', () => {});
+                    } else {
+                        console.error('无法获取 Dialog 实例');
+                    }
+                    return; // 阻止事件推进，保持在当前事件
+                } else {
+                    // 第5次还选算盘，父亲叹气
+                    if (dialog) {
+                        dialog.show('父亲一声叹气：为夫盼你不复贾竹子之道', () => {
+                            // 使用保存的 self 引用
+                            self.grabZhouCount = 0;
+                            self.currentEventIndex++;
+                            // 不在回调中调用 loadEvent，而是让正常流程处理
+                        });
+                    } else {
+                        console.error('无法获取 Dialog 实例');
+                        // 即使没有 Dialog 也要推进事件
+                        this.grabZhouCount = 0;
+                        this.currentEventIndex++;
+                    }
+                    // 不返回，允许正常流程处理下一个事件
+                }
+            } else {
+                // 选择了朱子，重置计数
+                this.grabZhouCount = 0;
+            }
+        }
         const choiceObj = choice === 'right' ? event.choices[1] : event.choices[0]
         console.log('选择对象:', choiceObj)
 

@@ -118,6 +118,36 @@ export class ChapterManager {
         return null
     }
 
+// 检查第三章监测点
+checkChapter3Progress(eventIndex, attributes, lastChoice, grabZhouCount) {
+    // 抓周仪式特殊处理
+    if (eventIndex === 0) { // 第一个事件
+        if (lastChoice === 'left') { // 假设左边是算盘
+            if (grabZhouCount < 4) {
+                // 弹窗提示父亲温柔劝说
+                this.game.dialog.show('父亲温柔地把算盘放回地上，请你再选一次', () => {});
+                return { special: true, holdEvent: true }; // 不推进事件
+            } else if (grabZhouCount === 4) {
+                // 第5次还选算盘，弹窗父亲叹气并推进
+                this.game.dialog.show('父亲一声叹气：为夫盼你不复贾竖子之道', () => {
+                    // 推进到下一个事件
+                    this.game.cardScene.currentEventIndex++;
+                    this.game.cardScene.nextEvent && this.game.cardScene.nextEvent();
+                });
+                return { special: true, holdEvent: false }; // 推进事件
+            }
+        }
+    }
+
+    // 普通学力结局判定
+    if (eventIndex === 14) { // 第15个选择后检查
+        if (attributes.learningProgress < 7) {
+            return this.endings.find(e => e.id === 'ending-3'); // 学力不足结局
+        }
+    }
+    return null;
+}
+
     // 检查是否需要显示弹窗
     shouldShowDialog(chapterNum, eventIndex) {
         switch(chapterNum) {
@@ -125,6 +155,8 @@ export class ChapterManager {
                 return true // 第一章总是显示弹窗
             case 2:
                 return eventIndex >= 10 // 第二章从第11个选择开始显示弹窗
+            case 3:
+                return eventIndex >= 15 // 第三章从第16个选择开始显示弹窗
             default:
                 return false
         }
@@ -136,36 +168,33 @@ export class ChapterManager {
         
         console.log('Current chapter:', chapter.title)
         
-        // 初始化卡牌场景
-        const cardEvents = chapter.cardEvents
-        if (!cardEvents || !Array.isArray(cardEvents)) {
-            console.error('Invalid card events in chapter:', chapter)
-            return
-        }
-        
-        console.log('Initializing card scene with', cardEvents.length, 'events')
-        
-        // 准备章节信息
+        // 启动章节卡牌场景
+        const cardEvents = this.chapters[this.currentChapter].cardEvents
         const chapterInfo = {
-            title: chapter.title,
-            number: this.currentChapter
+            chapterNumber: this.currentChapter,
+            title: this.chapters[this.currentChapter].title
         }
         
-        // 初始化卡牌场景
         this.game.cardScene.init(cardEvents, this.getChapterAttributes(), (state, event, choice, choiceData, eventIndex) => {
+            // 特殊呼叫，用于获取 Dialog 实例
+            if (state === 'getDialog') {
+                return this.game.dialog;
+            }
+            
             this.updateAttributes(state)
-
+            
             // 检查章节特殊监测点
             let ending = null
             if (this.currentChapter === 2) {
                 ending = this.checkChapter2Progress(eventIndex, state)
+            } else if (this.currentChapter === 3) {
+                ending = this.checkChapter3Progress(eventIndex, state)
             }
 
             // 如果需要显示弹窗
-            if (this.shouldShowDialog(this.currentChapter, eventIndex) && choiceData.result) {
+            if (this.shouldShowDialog(this.currentChapter, eventIndex) && choiceData && choiceData.result) {
                 console.log('显示选择结果:', choiceData.result)
                 this.game.dialog.show(choiceData.result, () => {
-                    // 处理结果
                     if (ending) {
                         this.showEnding(ending)
                     } else if (choiceData.ending) {
@@ -178,8 +207,16 @@ export class ChapterManager {
                         this.startChapterTitle()
                     }
                 })
-            } else if (ending) { // 监测点结局直接显示
+            } else if (ending) {
                 this.showEnding(ending)
+            } else if (choiceData && choiceData.ending) {
+                const choiceEnding = this.endings.find(e => e.id === choiceData.ending)
+                if (choiceEnding) {
+                    this.showEnding(choiceEnding)
+                }
+            } else if (choiceData && choiceData.nextChapter) {
+                this.currentChapter++
+                this.startChapterTitle()
             }
         }, chapterInfo)
         
