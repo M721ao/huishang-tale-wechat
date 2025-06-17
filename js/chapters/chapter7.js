@@ -1,4 +1,4 @@
-export const chapter3 = {
+export const chapter7 = {
     title: '第七章 金字招牌',
     
     // 故事场景脚本 介绍一些徽商留在现在的老字号，还有建材的等领域的建树

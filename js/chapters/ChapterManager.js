@@ -5,6 +5,7 @@ import { chapter3 } from './chapter3.js'
 import { chapter4 } from './chapter4.js'
 import { chapter5 } from './chapter5.js'
 import { chapter6 } from './chapter6.js'
+import {chapter7} from './chapter7.js'
 
 export class ChapterManager {
     constructor(game) {
@@ -17,6 +18,7 @@ export class ChapterManager {
             4: chapter4,
             5: chapter5,
             6: chapter6,
+            7: chapter7
         }
         
         // 结局条件
@@ -75,7 +77,24 @@ export class ChapterManager {
         this.game.setScene(this.game.storyScene, 'story')
         this.game.storyScene.loadScript(chapter.storyScript)
         this.game.storyScene.setOnFinish(() => {
-            this.startChapterCards()
+            // 检查是否有卡牌事件
+            if (chapter.cardEvents && chapter.cardEvents.length > 0) {
+                this.startChapterCards()
+            } else {
+                console.log('章节 ' + this.currentChapter + ' 没有卡牌事件，直接进入下一章')
+                // 如果是最后一章，显示结局
+                if (this.currentChapter >= Object.keys(this.chapters).length) {
+                    this.showEnding({
+                        title: '游戏结束',
+                        description: '感谢您的游玩，故事已经结束。',
+                        image: 'images/backgrounds/endings/ending-1.png'
+                    })
+                } else {
+                    // 否则进入下一章
+                    this.currentChapter++
+                    this.startChapterTitle()
+                }
+            }
         })
     }
 
@@ -172,11 +191,29 @@ checkChapter4Progress(eventIndex, attributes) {
         
         console.log('Current chapter:', chapter.title)
         
+        // 检查是否有卡牌事件
+        if (!chapter.cardEvents || chapter.cardEvents.length === 0) {
+            console.log('章节 ' + this.currentChapter + ' 没有卡牌事件，直接进入下一章')
+            // 如果是最后一章，显示结局
+            if (this.currentChapter >= Object.keys(this.chapters).length) {
+                this.showEnding({
+                    title: '游戏结束',
+                    description: '感谢您的游玩，故事已经结束。',
+                    image: 'images/backgrounds/endings/ending-1.png'
+                })
+            } else {
+                // 否则进入下一章
+                this.currentChapter++
+                this.startChapterTitle()
+            }
+            return
+        }
+        
         // 启动章节卡牌场景
-        const cardEvents = this.chapters[this.currentChapter].cardEvents
+        const cardEvents = chapter.cardEvents
         const chapterInfo = {
             chapterNumber: this.currentChapter,
-            title: this.chapters[this.currentChapter].title
+            title: chapter.title
         }
         
         this.game.cardScene.init(cardEvents, this.getChapterAttributes(), (state, event, choice, choiceData, eventIndex) => {
