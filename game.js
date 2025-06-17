@@ -7,6 +7,7 @@ import { EndingScene } from './js/scenes/EndingScene.js'
 import { Dialog } from './js/components/Dialog.js'
 import { ChapterTitleScene } from './js/scenes/ChapterTitleScene.js'
 import { ChapterManager } from './js/chapters/ChapterManager.js'
+import { UserManager } from './js/utils/UserManager.js'
 
 // 初始化游戏画布
 const canvas = wx.createCanvas()
@@ -40,12 +41,30 @@ class Game {
         // 初始化弹窗
         this.dialog = new Dialog(ctx, windowWidth, windowHeight)
         
+        // 初始化用户管理器
+        this.userManager = new UserManager(this)
+        this.userManager.init()
+        
         // 初始化章节管理器
         this.chapterManager = new ChapterManager(this)
         
-        // 设置标题场景的回调
+        // 设置标题场景的开始回调
         this.titleScene.setOnStart(() => {
-            this.startMainGame()
+            // 检查是否已登录
+            if (this.userManager && this.userManager.isLoggedIn) {
+                // 已登录，直接开始游戏
+                this.startMainGame()
+            } else {
+                // 未登录，显示登录选项
+                this.showLoginOptions()
+            }
+        })
+        
+        // 设置游客模式回调
+        this.titleScene.setOnGuestMode(() => {
+            if (this.userManager) {
+                this.userManager.enableGuestMode()
+            }
         })
     }
     
@@ -73,6 +92,18 @@ class Game {
         
         this.currentScene = scene;
         this.currentSceneType = type;
+        
+        // 如果是章节切换，保存游戏进度
+        if (type === 'chapterTitle' && this.chapterManager && this.userManager) {
+            const chapter = this.chapterManager.getCurrentChapter()
+            this.userManager.saveGameProgress(chapter)
+        }
+        
+        // 如果是标题场景，更新登录UI
+        if (type === 'title') {
+            this.updateLoginUI()
+        }
+        
         this.progress.currentScene = type;
         saveProgress(this.progress);
         
@@ -89,6 +120,47 @@ class Game {
         }
         saveProgress(this.progress)
         this.setScene(this.titleScene, 'title')
+    }
+    
+    // 启动游戏
+    start() {
+        // 设置初始场景
+        this.setScene(this.titleScene, 'title')
+        
+        // 检查登录状态，更新按钮显示
+        this.updateLoginUI()
+    }
+    
+    // 显示登录选项
+    showLoginOptions() {
+        // 显示游客模式文字链接
+        this.titleScene.showGuestButton(true)
+        
+        // 直接触发登录
+        if (this.userManager) {
+            this.userManager.login()
+        }
+    }
+    
+    // 更新登录相关UI
+    updateLoginUI() {
+        if (!this.userManager || !this.titleScene) return
+        
+        const status = this.userManager.checkLoginStatus()
+        
+        if (status.isLoggedIn) {
+            // 已登录，显示“继续游戏”按钮
+            this.titleScene.updateButtonText('继续游戏')
+            this.titleScene.showGuestButton(false) // 隐藏游客模式按钮
+            
+            if (status.isGuestMode) {
+                console.log('当前为游客模式')
+            }
+        } else {
+            // 未登录，显示“开始游戏”按钮
+            this.titleScene.updateButtonText('开始游戏')
+            this.titleScene.showGuestButton(true) // 显示游客模式按钮
+        }
     }
     
     // 开始主游戏

@@ -1,9 +1,14 @@
 // 结局场景
+import { getUIHelper } from '../utils/UIHelper.js'
+
 export class EndingScene {
     constructor(ctx, width, height) {
         this.ctx = ctx
         this.width = width
         this.height = height
+        
+        // 获取UI辅助工具
+        this.uiHelper = getUIHelper()
         this.title = ''
         this.description = ''
         this.imagePath = ''
@@ -56,17 +61,17 @@ export class EndingScene {
 
         // 绘制标题
         ctx.fillStyle = '#FFFFFF'
-        ctx.font = 'bold 36px FangSong'
+        ctx.font = this.uiHelper.getFont(36, 'FangSong', true)
         ctx.textAlign = 'center'
         ctx.textBaseline = 'middle'
         ctx.fillText(this.title, this.width/2, this.height * 0.75)
 
         // 绘制描述文本
-        ctx.font = '24px FangSong'
+        ctx.font = this.uiHelper.getFont(24, 'FangSong')
         this.drawWrappedText(ctx, this.description, this.width/2, this.height * 0.85, this.width * 0.8, 36)
 
         // 绘制提示文本
-        ctx.font = '20px FangSong'
+        ctx.font = this.uiHelper.getFont(20, 'FangSong')
         ctx.fillStyle = 'rgba(255, 255, 255, 0.6)'
         ctx.fillText('点击屏幕继续', this.width/2, this.height * 0.95)
 

@@ -1,9 +1,14 @@
 // 事件场景
+import { getUIHelper } from '../utils/UIHelper.js'
+
 export class EventScene {
     constructor(ctx, width, height) {
         this.ctx = ctx;
         this.width = width;
         this.height = height;
+        
+        // 获取UI辅助工具
+        this.uiHelper = getUIHelper();
         this.currentEvent = null;
         this.cardY = 0;          // 卡片当前Y位置
         this.startY = 0;         // 触摸开始Y位置
@@ -104,7 +109,7 @@ export class EventScene {
         
         // 绘制标题
         ctx.fillStyle = '#5C3317';
-        ctx.font = 'bold 28px FangSong';
+        ctx.font = this.uiHelper.getFont(28, 'FangSong', true);
         ctx.textAlign = 'center';
         ctx.fillText(
             currentEvent.title,
@@ -113,7 +118,7 @@ export class EventScene {
         );
         
         // 绘制描述文本
-        ctx.font = '20px FangSong';
+        ctx.font = this.uiHelper.getFont(20, 'FangSong');
         this.drawWrappedText(
             currentEvent.description,
             this.width / 2,
@@ -122,7 +127,7 @@ export class EventScene {
         );
         
         // 绘制选项提示
-        ctx.font = '16px FangSong';
+        ctx.font = this.uiHelper.getFont(16, 'FangSong');
         ctx.fillStyle = 'rgba(92, 51, 23, 0.6)';
         ctx.fillText(
             '上滑：' + currentEvent.choices[0].text,

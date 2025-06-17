@@ -1,8 +1,13 @@
+import { getUIHelper } from '../utils/UIHelper.js'
+
 export class ChapterTitleScene {
     constructor(ctx, width, height) {
-        this.ctx = ctx;
-        this.width = width;
-        this.height = height;
+        this.ctx = ctx
+        this.width = width
+        this.height = height
+        
+        // 获取UI辅助工具
+        this.uiHelper = getUIHelper();
         this.title = '';
         this.subtitle = '';
         this.startTime = 0;
@@ -83,31 +88,19 @@ export class ChapterTitleScene {
         const lineWidth = 200;
         const lineY = height * 0.4;
         
-        // 左边线条
-        ctx.beginPath();
-        ctx.moveTo(width/2 - lineWidth - 20, lineY);
-        ctx.lineTo(width/2 - 20, lineY);
-        ctx.strokeStyle = '#F4ECE4';
-        ctx.lineWidth = 2;
-        ctx.stroke();
-        
-        // 右边线条
-        ctx.beginPath();
-        ctx.moveTo(width/2 + 20, lineY);
-        ctx.lineTo(width/2 + lineWidth + 20, lineY);
-        ctx.stroke();
+
         
         // 绘制标题
         ctx.fillStyle = '#F4ECE4';
-        ctx.font = 'bold 48px FangSong';
+        ctx.font = this.uiHelper.getFont(48, 'FangSong', true);
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(title, width/2, height * 0.4);
         
         // 绘制副标题
         if (subtitle) {
-            ctx.font = '36px FangSong';
-            ctx.fillText(subtitle, width/2, height * 0.5);
+            ctx.font = this.uiHelper.getFont(36, 'FangSong');
+            ctx.fillText("--"+subtitle+"--", width/2, height * 0.5);
         }
         
         ctx.restore();

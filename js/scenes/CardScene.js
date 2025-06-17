@@ -1,10 +1,15 @@
 // 卡牌场景
+import { getUIHelper } from '../utils/UIHelper.js'
+
 export class CardScene {
     constructor(game, ctx, width, height) {
         this.game = game;
         this.ctx = ctx
         this.width = width
         this.height = height
+        
+        // 获取UI辅助工具
+        this.uiHelper = getUIHelper()
         
         // 卡牌状态
         this.currentEventIndex = 0
@@ -46,7 +51,7 @@ export class CardScene {
         this.currentEventIndex = 0
         this.chapterTitle = chapterInfo.title
         this.chapterNumber = chapterInfo.chapterNumber || chapterInfo.number // 兼容两种命名方式
-        console.log('初始化章节号:', this.chapterNumber)
+        // console.log('初始化章节号:', this.chapterNumber)
         this.loadEventImages()
     }
     
@@ -111,7 +116,7 @@ export class CardScene {
             // 判断是否做出选择
             if (Math.abs(this.dragOffset) > 100) {
                 const event = this.events[this.currentEventIndex]
-                console.log('当前事件:', event)
+                // console.log('当前事件:', event)
                 const choice = this.dragOffset > 0 ? 'right' : 'left';
                 const shouldAdvance = this.makeChoice(event, choice);
                 if (shouldAdvance) {
@@ -287,18 +292,18 @@ export class CardScene {
         
         // 绘制标题
         ctx.fillStyle = '#5C3317'
-        ctx.font = 'bold 24px FangSong'
+        ctx.font = this.uiHelper.getFont(22, 'FangSong', true)
         ctx.textAlign = 'center'
         ctx.fillText(event.title, x, y - this.cardHeight*0.35 + 30)
         
         // 绘制描述
-        ctx.font = '18px FangSong'
+        ctx.font = this.uiHelper.getFont(16, 'FangSong')
         this.drawWrappedText(
             ctx,
             event.description,
             x,
-            y,
-            this.cardWidth * 0.8,
+            y+10,
+            this.cardWidth * 0.9,
             25
         )
         
@@ -324,20 +329,22 @@ export class CardScene {
             return
         }
         
-        ctx.font = '20px FangSong'
+        ctx.font = this.uiHelper.getFont(16, 'FangSong')
         ctx.textAlign = 'center'
         
         // 左侧选项
-        ctx.fillStyle = this.dragOffset < 0 ? '#FF4D4D' : '#666666'
-        ctx.fillText('← ' + leftChoice.text, x - this.cardWidth*0.3, y + this.cardHeight*0.3)
+        ctx.fillStyle = this.dragOffset < 0 ? '#4CAF50' : '#666666'
+        ctx.fillText( leftChoice.text, x - this.cardWidth*0.25, y + this.cardHeight*0.3)
         
         // 右侧选项
         ctx.fillStyle = this.dragOffset > 0 ? '#4CAF50' : '#666666'
-        ctx.fillText(rightChoice.text + ' →', x + this.cardWidth*0.3, y + this.cardHeight*0.3)
+        ctx.fillText(rightChoice.text, x + this.cardWidth*0.35, y + this.cardHeight*0.3)
     }
     
     // 绘制自动换行文本
     drawWrappedText(ctx, text, x, y, maxWidth, lineHeight) {
+        // 使用自适应行高
+        const adaptiveLineHeight = this.uiHelper.getLineHeight(lineHeight)
         const words = text.split('')
         let line = ''
         let posY = y
@@ -349,7 +356,7 @@ export class CardScene {
             if (metrics.width > maxWidth && i > 0) {
                 ctx.fillText(line, x, posY)
                 line = words[i]
-                posY += lineHeight
+                posY += adaptiveLineHeight
             } else {
                 line = testLine
             }
@@ -397,15 +404,11 @@ export class CardScene {
     // 绘制章节标题
     drawChapterTitle() {
         const ctx = this.ctx
-        const y = 50
-
-        // 绘制背景条
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
-        ctx.fillRect(0, 0, this.width, 70)
+        const y = 20
 
         // 绘制标题
         ctx.fillStyle = '#5C3317'
-        ctx.font = 'bold 24px FangSong'
+        ctx.font = this.uiHelper.getFont(20, 'FangSong', true)
         ctx.textAlign = 'center'
         ctx.fillText(this.chapterTitle, this.width/2, y)
     }
@@ -415,13 +418,9 @@ export class CardScene {
         const ctx = this.ctx
         const y = this.height - 40
 
-        // 绘制半透明背景条
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'
-        ctx.fillRect(0, this.height - 60, this.width, 60)
-
         // 绘制提示文本
         ctx.fillStyle = '#666666'
-        ctx.font = '20px FangSong'
+        ctx.font = this.uiHelper.getFont(14, 'FangSong')
         ctx.textAlign = 'center'
         ctx.fillText('← 左右滑动做出选择 →', this.width/2, y)
     }
@@ -452,11 +451,11 @@ export class CardScene {
         ctx.fillRect(0, 0, this.width, this.height)
         
         // ctx.fillStyle = '#5C3317'
-        // ctx.font = 'bold 30px FangSong'
+        // ctx.font = this.uiHelper.getFont(26, 'FangSong', true)
         // ctx.textAlign = 'center'
         // ctx.fillText('第一章完成', this.width/2, this.height*0.4)
         
-        ctx.font = '20px FangSong'
+        ctx.font = this.uiHelper.getFont(18, 'FangSong')
         ctx.fillText('点击继续...', this.width/2, this.height*0.8)
     }
 }

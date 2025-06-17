@@ -4,10 +4,11 @@ export class UserManager {
         this.game = game;
         this.userInfo = null;
         this.gameProgress = {
-            currentChapter: 1,
+            currentChapter: 1
         };
         this.isLoggedIn = false;
         this.userId = null;
+        this.isGuestMode = false; // 游客模式标记
         this.serverUrl = 'http://localhost:3000/api'; // 开发环境使用本地服务器
     }
 
@@ -17,12 +18,32 @@ export class UserManager {
         this.loadUserData();
         
         // 如果已登录且有userId，则从服务器获取最新游戏进度
-        if (this.isLoggedIn && this.userId) {
+        if (this.isLoggedIn && this.userId && !this.isGuestMode) {
             this.fetchGameProgress();
         }
         // 注意：不再自动登录，需要用户手动点击登录按钮
     }
 
+    // 检查登录状态
+    checkLoginStatus() {
+        return {
+            isLoggedIn: this.isLoggedIn,
+            isGuestMode: this.isGuestMode,
+            currentChapter: this.gameProgress.currentChapter
+        };
+    }
+    
+    // 启用游客模式
+    enableGuestMode() {
+        this.isGuestMode = true;
+        this.isLoggedIn = true; // 游客模式也视为登录状态，但不会与服务器同步
+        this.userInfo = { nickName: '游客玩家' };
+        this.saveUserData();
+        if (this.game.startMainGame) {
+            this.game.startMainGame();
+        }
+    }
+    
     // 手动登录方法，需要由按钮点击触发
     login() {
         if (typeof wx !== 'undefined') {
@@ -158,18 +179,12 @@ export class UserManager {
     // 保存游戏进度
     saveGameProgress(chapter) {
         this.gameProgress.currentChapter = chapter;
-      
-        
-        // 如果这个章节还没有完成过，则添加到已完成章节列表
-        if (!this.gameProgress.completedChapters.includes(chapter - 1) && chapter > 1) {
-            this.gameProgress.completedChapters.push(chapter - 1);
-        }
         
         // 保存到本地
         this.saveUserData();
         
-        // 保存到服务器
-        if (this.userId) {
+        // 只有非游客模式才保存到服务器
+        if (this.userId && !this.isGuestMode) {
             this.saveProgressToServer();
         }
     }
@@ -179,7 +194,7 @@ export class UserManager {
         if (typeof wx !== 'undefined') {
             const progressData = {
                 userId: this.userId,
-                currentChapter: this.gameProgress.currentChapter,
+                currentChapter: this.gameProgress.currentChapter
             };
             
             wx.request({
@@ -188,9 +203,9 @@ export class UserManager {
                 data: progressData,
                 success: (res) => {
                     if (res.data && res.data.success) {
-                        console.log('游戏进度保存到服务器成功');
+                        console.log('游戏进度保存成功');
                     } else {
-                        console.error('保存游戏进度到服务器失败:', res.data);
+                        console.error('保存游戏进度失败:', res.data);
                     }
                 },
                 fail: (err) => {
@@ -215,21 +230,10 @@ export class UserManager {
                         // 更新本地游戏进度
                         this.gameProgress.currentChapter = serverProgress.currentChapter;
                         
-                        // 更新特定属性
-                        if (serverProgress.saltProgress) {
-                            this.gameProgress.attributes.saltProgress = serverProgress.saltProgress;
-                        }
-                        if (serverProgress.learningProgress) {
-                            this.gameProgress.attributes.learningProgress = serverProgress.learningProgress;
-                        }
-                        if (serverProgress.governmentRelation) {
-                            this.gameProgress.attributes.governmentRelation = serverProgress.governmentRelation;
-                        }
-                        
                         console.log('从服务器获取游戏进度成功:', this.gameProgress);
                         this.saveUserData();
                     } else {
-                        console.error('获取游戏进度失败:', res.data);
+                        console.log('没有找到游戏进度或获取失败');
                     }
                 },
                 fail: (err) => {
@@ -244,84 +248,54 @@ export class UserManager {
         return this.gameProgress;
     }
 
-    // 保存用户数据到本地存储
+    // 保存用户数据到本地
     saveUserData() {
         const userData = {
             userInfo: this.userInfo,
-            familyName: this.familyName,
-            gameProgress: this.gameProgress,
-            isLoggedIn: this.isLoggedIn
+            isLoggedIn: this.isLoggedIn,
+            userId: this.userId,
+            isGuestMode: this.isGuestMode,
+            gameProgress: this.gameProgress
         };
         
         if (typeof wx !== 'undefined') {
-            wx.setStorage({
-                key: 'huishang_user_data',
-                data: JSON.stringify(userData),
-                success: () => {
-                    console.log('用户数据保存成功');
-                },
-                fail: (err) => {
-                    console.error('保存用户数据失败:', err);
-                }
-            });
+            wx.setStorageSync('userData', userData);
         } else {
-            // 开发环境使用localStorage
+            // 开发环境下使用localStorage
             try {
-                localStorage.setItem('huishang_user_data', JSON.stringify(userData));
-                console.log('用户数据保存成功');
+                localStorage.setItem('userData', JSON.stringify(userData));
             } catch (e) {
                 console.error('保存用户数据失败:', e);
             }
         }
     }
 
-    // 从本地存储加载用户数据
+    // 从本地加载用户数据
     loadUserData() {
+        let userData = null;
+        
         if (typeof wx !== 'undefined') {
-            wx.getStorage({
-                key: 'huishang_user_data',
-                success: (res) => {
-                    try {
-                        const userData = JSON.parse(res.data);
-                        this.userInfo = userData.userInfo;
-                        this.familyName = userData.familyName;
-                        this.gameProgress = userData.gameProgress;
-                        this.isLoggedIn = userData.isLoggedIn;
-                        
-                        console.log('用户数据加载成功:', userData);
-                        
-                        // 如果已登录但还没有设置家族姓氏，显示设置界面
-                        if (this.isLoggedIn && !this.familyName) {
-                            this.showFamilyNameInput();
-                        }
-                    } catch (e) {
-                        console.error('解析用户数据失败:', e);
-                    }
-                },
-                fail: (err) => {
-                    console.log('没有找到用户数据或读取失败:', err);
-                }
-            });
+            userData = wx.getStorageSync('userData');
         } else {
             // 开发环境使用localStorage
             try {
-                const userData = JSON.parse(localStorage.getItem('huishang_user_data'));
-                if (userData) {
-                    this.userInfo = userData.userInfo;
-                    this.familyName = userData.familyName;
-                    this.gameProgress = userData.gameProgress;
-                    this.isLoggedIn = userData.isLoggedIn;
-                    
-                    console.log('用户数据加载成功:', userData);
-                    
-                    // 如果已登录但还没有设置家族姓氏，显示设置界面
-                    if (this.isLoggedIn && !this.familyName) {
-                        this.showFamilyNameInput();
-                    }
+                const dataStr = localStorage.getItem('userData');
+                if (dataStr) {
+                    userData = JSON.parse(dataStr);
                 }
             } catch (e) {
                 console.error('解析用户数据失败:', e);
             }
+        }
+        
+        if (userData) {
+            this.userInfo = userData.userInfo || null;
+            this.isLoggedIn = userData.isLoggedIn || false;
+            this.userId = userData.userId || null;
+            this.isGuestMode = userData.isGuestMode || false;
+            this.gameProgress = userData.gameProgress || { currentChapter: 1 };
+            
+            console.log('用户数据加载成功:', userData);
         }
     }
 }

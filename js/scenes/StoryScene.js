@@ -1,8 +1,14 @@
+// 故事场景
+import { getUIHelper } from '../utils/UIHelper.js'
+
 export class StoryScene {
     constructor(ctx, width, height) {
-        this.ctx = ctx;
-        this.width = width;
-        this.height = height;
+        this.ctx = ctx
+        this.width = width
+        this.height = height
+        
+        // 获取UI辅助工具
+        this.uiHelper = getUIHelper();
         
         // 文字显示区域设置
         this.textAreaHeight = height * 0.3;
@@ -156,7 +162,7 @@ export class StoryScene {
             );
             
             ctx.fillStyle = '#F4ECCB';
-            ctx.font = 'bold 20px FangSong';
+            ctx.font = this.uiHelper.getFont(20, 'FangSong', true);
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText(
@@ -185,7 +191,7 @@ export class StoryScene {
         let lineHeight = 35 // 增加行高
         let currentY = y
         
-        ctx.font = '24px FangSong' // 增大字号
+        ctx.font = this.uiHelper.getFont(24, 'FangSong') // 增大字号
         
         for (let i = 0; i < words.length; i++) {
             const testLine = line + words[i]
