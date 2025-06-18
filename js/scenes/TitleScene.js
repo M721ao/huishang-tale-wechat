@@ -98,6 +98,9 @@ export class TitleScene {
         }
         
         ctx.restore()
+        
+        // 绘制历史声明
+        this.drawHistoricalDisclaimer()
     }
     
     // 绘制按钮的通用方法
@@ -203,5 +206,19 @@ export class TitleScene {
         ctx.closePath()
         ctx.fill()
         ctx.stroke()
+    }
+    
+    // 绘制历史声明
+    drawHistoricalDisclaimer() {
+        const ctx = this.ctx
+        ctx.save()
+        
+        ctx.fillStyle = 'rgba(244, 236, 228, 0.6)'
+        ctx.font = this.uiHelper.getFont(14, 'FangSong')
+        ctx.textAlign = 'center'
+        ctx.textBaseline = 'bottom'
+        ctx.fillText('本游戏对历史事件进行了艺术改编，与真实历史可能存在差异', this.width/2, this.height - 10)
+        
+        ctx.restore()
     }
 }

@@ -92,15 +92,15 @@ export class ChapterTitleScene {
         
         // 绘制标题
         ctx.fillStyle = '#F4ECE4';
-        ctx.font = this.uiHelper.getFont(48, 'FangSong', true);
+        ctx.font = this.uiHelper.getFont(28, 'FangSong', true);
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(title, width/2, height * 0.4);
+        ctx.fillText("--"+title+"--", width/2, height * 0.4);
         
         // 绘制副标题
         if (subtitle) {
-            ctx.font = this.uiHelper.getFont(36, 'FangSong');
-            ctx.fillText("--"+subtitle+"--", width/2, height * 0.5);
+            ctx.font = this.uiHelper.getFont(40, 'FangSong');
+            ctx.fillText(subtitle, width/2, height * 0.5);
         }
         
         ctx.restore();
