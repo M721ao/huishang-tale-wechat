@@ -1,224 +1,414 @@
 // 故事场景
-import { getUIHelper } from '../utils/UIHelper.js'
+import { getUIHelper } from "../utils/UIHelper.js";
 
 export class StoryScene {
-    constructor(ctx, width, height) {
-        this.ctx = ctx
-        this.width = width
-        this.height = height
-        
-        // 获取UI辅助工具
-        this.uiHelper = getUIHelper();
-        
-        // 文字显示区域设置
-        this.textAreaHeight = height * 0.3;
-        this.textAreaY = height - this.textAreaHeight;
-        this.padding = 20;
-        
-        // 文字动画设置
-        this.currentText = '';
-        this.targetText = '';
-        this.textSpeed = 2; // 每帧显示的字符数
+  constructor(ctx, width, height) {
+    this.ctx = ctx;
+    this.width = width;
+    this.height = height;
+
+    // 获取UI辅助工具
+    this.uiHelper = getUIHelper();
+
+    // 文字显示区域设置
+    this.textAreaHeight = height * 0.28; // 降低文字区域高度从0.35到0.28
+    this.textAreaY = height - this.textAreaHeight;
+    this.padding = 25; // 增加内边距
+
+    // 文字动画设置
+    this.currentText = "";
+    this.targetText = "";
+    this.textSpeed = 1.5; // 稍微减慢打字速度
+    this.isTyping = false;
+    this.textOpacity = 0; // 文字透明度动画
+
+    // 当前剧情进度
+    this.currentScriptIndex = 0;
+    this.currentScript = null;
+
+    // 角色名称显示区域
+    this.nameBoxWidth = 180; // 增加名称框宽度
+    this.nameBoxHeight = 45; // 增加名称框高度
+    this.nameBoxX = this.padding;
+    this.nameBoxY = this.textAreaY - this.nameBoxHeight - 10; // 增加间距
+    this.nameOpacity = 0; // 名称透明度动画
+
+    // 角色立绘动画
+    this.characterOpacity = 0;
+    this.characterScale = 0.8;
+    this.characterTargetScale = 1.0;
+
+    // 背景切换动画
+    this.backgroundOpacity = 1;
+    this.newBackgroundImage = null;
+    this.isBackgroundTransitioning = false;
+
+    // 点击提示动画
+    this.clickHintOpacity = 0;
+    this.clickHintTimer = 0;
+
+    // 回调函数
+    this.onFinishCallback = null;
+  }
+
+  // 加载剧情脚本
+  loadScript(script) {
+    this.currentScript = script;
+    this.currentScriptIndex = 0;
+    this.showNextDialogue();
+  }
+
+  // 设置结束回调
+  setOnFinish(callback) {
+    this.onFinishCallback = callback;
+  }
+
+  // 显示下一段对话
+  showNextDialogue() {
+    if (
+      !this.currentScript ||
+      this.currentScriptIndex >= this.currentScript.length
+    ) {
+      if (this.onFinishCallback) {
+        this.onFinishCallback();
+      }
+      return;
+    }
+
+    const dialogue = this.currentScript[this.currentScriptIndex];
+    this.targetText = dialogue.text;
+    this.currentText = "";
+    this.isTyping = true;
+    this.currentCharacter = dialogue.character;
+    this.currentPosition = dialogue.position || "center";
+
+    // 重置动画状态
+    this.textOpacity = 0;
+    this.nameOpacity = 0;
+    this.characterOpacity = 0;
+    this.characterScale = 0.8;
+    this.clickHintOpacity = 0;
+
+    // 背景切换动画 - 修复闪现问题
+    if (dialogue.background && dialogue.background !== this.currentBackground) {
+      this.isBackgroundTransitioning = true;
+      this.backgroundOpacity = 0;
+
+      // 立即隐藏当前背景，防止闪现
+      this.backgroundImage = null;
+
+      const img = wx.createImage();
+      img.onload = () => {
+        this.newBackgroundImage = img;
+        // 延迟显示新背景
+        setTimeout(() => {
+          this.backgroundImage = this.newBackgroundImage;
+          this.currentBackground = dialogue.background;
+          this.isBackgroundTransitioning = false;
+        }, 300);
+      };
+      img.src = dialogue.background;
+    } else if (dialogue.background) {
+      const img = wx.createImage();
+      img.onload = () => {
+        this.backgroundImage = img;
+      };
+      img.src = dialogue.background;
+    }
+
+    // 加载立绘如果有的话
+    if (dialogue.character && dialogue.characterImage) {
+      const img = wx.createImage();
+      img.onload = () => {
+        this.characterImage = img;
+        // 延迟显示角色立绘
+        setTimeout(() => {
+          this.characterOpacity = 1;
+        }, 200);
+      };
+      img.src = dialogue.characterImage;
+    } else {
+      this.characterImage = null;
+    }
+  }
+
+  // 处理点击事件
+  handleTap() {
+    if (this.isTyping) {
+      // 如果正在打字，则直接显示完整文本
+      this.currentText = this.targetText;
+      this.isTyping = false;
+      this.textOpacity = 1;
+    } else {
+      // 否则显示下一段对话
+      this.currentScriptIndex++;
+      this.showNextDialogue();
+    }
+  }
+
+  // 更新文字动画
+  update() {
+    // 更新文字透明度
+    if (this.textOpacity < 1) {
+      this.textOpacity = Math.min(1, this.textOpacity + 0.05);
+    }
+
+    // 更新名称透明度
+    if (this.nameOpacity < 1) {
+      this.nameOpacity = Math.min(1, this.nameOpacity + 0.08);
+    }
+
+    // 更新角色立绘动画
+    if (this.characterOpacity < 1) {
+      this.characterOpacity = Math.min(1, this.characterOpacity + 0.03);
+    }
+    if (this.characterScale < this.characterTargetScale) {
+      this.characterScale = Math.min(
+        this.characterTargetScale,
+        this.characterScale + 0.02
+      );
+    }
+
+    // 更新背景切换动画
+    if (this.isBackgroundTransitioning && this.backgroundOpacity < 1) {
+      this.backgroundOpacity = Math.min(1, this.backgroundOpacity + 0.02);
+    }
+
+    // 更新打字动画
+    if (this.isTyping && this.currentText !== this.targetText) {
+      const nextCharCount = Math.min(
+        this.textSpeed,
+        this.targetText.length - this.currentText.length
+      );
+      this.currentText += this.targetText.substr(
+        this.currentText.length,
+        nextCharCount
+      );
+
+      if (this.currentText === this.targetText) {
         this.isTyping = false;
-        
-        // 当前剧情进度
-        this.currentScriptIndex = 0;
-        this.currentScript = null;
-        
-        // 角色名称显示区域
-        this.nameBoxWidth = 150;
-        this.nameBoxHeight = 40;
-        this.nameBoxX = this.padding;
-        this.nameBoxY = this.textAreaY - this.nameBoxHeight;
-        
-        // 回调函数
-        this.onFinishCallback = null;
+      }
     }
 
-    // 加载剧情脚本
-    loadScript(script) {
-        this.currentScript = script;
-        this.currentScriptIndex = 0;
-        this.showNextDialogue();
+    // 更新点击提示动画
+    if (!this.isTyping && this.currentText === this.targetText) {
+      this.clickHintTimer += 1;
+      if (this.clickHintTimer > 60) {
+        // 1秒后开始显示提示，减少闪动频率
+        this.clickHintOpacity =
+          0.4 + 0.15 * Math.sin(this.clickHintTimer * 0.05); // 降低频率和幅度
+      }
+    } else {
+      this.clickHintTimer = 0;
+      this.clickHintOpacity = 0;
+    }
+  }
+
+  // 绘制场景
+  draw() {
+    const { ctx, width, height } = this;
+
+    // 清空画布
+    ctx.clearRect(0, 0, width, height);
+
+    // 绘制背景（完全原色显示，无任何遮罩）
+    if (this.backgroundImage) {
+      // 确保背景图片完全原色显示，不使用透明度
+      ctx.save();
+      ctx.globalAlpha = 1.0; // 强制完全不透明
+      // 计算背景图片的显示区域（不包含文字区域）
+      const bgHeight = height - this.textAreaHeight;
+      ctx.drawImage(this.backgroundImage, 0, 0, width, bgHeight);
+      ctx.restore();
+    } else {
+      // 默认渐变背景
+      const gradient = ctx.createLinearGradient(
+        0,
+        0,
+        0,
+        height - this.textAreaHeight
+      );
+      gradient.addColorStop(0, "#1a1a2e");
+      gradient.addColorStop(1, "#16213e");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, width, height - this.textAreaHeight);
     }
 
-    // 设置结束回调
-    setOnFinish(callback) {
-        this.onFinishCallback = callback;
+    // 绘制立绘
+    if (this.characterImage) {
+      ctx.save();
+      ctx.globalAlpha = this.characterOpacity;
+
+      const charWidth = height * 0.85;
+      const charHeight = height * 0.85;
+      let charX = 0;
+
+      switch (this.currentPosition) {
+        case "left":
+          charX = -charWidth * 0.25;
+          break;
+        case "right":
+          charX = width - charWidth * 0.75;
+          break;
+        default: // center
+          charX = (width - charWidth) / 2;
+      }
+
+      // 应用缩放动画
+      const scaledWidth = charWidth * this.characterScale;
+      const scaledHeight = charHeight * this.characterScale;
+      const scaledX = charX + (charWidth - scaledWidth) / 2;
+      const scaledY = height - charHeight + (charHeight - scaledHeight) / 2;
+
+      ctx.drawImage(
+        this.characterImage,
+        scaledX,
+        scaledY,
+        scaledWidth,
+        scaledHeight
+      );
+      ctx.restore();
     }
 
-    // 显示下一段对话
-    showNextDialogue() {
-        if (!this.currentScript || this.currentScriptIndex >= this.currentScript.length) {
-            if (this.onFinishCallback) {
-                this.onFinishCallback();
-            }
-            return;
-        }
+    // 绘制文字区域（古典中国风，简洁优雅）
+    // 深色半透明背景
+    ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
+    ctx.fillRect(0, this.textAreaY, width, this.textAreaHeight);
 
-        const dialogue = this.currentScript[this.currentScriptIndex];
-        this.targetText = dialogue.text;
-        this.currentText = '';
-        this.isTyping = true;
-        this.currentCharacter = dialogue.character;
-        this.currentBackground = dialogue.background;
-        this.currentPosition = dialogue.position || 'center';
-        
-        // 加载背景图
-        if (dialogue.background) {
-            const img = wx.createImage()
-            img.onload = () => {
-                this.backgroundImage = img
-            }
-            img.src = dialogue.background
-        }
-        
-        // 加载立绘如果有的话
-        if (dialogue.character && dialogue.characterImage) {
-            this.characterImage = wx.createImage();
-            this.characterImage.src = dialogue.characterImage;
-        }
+    // 淡金色细边框
+    ctx.strokeStyle = "rgba(212, 175, 55, 0.6)";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(0, this.textAreaY, width, this.textAreaHeight);
+
+    // 绘制角色名称框（古典风格）
+    if (this.currentCharacter) {
+      ctx.save();
+      ctx.globalAlpha = this.nameOpacity;
+
+      // 名称框背景（深棕色半透明）
+      ctx.fillStyle = "rgba(101, 67, 33, 0.9)";
+      this.drawRoundedRect(
+        ctx,
+        this.nameBoxX,
+        this.nameBoxY,
+        this.nameBoxWidth,
+        this.nameBoxHeight,
+        6
+      );
+
+      // 淡金色边框
+      ctx.strokeStyle = "rgba(212, 175, 55, 0.8)";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // 绘制角色名称
+      ctx.fillStyle = "#F4ECE4";
+      ctx.font = this.uiHelper.getFont(22, "FangSong", true);
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(
+        this.currentCharacter,
+        this.nameBoxX + this.nameBoxWidth / 2,
+        this.nameBoxY + this.nameBoxHeight / 2
+      );
+      ctx.restore();
     }
 
-    // 处理点击事件
-    handleTap() {
-        if (this.isTyping) {
-            // 如果正在打字，则直接显示完整文本
-            this.currentText = this.targetText;
-            this.isTyping = false;
-        } else {
-            // 否则显示下一段对话
-            this.currentScriptIndex++;
-            this.showNextDialogue();
-        }
+    // 绘制对话文字
+    ctx.save();
+    ctx.globalAlpha = this.textOpacity;
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+    this.drawWrappedText(
+      this.currentText,
+      this.padding + 15,
+      this.textAreaY + this.padding + 10,
+      width - (this.padding + 15) * 2
+    );
+    ctx.restore();
+
+    // 绘制点击提示
+    if (this.clickHintOpacity > 0) {
+      ctx.save();
+      ctx.globalAlpha = this.clickHintOpacity;
+      ctx.fillStyle = "#F4ECE4";
+      ctx.font = this.uiHelper.getFont(16, "FangSong");
+      ctx.textAlign = "center";
+      ctx.textBaseline = "bottom";
+      ctx.fillText("点击继续", width / 2, height - 15);
+      ctx.restore();
+    }
+  }
+
+  // 绘制圆角矩形
+  drawRoundedRect(ctx, x, y, width, height, radius) {
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + width - radius, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+    ctx.lineTo(x + width, y + height - radius);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+    ctx.lineTo(x + radius, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  // 绘制自动换行文本
+  drawWrappedText(text, x, y, maxWidth) {
+    const { ctx } = this;
+    const words = text.split("");
+    let line = "";
+    let lineHeight = 38; // 增加行高
+    let currentY = y;
+
+    ctx.font = this.uiHelper.getFont(20, "FangSong"); // 增大字号
+
+    for (let i = 0; i < words.length; i++) {
+      const testLine = line + words[i];
+      const metrics = ctx.measureText(testLine);
+
+      if ((metrics.width > maxWidth && i > 0) || (i > 0 && i % 80 === 0)) {
+        // 绘制文字阴影
+        ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
+        ctx.shadowBlur = 4;
+        ctx.shadowOffsetX = 2;
+        ctx.shadowOffsetY = 2;
+
+        // 绘制描边
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 4;
+        ctx.strokeText(line, x, currentY);
+
+        // 绘制文字
+        ctx.fillStyle = "#F4ECE4";
+        ctx.fillText(line, x, currentY);
+
+        line = words[i];
+        currentY += lineHeight;
+      } else {
+        line = testLine;
+      }
     }
 
-    // 更新文字动画
-    update() {
-        if (this.isTyping && this.currentText !== this.targetText) {
-            const nextCharCount = Math.min(
-                this.textSpeed,
-                this.targetText.length - this.currentText.length
-            );
-            this.currentText += this.targetText.substr(
-                this.currentText.length,
-                nextCharCount
-            );
-            
-            if (this.currentText === this.targetText) {
-                this.isTyping = false;
-            }
-        }
-    }
+    // 绘制最后一行
+    if (line) {
+      // 绘制文字阴影
+      ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
+      ctx.shadowBlur = 4;
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 2;
 
-    // 绘制场景
-    draw() {
-        const { ctx, width, height } = this;
-        
-        // 清空画布
-        ctx.clearRect(0, 0, width, height);
-        
-        // 绘制背景
-        if (this.backgroundImage) {
-            ctx.drawImage(this.backgroundImage, 0, 0, width, height)
-        } else {
-            // 默认背景
-            ctx.fillStyle = '#000000'
-            ctx.fillRect(0, 0, width, height)
-        }
-        
-        // 绘制立绘
-        if (this.characterImage) {
-            const charWidth = height * 0.8;
-            const charHeight = height * 0.8;
-            let charX = 0;
-            
-            switch (this.currentPosition) {
-                case 'left':
-                    charX = -charWidth * 0.3;
-                    break;
-                case 'right':
-                    charX = width - charWidth * 0.7;
-                    break;
-                default: // center
-                    charX = (width - charWidth) / 2;
-            }
-            
-            ctx.drawImage(this.characterImage, charX, height - charHeight, charWidth, charHeight);
-        }
-        
-        // 绘制文字背景
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
-        ctx.fillRect(0, this.textAreaY, width, this.textAreaHeight);
-        
-        // 绘制角色名称框
-        if (this.currentCharacter) {
-            ctx.fillStyle = 'rgba(139, 69, 19, 0.9)';
-            ctx.fillRect(
-                this.nameBoxX,
-                this.nameBoxY,
-                this.nameBoxWidth,
-                this.nameBoxHeight
-            );
-            
-            ctx.fillStyle = '#F4ECCB';
-            ctx.font = this.uiHelper.getFont(20, 'FangSong', true);
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText(
-                this.currentCharacter,
-                this.nameBoxX + this.nameBoxWidth / 2,
-                this.nameBoxY + this.nameBoxHeight / 2
-            );
-        }
-        
-        // 绘制对话文字
-        ctx.textAlign = 'left'
-        ctx.textBaseline = 'top'
-        this.drawWrappedText(
-            this.currentText,
-            this.padding + 20,
-            this.textAreaY + this.padding,
-            width - (this.padding + 20) * 2
-        )
-    }
+      // 绘制描边
+      ctx.strokeStyle = "#000000";
+      ctx.lineWidth = 4;
+      ctx.strokeText(line, x, currentY);
 
-    // 绘制自动换行文本
-    drawWrappedText(text, x, y, maxWidth) {
-        const { ctx } = this
-        const words = text.split('') // 按字符分割
-        let line = ''
-        let lineHeight = 35 // 增加行高
-        let currentY = y
-        
-        ctx.font = this.uiHelper.getFont(24, 'FangSong') // 增大字号
-        
-        for (let i = 0; i < words.length; i++) {
-            const testLine = line + words[i]
-            const metrics = ctx.measureText(testLine)
-            
-            // 每15个字符强制换行
-            if ((metrics.width > maxWidth && i > 0) || (i > 0 && i % 15 === 0)) {
-                ctx.strokeStyle = '#000000'
-                ctx.lineWidth = 3
-                ctx.strokeText(line, x, currentY)
-                ctx.fillStyle = '#F4ECE4'
-                ctx.fillText(line, x, currentY)
-                
-                line = words[i]
-                currentY += lineHeight
-            } else {
-                line = testLine
-            }
-        }
-        
-        // 绘制最后一行
-        if (line) {
-            ctx.strokeStyle = '#000000'
-            ctx.lineWidth = 3
-            ctx.strokeText(line, x, currentY)
-            ctx.fillStyle = '#F4ECE4'
-            ctx.fillText(line, x, currentY)
-        }
+      // 绘制文字
+      ctx.fillStyle = "#F4ECE4";
+      ctx.fillText(line, x, currentY);
     }
+  }
 }
