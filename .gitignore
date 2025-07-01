@@ -24,3 +24,4 @@ temp/
 # 环境变量文件 - 所有目录
 server/.env
 
+docker-compose.yml
