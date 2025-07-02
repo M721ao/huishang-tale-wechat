@@ -1,365 +1,366 @@
 export const chapter4 = {
-    title: '第四章 无徽不成镇',
-    
-    // 故事场景脚本
-    storyScript: [
+  title: "第四章 无徽不成镇",
+
+  // 故事场景脚本
+  storyScript: [
+    {
+      text: "承蒙江家庇荫，今日便是我与江家小姐的大婚之日。",
+      background: "images/backgrounds/chapter3/cha3-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "提起江家，便不得不追溯那段旧事。",
+      background: "images/backgrounds/chapter3/cha3-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "十五年前，淮盐最繁忙的运销口岸汉口突发异变。当地盐商联手囤积居奇，盐价直攀云霄。",
+      background: "images/backgrounds/chapter3/cha3-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "百姓闻讯蜂拥至盐店抢购，谁料盐商见势当即闭门停业。",
+      background: "images/backgrounds/chapter3/cha3-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "民怨沸腾，几欲酿成哗变。",
+      background: "images/backgrounds/chapter3/cha3-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "为平此乱，朝廷特设会议，议定以核算食盐成本来厘定售价。",
+      background: "images/backgrounds/chapter3/cha3-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "两位重臣为到底是三两还是七两争执不下，乾隆帝遂令苏州巡抚与新任巡盐御史同赴两淮彻查。",
+      background: "images/backgrounds/chapter3/cha3-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "此事岂能难倒老道的两淮徽商？他们暗中打点，轻易摆平两位钦差，最后敲定每引六两。",
+      background: "images/backgrounds/chapter3/cha3-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "五年前，乾隆皇帝南巡首次驾临扬州。江春等盐商竞相接驾。圣驾离去不久，忽传下一道旨意：撤销执行十载的限价，改由市面自定，盐价随之再次飞涨。",
+      background: "images/backgrounds/chapter3/cha3-1.png",
+      character: null,
+      position: "center",
+    },
+  ],
+
+  // 卡牌事件配置
+  cardEvents: [
+    {
+      id: "event1",
+      title: "高门岳丈",
+      description: "江家乃当地望族，与岳丈打好关系，或可借势而行。",
+      choices: [
         {
-            text: '承租上庇荫，今天是我和江家小姐的婚礼',
-            background: 'images/backgrounds/chapter3/cha3-1.png',
-            character: null,
-            position: 'center'
-        },
-        // {
-        //     text: '说起江家，就不得不说这一段往事',
-        //     background: 'images/backgrounds/chapter3/cha3-1.png',
-        //     character: null,
-        //     position: 'center'
-        // },
-        // {
-        //     text: '15年前，淮盐最大的运销口岸汉口突生变故，汉口盐商联合起来囤积居奇，盐价随之飞涨上天',
-        //     background: 'images/backgrounds/chapter3/cha3-1.png',
-        //     character: null,
-        //     position: 'center'
-        // },
-        // {
-        //     text: '百姓见状纷纷前往盐店抢购，谁知盐商见势立刻停业不卖',
-        //     background: 'images/backgrounds/chapter3/cha3-1.png',
-        //     character: null,
-        //     position: 'center'
-        // },
-        // {
-        //     text: '百姓的愤怒几乎酿成民变',
-        //     background: 'images/backgrounds/chapter3/cha3-1.png',
-        //     character: null,
-        //     position: 'center'
-        // },
-        // {
-        //     text: '为此朝廷专开会议商讨核定食盐成本来确定售价',
-        //     background: 'images/backgrounds/chapter3/cha3-1.png',
-        //     character: null,
-        //     position: 'center'
-        // },
-        // {
-        //     text: '两位大员为成本究竟是3两还是7两争论不休，乾隆帝便派遣苏州巡抚同新任巡盐御史赴两淮考察',
-        //     background: 'images/backgrounds/chapter3/cha3-1.png',
-        //     character: null,
-        //     position: 'center'
-        // },
-        // {
-        //     text: '这自然难不倒两淮的徽州盐商们，他们轻车熟路搞定了两位钦差，最后敲定每引六两',
-        //     background: 'images/backgrounds/chapter3/cha3-1.png',
-        //     character: null,
-        //     position: 'center'
-        // },
-        // {
-        //     text: '5年前，乾隆皇帝南巡，首次驾临扬州，以江春为首的盐商接驾，而皇帝离开后不久，一道圣旨突然改变了运行十年的限定盐价，允许市场定价，盐价随之飞涨',
-        //     background: 'images/backgrounds/chapter3/cha3-1.png',
-        //     character: null,
-        //     position: 'center'
-        // }
-    ],
-    
-    // 卡牌事件配置
-    cardEvents: [
-        {
-            id: 'event1',
-            title: '高门岳丈',
-            description: '',
-            choices: [
-                {
-                    text: '搞好关系',
-                    governmentRelation: 10
-                },
-                {
-                    text: '不结交',
-                    governmentRelation: -10
-                }
-            ]
+          text: "悉心维系，与江家亲厚无间",
+          governmentRelation: 10,
         },
         {
-            id: 'event2',
-            title: '接驾翻修',
-            description: '皇帝第二次南巡，江家安排随行官员住进你的宅园，需要你出资翻修',
-            choices: [
-                    {
-                        text: '自掏腰包修缮一新',
-                        governmentRelation: 20
-                    },
-                    {
-                        text: '简单布置即可',
-                        governmentRelation: -10
-                    }
-                ]
-            },
-            {
-                id: 'event3',
-                title: '白塔之语',
-                description: '皇帝感叹大虹园缺少白塔',
-                choices: [
-                    {
-                        text: '抓住机会贿赂近侍获取白塔图样',
-                        governmentRelation: 20
-                    },
-                    {
-                        text: '让这句话随风而去吧',
-                        governmentRelation: 0
-                    }
-                ]
-            },
-            {
-                id: 'event4',
-                title: '落魄文人',
-                description: '有落魄文人登门拜访',
-                choices: [
-                    {
-                        text: '盛情相迎入府居住',
-                        governmentRelation: 10
-                    },
-                    {
-                        text: '吃顿饭意思意思就是了',
-                        governmentRelation: 0
-                    }
-                ]
-            },
-            {
-                id: 'event5',
-                title: '石桥火灾',
-                description: '城内石桥毁于火灾',
-                choices: [
-                    {
-                        text: '捐助重修',
-                        governmentRelation: 20
-                    },
-                    {
-                        text: '自顾不暇',
-                        governmentRelation: 0
-                    }
-                ]
-            },
-            {
-                id: 'event6',
-                title: '南巡选曲',
-                description: '皇帝即将再次南巡，为了取悦上意，安排你去梨园选曲',
-                choices: [
-                    {
-                        text: '南巡必须演新剧',
-                        governmentRelation: 20
-                    },
-                    {
-                        text: '用经典旧戏',
-                        governmentRelation: 0
-                    }
-                ]
-            },
-            {
-                id: 'event7',
-                title: '徽商会馆',
-                description: '你因公旅京，恰逢徽商会馆筹办',
-                choices: [
-                    {
-                        text: '慷慨捐助',
-                        governmentRelation: 10
-                    },
-                    {
-                        text: '备礼祝贺不过分参与',
-                        governmentRelation: 0
-                    }
-                ]
-            },
-            {
-                id: 'event8',
-                title: '军费支出',
-                description: '国家战事频起，朝廷军政费用支出浩繁',
-                choices: [
-                    {
-                        text: '主动加入捐输',
-                        governmentRelation: 20
-                    },
-                    {
-                        text: '不过分出头，参与即可',
-                        governmentRelation: 10
-                    }
-                ]
-            },
-            {
-                id: 'event9',
-                title: '书院兴建',
-                description: '扬州城内兴建书院，你是否参与捐资',
-                choices: [
-                    {
-                        text: '捐',
-                        governmentRelation: 20
-                    },
-                    {
-                        text: '啊，手头有点紧',
-                        governmentRelation: 0
-                    }
-                ]
-            },
-            {
-                id: 'event10',
-                title: '帮学子打点',
-                description: '南巡接驾前夕，有同乡学子请你帮忙打点召试',
-                choices: [
-                    {
-                        text: '帮忙打点上下助其一臂之力',
-                        governmentRelation: 20
-                    },
-                    {
-                        text: '语重心长告知要公平竞争走流程',
-                        governmentRelation: 0
-                    }
-                ]
-            },
-            {
-                id: 'event11',
-                title: '灾情连绵',
-                description: '灾情连绵，是否主动眷属',
-                choices: [
-                    {
-                        text: '捐',
-                        governmentRelation: 20
-                    },
-                    {
-                        text: '啊，手头有点紧',
-                        governmentRelation: -10
-                    }
-                ]
-            },
-            {
-                id: 'event12',
-                title: '修建祠堂',
-                description: '族人提议修建祠堂以彰显家族地位，需耗资五年收入',
-                choices: [
-                    {
-                        text: '建',
-                        governmentRelation: 20
-                    },
-                    {
-                        text: '啊，手头有点紧',
-                        governmentRelation: 0
-                    }
-                ]
-            },
-            {
-                id: 'event13',
-                title: '对联之争',
-                description: '你途径江苏新安镇，听闻本地人抱怨悦来集一对联',
-                choices: [
-                    {
-                        text: '赞同，觉得略有不妥',
-                        governmentRelation: 0
-                    },
-                    {
-                        text: '觉得这位仁兄太敏感了',
-                        governmentRelation: 0
-                    }
-                ]
-            },
-            {
-                id: 'event14',
-                title: '治理河道',
-                description: '治理河道，官员暗示眷属',
-                choices: [
-                    {
-                        text: '捐',
-                        governmentRelation: 20
-                    },
-                    {
-                        text: '啊，手头有点紧',
-                        governmentRelation: -10
-                    }
-                ]
-            },
-            {
-                id: 'event15',
-                title: '园子迎亲',
-                description: '长子结婚，是否为他新建一座园子',
-                choices: [
-                    {
-                        text: '建',
-                        governmentRelation: 10
-                    },
-                    {
-                        text: '儿啊，你该独立了',
-                        governmentRelation: 0
-                    }
-                ]
-            },
-            {
-                id: 'event16',
-                title: '皇帝庆典',
-                description: '皇帝执政庆典，江家率捐',
-                choices: [
-                    {
-                        text: '捐',
-                        governmentRelation: 20
-                    },
-                    {
-                        text: '啊，手头有点紧',
-                        governmentRelation: -10
-                    }
-                ]
-            },
-            {
-                id: 'event17',
-                title: '资金紧张',
-                description: '捐输不断，生意流水愈发吃紧',
-                choices: [
-                    {
-                        text: '买通御史，诬告竞争对手走私',
-                        governmentRelation: -20
-                    },
-                    {
-                        text: '变卖家产，借贷维持',
-                        governmentRelation: 0
-                    }
-                ]
-            },
-            {
-                id: 'event18',
-                title: '清剿白莲教',
-                description: '清剿白莲教，是否捐输',
-                choices: [
-                    {
-                        text: '捐',
-                        governmentRelation: 20
-                    },
-                    {
-                        text: '实在捐不动了',
-                        governmentRelation: -10
-                    }
-                ]
-            },
-            {
-                id: 'event19',
-                title: '追缴税款',
-                description: '朝廷开始追缴积欠课税',
-                choices: [
-                    {
-                        text: '赶快补交',
-                        governmentRelation: 0
-                    },
-                    {
-                        text: '法不责众，就是不补',
-                        governmentRelation: -20
-                    }
-                ]
-            },
-            {
-                id: 'event20',
-                title: '票盐制改革',
-                description: '盐政改革推行票盐制，生意一落千丈',
-                choices: [
-                    {
-                        text: '倒卖官盐',
-                        governmentRelation: -50
-                    },
-                    {
-                        text: '唉，再借些高利贷吧',
-                        governmentRelation: 0
-                    }
-                ]
-            }
-    ]
-}
+          text: "不愿攀附权贵，只求本分",
+          governmentRelation: -10,
+        },
+      ],
+    },
+    {
+      id: "event2",
+      title: "接驾翻修",
+      description:
+        "皇帝再度南巡，江家安排随行官员暂居你府中，需你出资整修宅园。",
+      choices: [
+        {
+          text: "倾资翻修，务使焕然一新",
+          governmentRelation: 20,
+        },
+        {
+          text: "略作粉饰，不必太过张扬",
+          governmentRelation: -10,
+        },
+      ],
+    },
+    {
+      id: "event3",
+      title: "白塔之语",
+      description: "皇帝行至大虹园，随口感叹园中若有白塔更为雅致。",
+      choices: [
+        {
+          text: "抓住时机，贿赂近侍求得白塔图纸",
+          governmentRelation: 20,
+        },
+        {
+          text: "权作耳边风，不以为意",
+          governmentRelation: 0,
+        },
+      ],
+    },
+    {
+      id: "event4",
+      title: "落魄文人",
+      description: "一位穷困潦倒的文人来府上投帖求见。",
+      choices: [
+        {
+          text: "盛情款待，留其在府中栖身",
+          governmentRelation: 10,
+        },
+        {
+          text: "只设一席便饭略尽地主之谊",
+          governmentRelation: 0,
+        },
+      ],
+    },
+    {
+      id: "event5",
+      title: "石桥火灾",
+      description: "城内石桥遭祝融吞噬，百姓往来受阻。",
+      choices: [
+        {
+          text: "慷慨解囊助其重修",
+          governmentRelation: 20,
+        },
+        {
+          text: "此时自顾尚且不暇",
+          governmentRelation: 0,
+        },
+      ],
+    },
+    {
+      id: "event6",
+      title: "南巡选曲",
+      description: "为迎接圣驾，再度吩咐你前往梨园遴选曲目。",
+      choices: [
+        {
+          text: "坚持要演全新剧目讨好上意",
+          governmentRelation: 20,
+        },
+        {
+          text: "沿用历年旧戏稳妥为上",
+          governmentRelation: 0,
+        },
+      ],
+    },
+    {
+      id: "event7",
+      title: "徽商会馆",
+      description: "恰逢你因事赴京，正值徽商合力筹建新会馆。",
+      choices: [
+        {
+          text: "当即捐资助力",
+          governmentRelation: 10,
+        },
+        {
+          text: "仅备薄礼致贺，不多参与",
+          governmentRelation: 0,
+        },
+      ],
+    },
+    {
+      id: "event8",
+      title: "军费支出",
+      description: "国库为连年征战所困，军饷筹集迫在眉睫。",
+      choices: [
+        {
+          text: "率先捐输以表忠诚",
+          governmentRelation: 20,
+        },
+        {
+          text: "略表心意，避免过于显眼",
+          governmentRelation: 10,
+        },
+      ],
+    },
+    {
+      id: "event9",
+      title: "书院兴建",
+      description: "扬州计划兴办书院以广育俊才。",
+      choices: [
+        {
+          text: "出资助成",
+          governmentRelation: 20,
+        },
+        {
+          text: "叹息囊中羞涩，只能作罢",
+          governmentRelation: 0,
+        },
+      ],
+    },
+    {
+      id: "event10",
+      title: "帮学子打点",
+      description: "南巡前夕，同乡学子求你打点场次以求捷报。",
+      choices: [
+        {
+          text: "倾力相助，上下打点一应俱全",
+          governmentRelation: 20,
+        },
+        {
+          text: "劝其凭真才实学自取功名",
+          governmentRelation: 0,
+        },
+      ],
+    },
+    {
+      id: "event11",
+      title: "灾情连绵",
+      description: "水旱蝗灾接踵而至，民不聊生。",
+      choices: [
+        {
+          text: "再行捐助，尽绵薄之力",
+          governmentRelation: 20,
+        },
+        {
+          text: "实在拮据，无力再捐",
+          governmentRelation: -10,
+        },
+      ],
+    },
+    {
+      id: "event12",
+      title: "修建祠堂",
+      description: "族中耆老倡议修建宗祠以显门第，需倾注数年之财力。",
+      choices: [
+        {
+          text: "同意，彰显家声",
+          governmentRelation: 20,
+        },
+        {
+          text: "叹曰家计尚紧，不敢妄动",
+          governmentRelation: 0,
+        },
+      ],
+    },
+    {
+      id: "event13",
+      title: "对联之争",
+      description: "途经江苏新安镇，闻当地人议悦来集门上一副对联太甚。",
+      choices: [
+        {
+          text: "略表认同，觉得确有失妥",
+          governmentRelation: 0,
+        },
+        {
+          text: "只觉此人小题大作",
+          governmentRelation: 0,
+        },
+      ],
+    },
+    {
+      id: "event14",
+      title: "治理河道",
+      description: "河道整治事关运盐通道，官员私下示意捐助。",
+      choices: [
+        {
+          text: "从命捐银，以保顺畅",
+          governmentRelation: 20,
+        },
+        {
+          text: "推托称困，暂不相应",
+          governmentRelation: -10,
+        },
+      ],
+    },
+    {
+      id: "event15",
+      title: "园子迎亲",
+      description: "长子即将完婚，族中望你为其新筑园宅。",
+      choices: [
+        {
+          text: "允诺修建，以示家门气派",
+          governmentRelation: 10,
+        },
+        {
+          text: "教其自立，方能自持门户",
+          governmentRelation: 0,
+        },
+      ],
+    },
+    {
+      id: "event16",
+      title: "皇帝庆典",
+      description: "皇帝登基周年庆，江家率先巨额捐输。",
+      choices: [
+        {
+          text: "随即慷慨解囊",
+          governmentRelation: 20,
+        },
+        {
+          text: "心力交瘁，只得婉拒",
+          governmentRelation: -10,
+        },
+      ],
+    },
+    {
+      id: "event17",
+      title: "资金紧张",
+      description: "频频捐输致周转吃紧，生意愈发艰难。",
+      choices: [
+        {
+          text: "买通御史，暗害对手以图翻身",
+          governmentRelation: -20,
+        },
+        {
+          text: "典卖田庄，四处借贷维系",
+          governmentRelation: 0,
+        },
+      ],
+    },
+    {
+      id: "event18",
+      title: "清剿白莲教",
+      description: "白莲教再起，官府张榜募捐讨伐军费。",
+      choices: [
+        {
+          text: "再掏一笔，免生后患",
+          governmentRelation: 20,
+        },
+        {
+          text: "实在囊空如洗，婉拒捐输",
+          governmentRelation: -10,
+        },
+      ],
+    },
+    {
+      id: "event19",
+      title: "追缴税款",
+      description: "朝廷紧急追查历年积欠盐课。",
+      choices: [
+        {
+          text: "痛快补缴，以求平安",
+          governmentRelation: 0,
+        },
+        {
+          text: "法不责众，断然拒付",
+          governmentRelation: -20,
+        },
+      ],
+    },
+    {
+      id: "event20",
+      title: "票盐制改革",
+      description: "盐政推行票盐制，旧法尽废，盐利断崖。",
+      choices: [
+        {
+          text: "铤而走险，私售官盐",
+          governmentRelation: -50,
+        },
+        {
+          text: "再借些高利贷以图缓急",
+          governmentRelation: 0,
+        },
+      ],
+    },
+  ],
+};

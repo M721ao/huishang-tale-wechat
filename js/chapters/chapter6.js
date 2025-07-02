@@ -1,25 +1,120 @@
 export const chapter6 = {
-    title: '第六章 红顶落幕',
-    
-    // 故事场景脚本
-    storyScript: [
-        {
-            text: '改革的风暴正在酝酿',
-            background: 'images/backgrounds/chapter3/cha3-1.png',
-            character: null,
-            position: 'center'
-        },
-        {
-            text: '盐政改革的消息传来，引起了扬州城内外的轩然大波',
-            background: 'images/backgrounds/chapter3/cha3-1.png',
-            character: null,
-            position: 'center'
-        },
-        {
-            text: '作为新晋盐商，你将如何在这场变革中寻找机遇？',
-            background: 'images/backgrounds/chapter3/cha3-1.png',
-            character: null,
-            position: 'center'
-        }
-    ],
-}
+  title: "第六章 红顶落幕",
+
+  storyScript: [
+    {
+      text: "十年战乱，山河再度归于太平。",
+      background: "images/backgrounds/chapter4-7/cha6.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "我又做回了徽州商人的本行，贩运木材与山货。",
+      background: "images/backgrounds/chapter3/cha3-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "同乡的男儿们依旧挑着担子外出谋生。",
+      background: "images/backgrounds/chapter3/cha3-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "七山一水一分田，容不下多少人的远志。",
+      background: "images/backgrounds/chapter3/cha3-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "纵然比起几百年前，徽州的村镇已焕然一新，",
+      background: "images/backgrounds/chapter3/cha3-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "可承载不住的，终究是好儿郎的壮志豪情。",
+      background: "images/backgrounds/chapter3/cha3-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "父亲日渐年迈，总念叨着，不愿我再去卷入乱世。",
+      background: "images/backgrounds/chapter3/cha3-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "近来，一个叫胡雪岩的名字越来越响亮。",
+      background: "images/backgrounds/chapter3/cha3-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "他从一个小学徒起步，接手钱庄，得左宗棠器重，",
+      background: "images/backgrounds/chapter3/cha3-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "当铺、布业、盐茶、药材、粮行，甚至军火……",
+      background: "images/backgrounds/chapter3/cha3-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "光绪七年，他被封为红顶商人。",
+      background: "images/backgrounds/chapter3/cha3-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "似乎又看到了徽商昔日的辉煌。",
+      background: "images/backgrounds/chapter3/cha3-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "可就在我孙子出生那年，传来胡雪岩因生丝投机失败，家业骤然崩塌的消息。",
+      background: "images/backgrounds/chapter3/cha3-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "我恰好赶货去杭州，特意绕去胡府门口看了看。",
+      background: "images/backgrounds/chapter3/cha3-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "门外，官兵匆匆进出，一箱箱金银被抬上马车。",
+      background: "images/backgrounds/chapter3/cha3-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "远远地，我望见他坐在主院里，静静看着天空，",
+      background: "images/backgrounds/chapter3/cha3-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "岿然不动，也不知在想些什么。",
+      background: "images/backgrounds/chapter3/cha3-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "随着那块“胡府”金字牌匾缓缓落下，",
+      background: "images/backgrounds/chapter3/cha3-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "大门关闭，一个时代，似乎也就此落幕了。",
+      background: "images/backgrounds/chapter3/cha3-1.png",
+      character: null,
+      position: "center",
+    },
+  ],
+};

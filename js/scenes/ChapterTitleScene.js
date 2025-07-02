@@ -60,7 +60,7 @@ export class ChapterTitleScene {
         this.backgroundImage.src = "images/backgrounds/chapter2/cha2-1.png";
         break;
       case 7:
-        this.subtitle = "现代徽商";
+        this.subtitle = "金字招牌";
         this.backgroundImage.src = "images/backgrounds/chapter2/cha2-1.png";
         break;
       default:

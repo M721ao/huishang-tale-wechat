@@ -134,45 +134,55 @@ export class CardScene {
   makeChoice(event, choice) {
     let shouldAdvance = true; // 默认推进事件
 
-    // 第二章 event3 特殊分支处理
-    if (this.chapterNumber === 2 && event.id === "event3") {
+    const choiceObj = choice === "right" ? event.choices[1] : event.choices[0];
+    if (!choiceObj) return shouldAdvance;
+
+    // 跳转到指定事件
+    if (choiceObj.nextId) {
+      const nextIndex = this.events.findIndex(
+        (ev) => ev.id === choiceObj.nextId
+      );
+      if (nextIndex !== -1) {
+        this.currentEventIndex = nextIndex;
+        shouldAdvance = false; // 不自动+1
+      }
+    }
+
+    // 第二章 event4 特殊分支处理
+    if (this.chapterNumber === 2 && event.id === "event4") {
       this.loanBranch = choice === "left" ? "wife" : "loan";
       if (this.loanBranch === "wife") {
-        this.events = this.events.filter((ev) => ev.id !== "event14");
+        this.events = this.events.filter((ev) => ev.id !== "event22");
       } else {
-        this.events = this.events.filter((ev) => ev.id !== "event13");
-      }
-      console.log("剩余事件ID:", this.events.map((e) => e.id).join(", "));
-    }
-
-    // 第三章 抓周仪式特殊处理
-    if (
-      this.chapterNumber === 3 &&
-      ["event1", "event2", "event3", "event4", "event5"].includes(event.id)
-    ) {
-      if (choice === "left") {
-        if (this.game && this.game.dialog) {
-          const message =
-            event.id !== "event5"
-              ? "父亲温柔地把算盘放回地上，请你再选一次"
-              : "父亲一声叹气：为夫盼你不复贾竖子之道";
-          this.game.dialog.show(message, () => {});
-        } else {
-          console.error("无法获取 Dialog 实例");
-        }
-      } else {
-        // 如果选择朱子，则直接跳到 event6
-        const nextEventIndex = this.events.findIndex(
-          (ev) => ev.id === "event6"
-        );
-        if (nextEventIndex !== -1) {
-          this.currentEventIndex = nextEventIndex - 1; // 设置为目标索引前一个，因为 handleTouchEnd 会自增
-        }
+        this.events = this.events.filter((ev) => ev.id !== "event21");
       }
     }
 
-    const choiceObj = choice === "right" ? event.choices[1] : event.choices[0];
-    if (!choiceObj) return shouldAdvance; // 如果没有选择对象，则直接返回
+    // // 第三章 抓周仪式特殊处理
+    // if (
+    //   this.chapterNumber === 3 &&
+    //   ["event1", "event2", "event3", "event4", "event5"].includes(event.id)
+    // ) {
+    //   if (choice === "left") {
+    //     if (this.game && this.game.dialog) {
+    //       const message =
+    //         event.id !== "event5"
+    //           ? "父亲温柔地把算盘放回地上，请你再选一次"
+    //           : "父亲一声叹气：为夫盼你不复贾竖子之道";
+    //       this.game.dialog.show(message, () => {});
+    //     } else {
+    //       console.error("无法获取 Dialog 实例");
+    //     }
+    //   } else {
+    //     // 如果选择朱子，则直接跳到 event6
+    //     const nextEventIndex = this.events.findIndex(
+    //       (ev) => ev.id === "event6"
+    //     );
+    //     if (nextEventIndex !== -1) {
+    //       this.currentEventIndex = nextEventIndex - 1; // 设置为目标索引前一个，因为 handleTouchEnd 会自增
+    //     }
+    //   }
+    // }
 
     // 更新游戏状态
     if (choiceObj.effects) {
@@ -182,18 +192,19 @@ export class CardScene {
     }
 
     // 特殊处理第二章的监测点
-    if (this.chapterNumber === 2 && this.currentEventIndex < 10) {
+    if (this.chapterNumber === 2) {
       if (typeof choiceObj.saltChange !== "undefined") {
         if (!this.gameState.saltChanges) {
           this.gameState.saltChanges = [];
         }
         this.gameState.saltChanges.push(choiceObj.saltChange);
-        if (this.currentEventIndex === 9) {
+        if (this.currentEventIndex === 20) {
           const totalProgress = this.gameState.saltChanges.reduce(
             (sum, change) => sum + change,
             0
           );
           this.gameState.saltProgress = totalProgress;
+          console.log(totalProgress);
         }
       }
     }
@@ -319,24 +330,34 @@ export class CardScene {
     ctx.fill();
     ctx.stroke();
 
-    // 绘制事件图片
-    const imgHeight = this.cardHeight * 0.4;
+    // 绘制事件图片（正方形区域，内容居中裁剪）
+    const maxImgHeight = this.cardHeight * 0.45;
+    const maxImgWidth = this.cardWidth * 0.7;
+    const squareSize = Math.min(maxImgWidth, maxImgHeight);
     const img = this.cardImages[event.id];
-    if (img) {
+    if (img && img.width && img.height) {
+      // 计算原图中正方形裁剪区域
+      const srcSize = Math.min(img.width, img.height);
+      const srcX = (img.width - srcSize) / 2;
+      const srcY = (img.height - srcSize) / 2;
       ctx.drawImage(
         img,
-        x - this.cardWidth * 0.4,
+        srcX,
+        srcY,
+        srcSize,
+        srcSize, // 裁剪原图正方形
+        x - squareSize / 2,
         y - this.cardHeight * 0.45,
-        this.cardWidth * 0.8,
-        imgHeight
+        squareSize,
+        squareSize
       );
     }
 
     // 绘制标题
-    ctx.fillStyle = cardColors.text;
-    ctx.font = this.uiHelper.getFont(20, "FangSong", true);
-    ctx.textAlign = "center";
-    ctx.fillText(event.title, x, y - this.cardHeight * 0.35 + 30);
+    // ctx.fillStyle = cardColors.text;
+    // ctx.font = this.uiHelper.getFont(20, "FangSong", true);
+    // ctx.textAlign = "center";
+    // ctx.fillText(event.title, x, y - this.cardHeight * 0.35 + 30);
 
     // 绘制描述
     ctx.fillStyle = cardColors.text;

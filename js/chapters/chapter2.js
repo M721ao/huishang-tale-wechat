@@ -1,497 +1,494 @@
 export const chapter2 = {
-    title: '第二章 盐引之争',
-    
-    // 故事场景脚本
-    storyScript: [
+  title: "第二章 盐引之争",
+
+  // 故事场景脚本
+  storyScript: [
+    {
+      text: "天下三分明月夜，二分无赖是扬州",
+      background: "images/backgrounds/chapter2/cha2-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "在你到来之前，已有数不清的徽州商人在这里发了大财",
+      background: "images/backgrounds/chapter2/cha2-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "也有不少客居的山陕商人，实力强劲，堪称巨鳄",
+      background: "images/backgrounds/chapter2/cha2-1.png",
+      character: null,
+      position: "center",
+    },
+    {
+      text: "首先，获得盐引在扬州站稳脚跟吧",
+      background: "images/backgrounds/chapter2/cha2-1.png",
+      character: null,
+      position: "center",
+    },
+  ],
+
+  // 卡牌事件配置
+  cardEvents: [
+    {
+      id: "event1",
+      description: "了解盐引如何获取",
+      choices: [
         {
-            text: '天下三分明月夜，二分无赖是扬州',
-            background: 'images/backgrounds/chapter2/cha2-1.png',
-            character: null,
-            position: 'center'
+          text: "直接前往盐运司衙门",
+          saltChange: 0,
+          nextId: "event2",
         },
         {
-            text: '在你到来之前，已有数不清的徽州商人在这里发了大财',
-            background: 'images/backgrounds/chapter2/cha2-1.png',
-            character: null,
-            position: 'center'
+          text: "先前往会馆了解情况",
+          saltChange: 1,
+          nextId: "event4",
+        },
+      ],
+    },
+    {
+      id: "event2",
+      description: "同乡劝你先向同乡前辈了解情况",
+      choices: [
+        {
+          text: "同意，前往会馆",
+          saltChange: 1,
+          nextId: "event4",
         },
         {
-            text: '也有不少客居的山陕商人，实力强劲，堪称巨鳄',
-            background: 'images/backgrounds/chapter2/cha2-1.png',
-            character: null,
-            position: 'center'
-        }
-    ],
-    
-    // 卡牌事件配置
-    cardEvents: [
+          text: "执意自行前往衙门",
+          saltChange: 0,
+        },
+      ],
+    },
+    {
+      id: "event3",
+      description: "衙门称近日不发放盐引给新商，你吃了闭门羹",
+      choices: [
         {
-            id: 'event1',
-            title: '初到扬州',
-            description: '你亟需获得盐引立住脚跟',
-            choices: [
-              {
-                text: '默默跟随人群排队',
-                saltChange: 0
-              },
-              {
-                text: '塞钱给差役插队',
-                saltChange: 1
-              }
-            ]
-          },
-          {
-            id: 'event2',
-            title: '验资风波',
-            description: '轮到你购买，却被要求：“新商需得验资“',
-            choices: [
-              {
-                text: '据理力争',
-                saltChange: 0
-              },
-              {
-                text: '恳请延期验资',
-                saltChange: -0.5
-              }
-            ]
-          },
-          {
-            id: 'event3',
-            title: '筹资难题',
-            description: '为筹资金抵押称贷',
-            choices: [
-              {
-                text: '抵押妻子陪嫁',
-                saltChange: 0.5
-              },
-              {
-                text: '寻求高利贷款',
-                saltChange: 0.5
-              }
-            ]
-          },
-          {
-            id: 'event4',
-            title: '干股引荐',
-            description: '同乡引荐前辈，要求三成干股',
-            choices: [
-              {
-                text: '让出三成干股',
-                saltChange: 1.5
-              },
-              {
-                text: '拒绝好意',
-                saltChange: 0
-              }
-            ]
-          },
-          {
-            id: 'event5',
-            title: '盐运使寿宴',
-            description: '恰逢盐运使寿宴',
-            choices: [
-              {
-                text: '打点关系赴宴',
-                saltChange: 0.5
-              },
-              {
-                text: '拖同乡带你赴宴',
-                saltChange: 0.5
-              }
-            ]
-          },
-          {
-            id: 'event6',
-            title: '寿宴贺礼',
-            description: '为寿宴准备贺礼',
-            choices: [
-              {
-                text: '重金准备',
-                saltChange: 0.5
-              },
-              {
-                text: '略备薄礼',
-                saltChange: -0.5
-              }
-            ]
-          },
-          {
-            id: 'event7',
-            title: '晋商挑衅',
-            description: '宴会上，一晋商仆从故意打翻酒杯',
-            choices: [
-              {
-                text: '笑称"碎碎平安"',
-                saltChange: 0.5
-              },
-              {
-                text: '愤然离席',
-                saltChange: -1
-              }
-            ]
-          },
-          {
-            id: 'event8',
-            title: '小妾索礼',
-            description: '盐运使小妾暗示索要礼物',
-            choices: [
-              {
-                text: '连夜送礼',
-                saltChange: 1
-              },
-              {
-                text: '无视之',
-                saltChange: -0.5
-              }
-            ]
-          },
-          {
-            id: 'event9',
-            title: '翻修祠堂',
-            description: '适逢年关，妻子写信告诉你宗族要翻新祠堂',
-            choices: [
-              {
-                text: '应允出资',
-                saltChange: 0.5
-              },
-              {
-                text: '手头困难拒绝',
-                saltChange: 0
-              }
-            ]
-          },
-          {
-            id: 'event10',
-            title: '再次购引',
-            description: '再次尝试购引，又遇晋商刁难',
-            choices: [
-              {
-                text: '贿赂通关',
-                saltChange: 1.5
-              },
-              {
-                text: '公开抗议',
-                saltChange: 0.5
-              }
-            ]
-          },
-        //   event11-29
-        //   {
-        //     id: 'event11',
-        //     title: '盐商互助',
-        //     description: '一位落魄的盐商请求你的帮助',
-        //     choices: [
-        //         {
-        //             text: '会合互助',
-        //             result: '你们绔结成盟，共同幸存',
-        //         },
-        //         {
-        //             text: '拒绝请求',
-        //             result: '你选择独行，但失去了盟友',
-        //         }
-        //     ]
-        // },
-        // {
-        //     id: 'event12',
-        //     title: '母亲来信',
-        //     description: '母亲发来书信，同族后生想来扬州投靠',
-        //     choices: [
-        //         {
-        //             text: '同意',
-        //             result: '你接纳了后生，为家族传承播下种子',
-        //         },
-        //         {
-        //             text: '以根基不稳拒绝',
-        //             result: '你婉拒了来投之意，心中却难以释怀',
-        //         }
-        //     ]
-        // },
-        {
-            id: 'event13',
-            title: '为妻赎嫁',
-            description: '站稳脚跟，是否为妻子赎回陪嫁',
-            choices: [
-                {
-                    text: '高价赎回',
-                    result: '你不惜重金，终于物归原主',
-                },
-                {
-                    text: '按数偿还',
-                    result: '你讲信修睦，赢得岳家尊重',
-                }
-            ]
+          text: "你正要口出狂言之际被同乡拉走",
+          saltChange: -0.5,
         },
         {
-            id: 'event14',
-            title: '偿还贷款',
-            description: '贷款到期，是否如数偿还',
-            choices: [
-                {
-                    text: '如数偿还',
-                    result: '你守信还债，声誉渐隆',
-                },
-                {
-                    text: '暂缓处理',
-                    result: '你暂缓还款，信用蒙尘',
-                }
-            ]
+          text: "想起同乡劝告前往会馆",
+          saltChange: 0.5,
         },
-        // {
-        //     id: 'event15',
-        //     title: '盐工工钱',
-        //     description: '今年产量浮动严重，是否按时发放工钱',
-        //     choices: [
-        //         {
-        //             text: '如数发放',
-        //             result: '你体恤工人，赢得人心',
-        //         },
-        //         {
-        //             text: '拖延一下',
-        //             result: '你选择拖延，引发怨声载道',
-        //         }
-        //     ]
-        // },
-        // {
-        //     id: 'event16',
-        //     title: '资助科举',
-        //     description: '徽州学子求你资助科举',
-        //     choices: [
-        //         {
-        //             text: '包揽全部费用',
-        //             result: '你慷慨解囊，学子感恩铭记',
-        //         },
-        //         {
-        //             text: '手头紧，介绍给同乡会',
-        //             result: '你尽力斡旋，略感歉疚',
-        //         }
-        //     ]
-        // },
-        // {
-        //     id: 'event17',
-        //     title: '垫付军饷',
-        //     description: '战事突起，朝廷暗示盐商垫付军饷',
-        //     choices: [
-        //         {
-        //             text: '冒险垫付军饷',
-        //             result: '你博得朝廷青睐，却也风险并存',
-        //         },
-        //         {
-        //             text: '婉拒',
-        //             result: '你明哲保身，少了升迁之机',
-        //         }
-        //     ]
-        // },
-        // {
-        //     id: 'event18',
-        //     title: '晋商遇劫',
-        //     description: '听闻晋商盐船遭“水匪”',
-        //     choices: [
-        //         {
-        //             text: '趁火打劫',
-        //             result: '你乘虚而入，获利颇丰但名声受损',
-        //         },
-        //         {
-        //             text: '派人护航',
-        //             result: '你仗义出手，赢得友商敬重',
-        //         }
-        //     ]
-        // },
-        // {
-        //     id: 'event19',
-        //     title: '盐税压力',
-        //     description: '产量连年大幅波动，盐工纷纷逃亡，朝廷仍强征固定盐税',
-        //     choices: [
-        //         {
-        //             text: '提议浮动税制',
-        //             result: '你进言得策，朝廷深思之',
-        //         },
-        //         {
-        //             text: '压榨盐工补缺',
-        //             result: '你压榨工人，换来短暂安稳',
-        //         }
-        //     ]
-        // },
-        // {
-        //     id: 'event20',
-        //     title: '女儿拒婚',
-        //     description: '女儿拒嫁盐运使之子',
-        //     choices: [
-        //         {
-        //             text: '强令完婚',
-        //             result: '你牺牲亲情换取政治筹码',
-        //         },
-        //         {
-        //             text: '送其入道观',
-        //             result: '你尊重选择，却断了婚姻之路',
-        //         }
-        //     ]
-        // },
-        // {
-        //     id: 'event21',
-        //     title: '晋商走私',
-        //     description: '发现晋商走私证据',
-        //     choices: [
-        //         {
-        //             text: '向盐运使举报',
-        //             result: '你正直报官，赢得清誉',
-        //         },
-        //         {
-        //             text: '暗中要挟合作',
-        //             result: '你借势而谋，隐患犹存',
-        //         }
-        //     ]
-        // },
-        // {
-        //     id: 'event22',
-        //     title: '倭寇袭盐场',
-        //     description: '盐场遭倭寇袭击',
-        //     choices: [
-        //         {
-        //             text: '组织乡勇抵抗',
-        //             result: '你奋起保盐，声威大震',
-        //         },
-        //         {
-        //             text: '花钱买平安',
-        //             result: '你花重金保全，但士气低迷',
-        //         }
-        //     ]
-        // },
-        // {
-        //     id: 'event23',
-        //     title: '茶业价格战',
-        //     description: '晋商突然在茶业发难打价格战',
-        //     choices: [
-        //         {
-        //             text: '暗中帮助同乡商会',
-        //             result: '你暗助徽商，团结共进',
-        //         },
-        //         {
-        //             text: '公开联合徽商反制',
-        //             result: '你公开反制，掀起商战风云',
-        //         }
-        //     ]
-        // },
-        // {
-        //     id: 'event24',
-        //     title: '担保请求',
-        //     description: '同乡商人资金断裂求你担保',
-        //     choices: [
-        //         {
-        //             text: '联名作保',
-        //             result: '你挺身而出，风险共担',
-        //         },
-        //         {
-        //             text: '撇清关系',
-        //             result: '你避责为上，惹人非议',
-        //         }
-        //     ]
-        // },
-        // {
-        //     id: 'event25',
-        //     title: '偷税传闻',
-        //     description: '有人散布你偷税传闻，钦差南下巡查账目',
-        //     choices: [
-        //         {
-        //             text: '重金打点',
-        //             result: '你用金钱摆平风波，但真相难辨',
-        //         },
-        //         {
-        //             text: '如实呈报',
-        //             result: '你自信无愧，静待清查结果',
-        //         }
-        //     ]
-        // },
-        // {
-        //     id: 'event26',
-        //     title: '家乡学堂',
-        //     description: '家乡修办学堂',
-        //     choices: [
-        //         {
-        //             text: '大力资助，全部顶配',
-        //             result: '你厚植桑梓，乡人感念不已',
-        //         },
-        //         {
-        //             text: '点到为止即可',
-        //             result: '你量力而为，略显保守',
-        //         }
-        //     ]
-        // },
-        // {
-        //     id: 'event27',
-        //     title: '纲盐法推行',
-        //     description: '盐引积滞，引发盐商普遍不满，朝廷颁布纲盐法',
-        //     choices: [
-        //         {
-        //             text: '积极入册',
-        //             result: '你顺势而动，掌握主动',
-        //         },
-        //         {
-        //             text: '顺其自然',
-        //             result: '你观望观局，错失良机',
-        //         }
-        //     ]
-        // },
-        // {
-        //     id: 'event28',
-        //     title: '邻省积粮',
-        //     description: '听闻邻近省份有积粮',
-        //     choices: [
-        //         {
-        //             text: '向官府尽数收购',
-        //             result: '你果断出手，粮利双收',
-        //         },
-        //         {
-        //             text: '放弃屯粮',
-        //             result: '你谨慎退让，失去先机',
-        //         }
-        //     ]
-        // },
-        // {
-        //     id: 'event29',
-        //     title: '城中失火',
-        //     description: '城中失火，有桥被烧毁',
-        //     choices: [
-        //         {
-        //             text: '慷慨捐赠修复',
-        //             result: '你慷慨解囊，名动一时',
-        //         },
-        //         {
-        //             text: '自顾不暇',
-        //             result: '你明哲保身，却寒了民心',
-        //         }
-        //     ]
-        // },
-        // {
-        //     id: 'event30',
-        //     title: '税监横征',
-        //     description: '稅监太监大肆征税',
-        //     choices: [
-        //         {
-        //             text: '联络朝臣对抗',
-        //             result: '你联络朝臣，共谋对策',
-        //         },
-        //         {
-        //             text: '忍气吞声',
-        //             result: '你逆来顺受，积怨日深',
-        //         }
-        //     ]
-        // },
+      ],
+    },
+    {
+      id: "event4",
+      description:
+        "从徽州前辈处得知不少有用信息，盐引获取后还需支盐贩盐，你需要资金提前准备",
+      choices: [
         {
-            id: 'event31',
-            title: '徽商领袖',
-            description: '被推举为徽商领袖',
-            choices: [
-                {
-                    text: '乘势而上',
-                    result: '你走上权力巅峰，众望所归。',
-                    nextChapter: true
-                },
-                {
-                    text: '激流勇退',
-                    result: '你急流勇退，留得清誉满身',
-                    nextChapter: true
-                }
-            ]
+          text: "抵押妻子陪嫁",
+          saltChange: 0.5,
         },
-    ]
-}
+        {
+          text: "寻求高利贷款",
+          saltChange: 0.5,
+        },
+      ],
+    },
+
+    {
+      id: "event5",
+      description: "你在扬州还未稳定，母亲便写信要你照顾来投奔你的家中小辈",
+      choices: [
+        {
+          text: "把他再介绍去杭州的茶庄",
+          saltChange: 0.5,
+        },
+        {
+          text: "多个人帮忙也好",
+          saltChange: 1,
+        },
+      ],
+    },
+    {
+      id: "event6",
+      description: "听说有门路快速获得盐引",
+      choices: [
+        {
+          text: "不妨听听",
+          saltChange: 1,
+        },
+        {
+          text: "别是什么歪门邪道",
+          saltChange: 0,
+          nextId: "event12",
+        },
+      ],
+    },
+    {
+      id: "event7",
+      title: "",
+      description: "原来是有位晋商想转手盐引",
+      choices: [
+        {
+          text: "请人介绍前往了解",
+          saltChange: 0.5,
+        },
+        {
+          text: "不知晋商是否可信，算了",
+          saltChange: 0,
+          nextId: "event12",
+        },
+      ],
+    },
+    {
+      id: "event8",
+      description: "前往拜访晋商",
+      choices: [
+        {
+          text: "略备薄礼独自前往",
+          saltChange: 0,
+        },
+        {
+          text: "认真准备礼物并带上仆从",
+          saltChange: 0.5,
+        },
+      ],
+    },
+    {
+      id: "event9",
+      description: "一番寒暄后你刚落座，其仆从便打翻了你的茶杯",
+      choices: [
+        {
+          text: '笑称"碎碎平安"，把话拉回正题',
+          saltChange: 0.5,
+        },
+        {
+          text: "愤然离席",
+          saltChange: 0,
+          nextId: "event12",
+        },
+      ],
+    },
+    {
+      id: "event10",
+      description: "晋商称自己要回山西，盐引支取贩售有地区限制故而出手",
+      choices: [
+        {
+          text: "相信，询问价格",
+          saltChange: 0.5,
+        },
+        {
+          text: "有点怪，来都来了问问价",
+          saltChange: 0.5,
+        },
+      ],
+    },
+    {
+      id: "event11",
+      description: "盐引价格竟比官价还高，晋商解释次批支盐日期临近风险很低",
+      choices: [
+        {
+          text: "原来遇到盐引贩子了……告辞离去",
+          saltChange: 0.5,
+        },
+        {
+          text: "你心动了，告辞回去筹款",
+          saltChange: 0,
+        },
+      ],
+    },
+    {
+      id: "event12",
+      description: "同乡告诉你今年产量浮动严重，晋商恐是担心支取才想法脱手",
+      choices: [
+        {
+          text: "你连连称谢，庆幸自己没有掏钱",
+          saltChange: 0.5,
+        },
+        {
+          text: "虽有风险，但确实能快速获得盐引",
+          saltChange: 1,
+        },
+      ],
+    },
+    {
+      id: "event13",
+      description:
+        "是夜，你发现了下午遗漏的重要信息，盐产量浮动，得盐引但若无法支取该如何",
+      choices: [
+        {
+          text: "产生退缩之意",
+          saltChange: -0.5,
+        },
+        {
+          text: "绝不可半途放弃",
+          saltChange: 0.5,
+        },
+      ],
+    },
+    {
+      id: "event14",
+      description: "你得知有位徽州盐商正在寻找合作伙伴",
+      choices: [
+        {
+          text: "前往洽谈",
+          saltChange: 0.5,
+        },
+        {
+          text: "暂时不做合伙打算",
+          saltChange: 0,
+          nextId: "event16",
+        },
+      ],
+    },
+    {
+      id: "event15",
+      description: "原来是前辈想资助一些新商，要求占股三成",
+      choices: [
+        {
+          text: "拒绝好意",
+          saltChange: 0,
+        },
+        {
+          text: "接受并签订合同",
+          saltChange: 1,
+        },
+      ],
+    },
+    {
+      id: "event16",
+      description: "你收到同乡请你去青楼的邀约",
+      choices: [
+        {
+          text: "推辞不去",
+          saltChange: 0,
+          nextId: "event18",
+        },
+        {
+          text: "同意前往",
+          saltChange: 1,
+        },
+      ],
+    },
+    {
+      id: "event17",
+      description: "你遇到一位红颜知己，她告诉你下个月或许有获得盐引的机会",
+      choices: [
+        {
+          text: "一笑而过",
+          saltChange: 0,
+        },
+        {
+          text: "记在心里",
+          saltChange: 1,
+        },
+      ],
+    },
+    {
+      id: "event18",
+      description: "战事突起，两淮盐商纷纷捐款",
+      choices: [
+        {
+          text: "你也跟随捐款",
+          saltChange: 1,
+        },
+        {
+          text: "资金紧张，算了",
+          saltChange: 1,
+        },
+      ],
+    },
+    {
+      id: "event19",
+      description: "运司衙门张贴告示，可前往认购新一批盐引",
+      choices: [
+        {
+          text: "立即动身",
+          saltChange: 0.5,
+        },
+        {
+          text: "时不我待",
+          saltChange: 0.5,
+        },
+      ],
+    },
+    {
+      id: "event20",
+      description: "衙门口人头攒动，已排起长队",
+      choices: [
+        {
+          text: "前往队尾耐心等待",
+          saltChange: 0.5,
+        },
+        {
+          text: "张望有无熟人想要插队",
+          saltChange: 1,
+        },
+      ],
+    },
+
+    {
+      id: "event21",
+      title: "为妻赎嫁",
+      description: "站稳脚跟，是否为妻子赎回陪嫁",
+      choices: [
+        {
+          text: "坚持高价赎回",
+          result: "你不惜重金，终于物归原主",
+        },
+        {
+          text: "妻子体恤你生意不易，称算了",
+          result: "你从善如流，妻子也不再提起此事",
+        },
+      ],
+    },
+    {
+      id: "event22",
+      title: "偿还贷款",
+      description: "贷款到期，是否如数偿还",
+      choices: [
+        {
+          text: "如数偿还",
+          result: "守信还债，声誉渐隆",
+        },
+        {
+          text: "暂缓处理",
+          result: "暂缓还款，信用蒙尘",
+        },
+      ],
+    },
+
+    {
+      id: "event23",
+      description: "一徽州学子登门请你资助科举",
+      choices: [
+        {
+          text: "包揽全部费用",
+          result: "你慷慨解囊，学子感恩铭记",
+        },
+        {
+          text: "手头紧，介绍给同乡会",
+          result: "你尽力斡旋，略感歉疚",
+        },
+      ],
+    },
+    {
+      id: "event24",
+      title: "晋商遇劫",
+      description: "听闻有位晋商盐船遭“水匪”",
+      choices: [
+        {
+          text: "趁火打劫",
+          result: "你乘虚而入，获利颇丰但名声受损",
+        },
+        {
+          text: "派人护航",
+          result: "你仗义出手，赢得友商敬重",
+        },
+      ],
+    },
+    {
+      id: "event25",
+      description: "盐场遭倭寇袭击",
+      choices: [
+        {
+          text: "组织乡勇抵抗",
+          result: "你奋起保盐，声威大震",
+        },
+        {
+          text: "花钱买平安",
+          result: "你花重金保全，但士气低迷",
+        },
+      ],
+    },
+
+    {
+      id: "event26",
+      title: "担保请求",
+      description: "同乡商人资金断裂求你担保",
+      choices: [
+        {
+          text: "联名作保",
+          result: "你挺身而出，风险共担",
+        },
+        {
+          text: "撇清关系",
+          result: "你避责为上，惹来非议",
+        },
+      ],
+    },
+    {
+      id: "event27",
+      description: "你名声渐起，有人散布你偷税传闻",
+      choices: [
+        {
+          text: "重金打点",
+          result: "你用金钱摆平风波，但真相难辨",
+        },
+        {
+          text: "如实呈报",
+          result: "你自信无愧，静待清查结果",
+        },
+      ],
+    },
+    {
+      id: "event28",
+      description: "家乡修办学堂",
+      choices: [
+        {
+          text: "大力资助，全部顶配",
+          result: "你厚植桑梓，乡人感念不已",
+        },
+        {
+          text: "点到为止即可",
+          result: "你量力而为，进退有度",
+        },
+      ],
+    },
+    {
+      id: "event29",
+      description: "长子成年，想来扬州接手生意",
+      choices: [
+        {
+          text: "不同意，希望他专心科举",
+        },
+        {
+          text: "同意，还是交给儿子最放心",
+        },
+      ],
+    },
+    {
+      id: "event30",
+      description: "家书还未寄出，长子已经来到扬州",
+      choices: [
+        {
+          text: "希望他从基层干起",
+        },
+        {
+          text: "别没苦硬吃，把他带在身边",
+        },
+      ],
+    },
+    {
+      id: "event31",
+      description: "长子和后辈都开始独当一面，是时候放手",
+      choices: [
+        {
+          text: "回乡与妻子团聚",
+        },
+        {
+          text: "流连扬州风华，只偶尔回去探亲",
+        },
+      ],
+    },
+    {
+      id: "event32",
+      description: "正德七年，你身体每况愈下；夜色之中，你回想起这一生的浮沉。",
+      choices: [
+        {
+          text: "我此生虽辛苦，却无悔于心",
+        },
+        {
+          text: "这灯火扬州，我也算留下一笔",
+        },
+      ],
+    },
+  ],
+};
