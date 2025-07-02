@@ -73,12 +73,24 @@ export class CardScene {
     defaultImage.src = this.getDefaultCardImage();
 
     this.events.forEach((event) => {
-      if (event.image) {
+      if (
+        event.image &&
+        typeof event.image === "string" &&
+        event.image.trim() !== ""
+      ) {
         const img = wx.createImage();
         img.src = event.image;
         this.cardImages[event.id] = img;
       } else {
         this.cardImages[event.id] = defaultImage;
+        if (event.image) {
+          console.log(
+            "CardScene: 无效的事件图片路径:",
+            event.image,
+            "for event:",
+            event.id
+          );
+        }
       }
     });
   }

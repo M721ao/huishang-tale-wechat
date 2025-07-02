@@ -27,8 +27,18 @@ class Game {
   constructor() {
     this.currentSceneType = "title";
     this.currentScene = null;
-    this.progress = wx.getStorageSync("gameProgress") || {
-      currentChapter: 1,
+
+    // 安全地加载游戏进度
+    let savedProgress = null;
+    try {
+      savedProgress = wx.getStorageSync("gameProgress");
+      console.log("游戏进度读取成功");
+    } catch (error) {
+      console.error("读取游戏进度失败:", error);
+    }
+
+    this.progress = savedProgress || {
+      currentChapter: 0,
       currentScene: "title",
       storyProgress: 0,
       attributes: {}, // 每章节的属性
@@ -56,14 +66,31 @@ class Game {
     // 初始化章节管理器
     this.chapterManager = new ChapterManager(this);
 
+    // 初始化背景音乐
+    this.initBGM();
+
+    // 延迟设置回调，确保UserManager完全初始化
+    setTimeout(() => {
+      this.setupTitleSceneCallbacks();
+    }, 100);
+  }
+
+  setupTitleSceneCallbacks() {
     // 设置标题场景的开始回调
     this.titleScene.setOnStart(() => {
       // 检查是否已登录
       if (this.userManager && this.userManager.isLoggedIn) {
-        // 已登录，直接开始游戏
-        this.startMainGame();
+        // 已登录，先获取最新游戏进度再开始游戏
+        console.log("用户已登录，获取最新游戏进度");
+        if (!this.userManager.isGuestMode) {
+          // 非游客模式，从服务器获取最新进度
+          this.userManager.fetchGameProgressAndStartGame();
+        } else {
+          // 游客模式，直接开始游戏
+          this.handleGameStart();
+        }
       } else {
-        // 未登录，显示登录选项
+        // 未登录，直接触发登录，登录成功后会自动开始游戏
         this.showLoginOptions();
       }
     });
@@ -74,6 +101,24 @@ class Game {
         this.userManager.enableGuestMode();
       }
     });
+  }
+
+  // 初始化背景音乐
+  initBGM() {
+    if (!this.bgmAudio) {
+      this.bgmAudio = wx.createInnerAudioContext();
+      this.bgmAudio.src = "audio/bgm.mp3";
+      this.bgmAudio.loop = true;
+      this.bgmAudio.volume = 0.5;
+      // 先尝试直接播放
+      this.bgmAudio.play();
+      // 兼容微信自动播放策略：如未成功，首次用户交互后再播放
+      const tryPlay = () => {
+        this.bgmAudio.play();
+        wx.offTouchStart(tryPlay); // 只绑定一次
+      };
+      wx.onTouchStart(tryPlay);
+    }
   }
 
   // 切换场景
@@ -103,8 +148,8 @@ class Game {
 
     // 如果是章节切换，保存游戏进度
     if (type === "chapterTitle" && this.chapterManager && this.userManager) {
-      const chapter = this.chapterManager.getCurrentChapter();
-      this.userManager.saveGameProgress(chapter);
+      const chapterNumber = this.chapterManager.currentChapter;
+      this.userManager.saveGameProgress(chapterNumber);
     }
 
     // 如果是标题场景，更新登录UI
@@ -121,7 +166,7 @@ class Game {
   // 开始新游戏
   startNewGame() {
     this.progress = {
-      currentChapter: 1,
+      currentChapter: 0, // 新游戏从引子开始
       currentScene: "title",
       storyProgress: 0,
       attributes: {},
@@ -141,8 +186,10 @@ class Game {
 
   // 显示登录选项
   showLoginOptions() {
-    // 显示游客模式文字链接
-    this.titleScene.showGuestButton(true);
+    // 可以延迟显示游客模式按钮，给用户更多时间完成登录
+    setTimeout(() => {
+      this.titleScene.showGuestButton(true);
+    }, 3000); // 3秒后才显示游客模式选项
 
     // 直接触发登录
     if (this.userManager) {
@@ -157,7 +204,7 @@ class Game {
     const status = this.userManager.checkLoginStatus();
 
     if (status.isLoggedIn) {
-      // 已登录，显示“继续游戏”按钮
+      // 已登录，显示"继续游戏"按钮
       this.titleScene.updateButtonText("继续游戏");
       this.titleScene.showGuestButton(false); // 隐藏游客模式按钮
 
@@ -165,7 +212,7 @@ class Game {
         console.log("当前为游客模式");
       }
     } else {
-      // 未登录，显示“开始游戏”按钮
+      // 未登录，显示"开始游戏"按钮
       this.titleScene.updateButtonText("开始游戏");
       this.titleScene.showGuestButton(true); // 显示游客模式按钮
     }
@@ -179,33 +226,130 @@ class Game {
 
     // 设置引子结束后的回调
     this.prologueScene.setOnFinish(() => {
+      // 引子结束后，设置章节为1并开始第一章
+      this.progress.currentChapter = 1;
+      this.chapterManager.currentChapter = 1;
+      saveProgress(this.progress);
       this.chapterManager.startChapterTitle();
     });
   }
 
   // 继续游戏
   continueGame() {
-    const progress = loadProgress();
-    if (progress) {
-      this.progress = progress;
-      this.chapterManager.currentChapter = progress.currentChapter;
-      switch (progress.currentScene) {
+    console.log("=== 开始continueGame ===");
+
+    // 使用UserManager中已同步的进度，而不是本地存储的旧进度
+    const userProgress = this.userManager.getGameProgress();
+    console.log("UserManager进度数据:", userProgress);
+
+    // 同时也检查本地进度作为对比
+    const localProgress = loadProgress();
+    console.log("本地进度数据:", localProgress);
+
+    // 使用UserManager的进度作为主要数据源
+    if (userProgress && userProgress.currentChapter > 0) {
+      this.progress.currentChapter = userProgress.currentChapter;
+      this.chapterManager.currentChapter = userProgress.currentChapter;
+
+      console.log("当前章节:", userProgress.currentChapter);
+
+      // 对于继续游戏，通常应该从章节标题开始
+      console.log("启动章节标题场景");
+      this.chapterManager.startChapterTitle();
+    } else if (localProgress) {
+      // 如果UserManager没有有效进度，使用本地进度
+      console.log("使用本地进度");
+      this.progress = localProgress;
+      this.chapterManager.currentChapter = localProgress.currentChapter;
+      console.log("当前章节:", localProgress.currentChapter);
+      console.log("当前场景:", localProgress.currentScene);
+
+      switch (localProgress.currentScene) {
         case "title":
+          console.log("启动章节标题场景");
           this.chapterManager.startChapterTitle();
           break;
         case "prologue":
+          console.log("启动引子场景");
           this.chapterManager.startChapterPrologue();
           break;
         case "story":
+          console.log("启动故事场景");
           this.chapterManager.startChapterStory();
           break;
         case "card":
+          console.log("启动卡牌场景");
           this.chapterManager.startChapterCards();
+          break;
+        default:
+          console.log("未知场景，启动章节标题场景");
+          this.chapterManager.startChapterTitle();
           break;
       }
     } else {
+      console.log("没有任何进度，启动新游戏");
       this.startNewGame();
     }
+    console.log("=== continueGame结束 ===");
+  }
+
+  // 登录成功后的回调
+  onLoginSuccess() {
+    console.log("登录成功，开始游戏");
+    // 更新UI状态
+    this.updateLoginUI();
+    // 开始游戏
+    this.handleGameStart();
+  }
+
+  // 处理游戏开始逻辑
+  handleGameStart() {
+    console.log("=== 开始处理游戏开始逻辑 ===");
+
+    // 使用UserManager中的游戏进度，而不是本地存储的progress
+    const userProgress = this.userManager.getGameProgress();
+    console.log("当前用户游戏进度:", userProgress);
+    console.log("userProgress类型:", typeof userProgress);
+
+    // 获取当前章节
+    let currentChapter = 0;
+    if (userProgress && typeof userProgress.currentChapter === "number") {
+      currentChapter = userProgress.currentChapter;
+      console.log("从userProgress获取到章节:", currentChapter);
+    } else {
+      console.log("无法从userProgress获取章节，使用默认值0");
+      console.log("userProgress存在:", !!userProgress);
+      if (userProgress) {
+        console.log(
+          "userProgress.currentChapter类型:",
+          typeof userProgress.currentChapter
+        );
+        console.log(
+          "userProgress.currentChapter值:",
+          userProgress.currentChapter
+        );
+      }
+    }
+
+    console.log("最终当前章节:", currentChapter);
+
+    if (currentChapter > 0) {
+      // 有进度且章节大于0，直接继续游戏
+      console.log("检测到有效进度，开始继续游戏到章节:", currentChapter);
+      // 同步本地进度
+      this.progress.currentChapter = currentChapter;
+      this.chapterManager.currentChapter = currentChapter;
+      saveProgress(this.progress);
+      console.log("调用continueGame()");
+      this.continueGame();
+    } else {
+      // 章节为0或没有进度，进入引子
+      console.log("没有有效进度，进入引子");
+      console.log("调用startMainGame()");
+      this.startMainGame();
+    }
+
+    console.log("=== 游戏开始逻辑处理完成 ===");
   }
 
   // 更新游戏
@@ -271,6 +415,6 @@ wx.onTouchEnd((e) => {
 
 // 等待图片加载完成后启动游戏
 coverImage.onload = () => {
-  game.startNewGame();
+  game.start();
   gameLoop();
 };

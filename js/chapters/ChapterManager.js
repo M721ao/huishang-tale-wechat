@@ -50,7 +50,7 @@ export class ChapterManager {
         title: "朱楼倾覆",
         description:
           "再富丽的朱楼，也禁不起积重难返。终究因家道衰落而轰然坍塌，昔日繁华只余断瓦残垣。",
-        image: "images/backgrounds/endings/ending-1.png",
+        image: "images/backgrounds/endings/ending-4.png",
       },
     ];
   }
@@ -118,7 +118,18 @@ export class ChapterManager {
       ending.description,
       ending.image,
       () => {
-        // 结局后返回标题场景
+        // 结局后重置游戏进度为章节1
+        console.log("结局结束，重置游戏进度");
+        this.currentChapter = 1;
+        this.game.progress.currentChapter = 1;
+        this.game.progress.attributes = {}; // 清空属性
+
+        // 保存重置后的进度
+        if (this.game.userManager) {
+          this.game.userManager.saveGameProgress(1);
+        }
+
+        // 返回标题场景
         this.game.setScene(this.game.titleScene, "title");
       }
     );
@@ -138,7 +149,6 @@ export class ChapterManager {
   // 检查第二章监测点
   checkChapter2Progress(eventIndex, attributes) {
     if (eventIndex === 20) {
-      // 第10个选择后检查
       if (attributes.saltProgress < 8) {
         return this.endings.find((e) => e.id === "ending-2");
       }

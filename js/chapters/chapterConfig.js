@@ -70,29 +70,35 @@ export function getUnlockedChapters() {
 
 // 保存游戏进度
 export function saveProgress() {
-  wx.setStorageSync("gameProgress", {
-    chapters: chapters.map(({ id, unlocked }) => ({ id, unlocked })),
-  });
+  try {
+    wx.setStorageSync("gameProgress", {
+      chapters: chapters.map(({ id, unlocked }) => ({ id, unlocked })),
+    });
+    console.log("游戏进度保存成功");
+  } catch (error) {
+    console.error("保存游戏进度失败:", error);
+    // 如果存储失败，不抛出错误，只记录日志
+  }
 }
 
 // 加载游戏进度
 export function loadProgress() {
-  const progress = wx.getStorageSync("gameProgress");
-  if (progress) {
-    // 加载已解锁的章节
-    for (const chapter of chapters) {
-      if (progress.unlockedChapters.includes(chapter.id)) {
-        chapter.unlocked = true;
+  try {
+    const progress = wx.getStorageSync("gameProgress");
+    if (progress && progress.chapters) {
+      // 加载已解锁的章节
+      for (const chapter of chapters) {
+        const saved = progress.chapters.find((c) => c.id === chapter.id);
+        if (saved) {
+          chapter.unlocked = saved.unlocked;
+        }
       }
     }
+    console.log("游戏进度加载成功");
+    return progress;
+  } catch (error) {
+    console.error("加载游戏进度失败:", error);
+    // 如果加载失败，返回null，使用默认值
+    return null;
   }
-  return progress;
 }
-
-// 初始游戏状态
-export const initialState = {
-  money: 10, // 初始10两银子
-  reputation: 0, // 声望
-  relations: {}, // 人际关系
-  inventory: {}, // 库存
-};

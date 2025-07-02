@@ -1,1 +1,16 @@
-{"deviceOrientation":"portrait","showStatusBar":false,"networkTimeout":{"request":5000,"connectSocket":5000,"uploadFile":5000,"downloadFile":5000},"loadingPageConfig":{"backgroundImage":"images/cover.jpg","backgroundColor":"#000000","textColor":"#ffffff","loadingText":"游戏加载中..."}}
+{
+  "deviceOrientation": "portrait",
+  "showStatusBar": false,
+  "networkTimeout": {
+    "request": 5000,
+    "connectSocket": 5000,
+    "uploadFile": 5000,
+    "downloadFile": 5000
+  },
+  "loadingPageConfig": {
+    "backgroundImage": "images/cover.jpg",
+    "backgroundColor": "#000000",
+    "textColor": "#ffffff",
+    "loadingText": "游戏加载中..."
+  }
+}

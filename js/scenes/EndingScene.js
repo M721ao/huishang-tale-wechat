@@ -77,9 +77,14 @@ export class EndingScene {
     this.alpha = 0;
     this.startTime = Date.now();
 
-    // 加载结局图片
-    this.image = wx.createImage();
-    this.image.src = this.imagePath;
+    // 只有在 imagePath 有效时才加载结局图片
+    if (imagePath && typeof imagePath === "string" && imagePath.trim() !== "") {
+      this.image = wx.createImage();
+      this.image.src = imagePath;
+    } else {
+      this.image = null;
+      console.log("EndingScene: 无有效的图片路径，跳过图片加载");
+    }
   }
 
   // 更新状态

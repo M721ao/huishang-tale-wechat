@@ -89,35 +89,16 @@ export class StoryScene {
     this.characterScale = 0.8;
     this.clickHintOpacity = 0;
 
-    // 背景切换动画 - 修复闪现问题
-    if (dialogue.background && dialogue.background !== this.currentBackground) {
-      this.isBackgroundTransitioning = true;
-      this.backgroundOpacity = 0;
-
-      // 立即隐藏当前背景，防止闪现
-      this.backgroundImage = null;
-
-      const img = wx.createImage();
-      img.onload = () => {
-        this.newBackgroundImage = img;
-        // 延迟显示新背景
-        setTimeout(() => {
-          this.backgroundImage = this.newBackgroundImage;
-          this.currentBackground = dialogue.background;
-          this.isBackgroundTransitioning = false;
-        }, 300);
-      };
-      img.src = dialogue.background;
-    } else if (dialogue.background) {
-      const img = wx.createImage();
-      img.onload = () => {
-        this.backgroundImage = img;
-      };
-      img.src = dialogue.background;
-    }
+    // 加载背景图片
+    this.loadCurrentBackground(dialogue);
 
     // 加载立绘如果有的话
-    if (dialogue.character && dialogue.characterImage) {
+    if (
+      dialogue.character &&
+      dialogue.characterImage &&
+      typeof dialogue.characterImage === "string" &&
+      dialogue.characterImage.trim() !== ""
+    ) {
       const img = wx.createImage();
       img.onload = () => {
         this.characterImage = img;
@@ -409,6 +390,74 @@ export class StoryScene {
       // 绘制文字
       ctx.fillStyle = "#F4ECE4";
       ctx.fillText(line, x, currentY);
+    }
+  }
+
+  // 加载背景图片
+  loadCurrentBackground(dialogue) {
+    // 检查当前背景和新背景是否不同，需要切换
+    if (
+      this.currentBackground &&
+      dialogue.background &&
+      this.currentBackground !== dialogue.background
+    ) {
+      this.isBackgroundTransitioning = true;
+      this.backgroundOpacity = 0;
+
+      // 立即隐藏当前背景，防止闪现
+      this.backgroundImage = null;
+
+      const img = wx.createImage();
+      img.onload = () => {
+        this.newBackgroundImage = img;
+        // 延迟显示新背景
+        setTimeout(() => {
+          this.backgroundImage = this.newBackgroundImage;
+          this.currentBackground = dialogue.background;
+          this.isBackgroundTransitioning = false;
+        }, 300);
+      };
+
+      // 只有在背景路径有效时才设置图片源
+      if (
+        dialogue.background &&
+        typeof dialogue.background === "string" &&
+        dialogue.background.trim() !== ""
+      ) {
+        img.src = dialogue.background;
+      } else {
+        console.log("StoryScene: 无效的背景图片路径:", dialogue.background);
+      }
+    } else if (
+      dialogue.background &&
+      typeof dialogue.background === "string" &&
+      dialogue.background.trim() !== ""
+    ) {
+      const img = wx.createImage();
+      img.onload = () => {
+        this.backgroundImage = img;
+      };
+      img.src = dialogue.background;
+    }
+
+    // 加载立绘如果有的话
+    if (
+      dialogue.character &&
+      dialogue.characterImage &&
+      typeof dialogue.characterImage === "string" &&
+      dialogue.characterImage.trim() !== ""
+    ) {
+      const img = wx.createImage();
+      img.onload = () => {
+        this.characterImage = img;
+        // 延迟显示角色立绘
+        setTimeout(() => {
+          this.characterOpacity = 1;
+        }, 200);
+      };
+      img.src = dialogue.characterImage;
+    } else {
+      this.characterImage = null;
     }
   }
 }
