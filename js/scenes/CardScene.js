@@ -1,5 +1,6 @@
 // 卡牌场景
 import { getUIHelper } from "../utils/UIHelper.js";
+import { getImageUrl } from "../config/resourceConfig.js";
 
 export class CardScene {
   constructor(game, ctx, width, height) {
@@ -55,22 +56,24 @@ export class CardScene {
     this.loadEventImages();
   }
 
-  // 获取章节默认卡牌图片
+  // 获取默认卡牌图片
   getDefaultCardImage() {
     const defaultImages = {
-      1: "images/card_events/one.png",
-      2: "images/card_events/two.png",
-      3: "images/card_events/three.png",
-      4: "images/card_events/four.png",
+      1: "card-1",
+      2: "card-2",
+      3: "card-3",
+      4: "card-4",
+      // 5: "card-5",
+      // 6: "card-6",
     };
-    return defaultImages[this.chapterNumber] || "images/card_events/one.png";
+    return defaultImages[this.chapterNumber] || "card-1";
   }
 
   // 加载事件图片
   loadEventImages() {
     // 创建默认图片
     const defaultImage = wx.createImage();
-    defaultImage.src = this.getDefaultCardImage();
+    defaultImage.src = getImageUrl(this.getDefaultCardImage());
 
     this.events.forEach((event) => {
       if (
@@ -79,7 +82,7 @@ export class CardScene {
         event.image.trim() !== ""
       ) {
         const img = wx.createImage();
-        img.src = event.image;
+        img.src = getImageUrl(event.image);
         this.cardImages[event.id] = img;
       } else {
         this.cardImages[event.id] = defaultImage;
@@ -210,14 +213,19 @@ export class CardScene {
           this.gameState.saltChanges = [];
         }
         this.gameState.saltChanges.push(choiceObj.saltChange);
-        if (this.currentEventIndex === 20) {
-          const totalProgress = this.gameState.saltChanges.reduce(
-            (sum, change) => sum + change,
-            0
-          );
-          this.gameState.saltProgress = totalProgress;
-          console.log(totalProgress);
-        }
+
+        // 每次有saltChange时都计算总进度，而不仅仅在event20时
+        const totalProgress = this.gameState.saltChanges.reduce(
+          (sum, change) => sum + change,
+          0
+        );
+        this.gameState.saltProgress = totalProgress;
+        console.log(
+          "第二章盐业进度更新:",
+          totalProgress,
+          "当前事件索引:",
+          this.currentEventIndex
+        );
       }
     }
 

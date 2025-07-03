@@ -401,28 +401,124 @@ export class UserManager {
   // 先获取游戏进度，然后再开始游戏
   fetchGameProgressAndStartGame() {
     console.log("开始获取游戏进度并启动游戏");
+
+    // 显示加载提示
+    if (typeof wx !== "undefined") {
+      wx.showLoading({
+        title: "正在获取游戏进度...",
+        mask: true,
+      });
+    }
+
     this.fetchGameProgress()
       .then(() => {
         console.log("游戏进度获取完成，启动游戏");
-        if (this.game && this.game.onLoginSuccess) {
-          this.game.onLoginSuccess();
+
+        // 隐藏加载提示
+        if (typeof wx !== "undefined") {
+          wx.hideLoading();
+
+          // 显示成功提示
+          wx.showToast({
+            title: "进度同步完成",
+            icon: "success",
+            duration: 1500,
+          });
         }
+
+        // 延迟一点时间让用户看到成功提示
+        setTimeout(() => {
+          if (this.game && this.game.onLoginSuccess) {
+            this.game.onLoginSuccess();
+          }
+        }, 1600);
       })
       .catch((err) => {
         console.error("获取游戏进度失败:", err);
-        // 即使获取进度失败，也要继续游戏
-        if (this.game && this.game.onLoginSuccess) {
-          this.game.onLoginSuccess();
+
+        // 隐藏加载提示
+        if (typeof wx !== "undefined") {
+          wx.hideLoading();
+
+          // 显示失败提示
+          wx.showToast({
+            title: "进度获取失败，使用本地进度",
+            icon: "none",
+            duration: 2000,
+          });
         }
+
+        // 即使获取进度失败，也要继续游戏
+        setTimeout(() => {
+          if (this.game && this.game.onLoginSuccess) {
+            this.game.onLoginSuccess();
+          }
+        }, 2100);
       });
   }
 
   // 登录成功后延迟启动游戏（用于显示toast）
   fetchGameProgressAndStartGameWithDelay() {
     console.log("登录成功，延迟启动游戏");
-    // 显示延迟的登录成功提示
+
+    // 显示延迟的登录成功提示，然后获取游戏进度
     setTimeout(() => {
-      this.fetchGameProgressAndStartGame();
-    }, 1500); // 等待toast显示完毕
+      // 显示获取进度的加载提示
+      if (typeof wx !== "undefined") {
+        wx.showLoading({
+          title: "同步游戏数据中...",
+          mask: true,
+        });
+      }
+
+      this.fetchGameProgress()
+        .then(() => {
+          console.log("游戏进度获取完成，启动游戏");
+
+          // 隐藏加载提示
+          if (typeof wx !== "undefined") {
+            wx.hideLoading();
+
+            // 根据是否是新用户显示不同提示
+            const message = this.isNewUser
+              ? "欢迎开始游戏！"
+              : "进度同步完成！";
+            wx.showToast({
+              title: message,
+              icon: "success",
+              duration: 1500,
+            });
+          }
+
+          // 延迟一点时间让用户看到提示
+          setTimeout(() => {
+            if (this.game && this.game.onLoginSuccess) {
+              this.game.onLoginSuccess();
+            }
+          }, 1600);
+        })
+        .catch((err) => {
+          console.error("获取游戏进度失败:", err);
+
+          // 隐藏加载提示
+          if (typeof wx !== "undefined") {
+            wx.hideLoading();
+
+            // 显示失败提示
+            wx.showToast({
+              title: "进度同步失败，使用本地进度",
+              icon: "none",
+              duration: 2000,
+            });
+          }
+
+          // 即使获取进度失败，也要继续游戏
+          setTimeout(() => {
+            if (this.game && this.game.onLoginSuccess) {
+              this.game.onLoginSuccess();
+            }
+          }, 2100);
+        });
+    }, 1500); // 等待登录成功toast显示完毕
   }
 }

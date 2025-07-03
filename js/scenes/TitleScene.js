@@ -1,5 +1,6 @@
 // 标题场景
 import { getUIHelper } from "../utils/UIHelper.js";
+import { getImageUrl } from "../config/resourceConfig.js";
 
 export class TitleScene {
   constructor(ctx, width, height) {
@@ -30,7 +31,7 @@ export class TitleScene {
 
     // 加载封面图片
     this.coverImage = wx.createImage();
-    this.coverImage.src = "images/cover.png";
+    this.coverImage.src = getImageUrl("game-cover");
   }
 
   // 处理点击事件

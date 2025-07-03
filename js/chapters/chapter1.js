@@ -4,7 +4,7 @@ export const chapter1 = {
   storyScript: [
     {
       text: "成化十六年 · 黟县",
-      background: "images/backgrounds/chapter1/cha1-1.png",
+      background: "bg-cha1",
       character: null,
       position: "center",
     },

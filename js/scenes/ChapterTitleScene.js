@@ -1,4 +1,5 @@
 import { getUIHelper } from "../utils/UIHelper.js";
+import { getBackgroundUrl } from "../config/resourceConfig.js";
 
 export class ChapterTitleScene {
   constructor(ctx, width, height) {
@@ -27,45 +28,56 @@ export class ChapterTitleScene {
     this.backgroundImage.onload = () => {
       this.draw();
     };
+
+    // 根据章节设置不同的背景图片
+    this.currentChapter = 1; // 默认第一章
   }
 
   // 设置章节标题
-  setTitle(title) {
+  setTitle(title, subtitle = "") {
     this.title = title;
-    // 设置副标题
-    const chapterNum = parseInt(title.match(/\d+/)[0]);
-    switch (chapterNum) {
+
+    // 根据标题设置章节编号
+    const chapterMatch = title.match(/第(\d+)章/);
+    if (chapterMatch) {
+      this.currentChapter = parseInt(chapterMatch[1]);
+    }
+
+    // 根据章节设置副标题和背景图片
+    switch (this.currentChapter) {
       case 1:
-        this.subtitle = "徽商缘起";
-        this.backgroundImage.src = "images/backgrounds/chapter1/cha1-1.png";
+        this.subtitle = subtitle || "徽商缘起";
+        this.backgroundImage.src = getBackgroundUrl("bg-cha1");
         break;
       case 2:
-        this.subtitle = "盐引之争";
-        this.backgroundImage.src = "images/backgrounds/chapter2/cha2-1.png";
+        this.subtitle = subtitle || "盐引之争";
+        this.backgroundImage.src = getBackgroundUrl("bg-cha2");
         break;
       case 3:
-        this.subtitle = "诗书商道";
-        this.backgroundImage.src = "images/backgrounds/chapter2/cha2-1.png";
+        this.subtitle = subtitle || "诗书商道";
+        this.backgroundImage.src = getBackgroundUrl("bg-cha3");
         break;
       case 4:
-        this.subtitle = "无徽不成镇";
-        this.backgroundImage.src = "images/backgrounds/chapter2/cha2-1.png";
+        this.subtitle = subtitle || "无徽不成镇";
+        this.backgroundImage.src = getBackgroundUrl("bg-cha4");
         break;
       case 5:
-        this.subtitle = "风雨飘摇";
-        this.backgroundImage.src = "images/backgrounds/chapter2/cha2-1.png";
+        this.subtitle = subtitle || "风雨飘摇";
+        this.backgroundImage.src = getBackgroundUrl("bg-cha5");
         break;
       case 6:
-        this.subtitle = "红顶落幕";
-        this.backgroundImage.src = "images/backgrounds/chapter2/cha2-1.png";
+        this.subtitle = subtitle || "红顶落幕";
+        this.backgroundImage.src = getBackgroundUrl("bg-cha6");
         break;
       case 7:
-        this.subtitle = "金字招牌";
-        this.backgroundImage.src = "images/backgrounds/chapter2/cha2-1.png";
+        this.subtitle = subtitle || "金字招牌";
+        this.backgroundImage.src = getBackgroundUrl("bg-cha7");
         break;
       default:
-        this.subtitle = "";
+        this.subtitle = subtitle || "";
+        this.backgroundImage.src = getBackgroundUrl("bg-cha7");
     }
+
     this.startTime = Date.now();
 
     // 开始转场动画

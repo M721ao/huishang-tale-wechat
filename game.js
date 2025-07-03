@@ -3,6 +3,7 @@ import {
   saveProgress,
   initialState,
 } from "./js/chapters/chapterConfig.js";
+import { getAudioUrl, getImageUrl } from "./js/config/resourceConfig.js";
 import { TitleScene } from "./js/scenes/TitleScene.js";
 import { PrologueScene } from "./js/scenes/PrologueScene.js";
 import { StoryScene } from "./js/scenes/StoryScene.js";
@@ -12,6 +13,9 @@ import { Dialog } from "./js/components/Dialog.js";
 import { ChapterTitleScene } from "./js/scenes/ChapterTitleScene.js";
 import { ChapterManager } from "./js/chapters/ChapterManager.js";
 import { UserManager } from "./js/utils/UserManager.js";
+// 移除测试工具引用，避免在真机环境中出现window未定义错误
+// import "./js/utils/cosTest.js"; // 导入COS测试工具
+// import "./js/utils/serverTest.js"; // 导入服务器测试工具
 
 // 初始化游戏画布
 const canvas = wx.createCanvas();
@@ -107,7 +111,7 @@ class Game {
   initBGM() {
     if (!this.bgmAudio) {
       this.bgmAudio = wx.createInnerAudioContext();
-      this.bgmAudio.src = "audio/bgm.mp3";
+      this.bgmAudio.src = getAudioUrl("audio/bgm.mp3");
       this.bgmAudio.loop = true;
       this.bgmAudio.volume = 0.5;
       // 先尝试直接播放
@@ -383,7 +387,7 @@ const game = new Game();
 
 // 加载封面图片
 const coverImage = wx.createImage();
-coverImage.src = "images/cover.png";
+coverImage.src = getImageUrl("game-cover");
 
 // 游戏主循环
 function gameLoop() {

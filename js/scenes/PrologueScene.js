@@ -1,5 +1,6 @@
 // 引子场景
 import { getUIHelper } from "../utils/UIHelper.js";
+import { getBackgroundUrl } from "../config/resourceConfig.js";
 
 export class PrologueScene {
   constructor(ctx, width, height) {
@@ -15,7 +16,7 @@ export class PrologueScene {
 
     // 加载背景图片
     this.backgroundImage = wx.createImage();
-    this.backgroundImage.src = "images/backgrounds/prologue.png";
+    this.backgroundImage.src = getBackgroundUrl("prologue.png");
 
     // 滚动的文字
     this.scrollingLines = [];

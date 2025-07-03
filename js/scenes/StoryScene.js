@@ -1,5 +1,6 @@
 // 故事场景
 import { getUIHelper } from "../utils/UIHelper.js";
+import { getImageUrl, getBackgroundUrl } from "../config/resourceConfig.js";
 
 export class StoryScene {
   constructor(ctx, width, height) {
@@ -107,7 +108,8 @@ export class StoryScene {
           this.characterOpacity = 1;
         }, 200);
       };
-      img.src = dialogue.characterImage;
+      // 转换为COS链接
+      img.src = getImageUrl(dialogue.characterImage);
     } else {
       this.characterImage = null;
     }
@@ -424,7 +426,8 @@ export class StoryScene {
         typeof dialogue.background === "string" &&
         dialogue.background.trim() !== ""
       ) {
-        img.src = dialogue.background;
+        // 转换为COS链接
+        img.src = getImageUrl(dialogue.background);
       } else {
         console.log("StoryScene: 无效的背景图片路径:", dialogue.background);
       }
@@ -437,7 +440,8 @@ export class StoryScene {
       img.onload = () => {
         this.backgroundImage = img;
       };
-      img.src = dialogue.background;
+      // 转换为COS链接
+      img.src = getImageUrl(dialogue.background);
     }
 
     // 加载立绘如果有的话
@@ -455,7 +459,8 @@ export class StoryScene {
           this.characterOpacity = 1;
         }, 200);
       };
-      img.src = dialogue.characterImage;
+      // 转换为COS链接
+      img.src = getImageUrl(dialogue.characterImage);
     } else {
       this.characterImage = null;
     }

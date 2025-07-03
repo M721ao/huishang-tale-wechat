@@ -1,52 +1,54 @@
 // 章节配置
+import { getChapterBackgroundUrl } from "../config/resourceConfig.js";
+
 export const chapters = [
   {
     id: 1,
     title: "第一章：寄命于商",
     description: "主角来到徽州，开始经商之路",
     unlocked: true,
-    background: "images/chapters/ch1_bg.png",
+    background: getChapterBackgroundUrl("bg-cha1"),
   },
   {
     id: 2,
     title: "第二章：盐引争锋",
     description: "逐步涉足盐业贸易",
     unlocked: false,
-    background: "images/chapters/ch2_bg.png",
+    background: getChapterBackgroundUrl("bg-cha2"),
   },
   {
     id: 3,
     title: "第三章：儒贾之道",
     description: "拓展茶叶贸易版图",
     unlocked: false,
-    background: "images/chapters/ch3_bg.png",
+    background: getChapterBackgroundUrl("bg-cha3"),
   },
   {
     id: 4,
     title: "第四章：无徽不成镇",
     description: "与其他商家建立联盟",
     unlocked: false,
-    background: "images/chapters/ch4_bg.png",
+    background: getChapterBackgroundUrl("bg-cha4"),
   },
   {
     id: 5,
     title: "第五章：风雨飘摇",
     description: "参与漕运贸易的机遇与挑战",
     unlocked: false,
-    background: "images/chapters/ch5_bg.png",
+    background: getChapterBackgroundUrl("bg-cha5"),
   },
   {
     id: 6,
     title: "第六章：红顶落幕",
     description: "建立徽商会馆，扩大影响力",
     unlocked: false,
-    background: "images/chapters/ch6_bg.png",
+    background: getChapterBackgroundUrl("bg-cha6"),
   },
   {
     id: 7,
     title: "第六章：金字招牌",
     unlocked: false,
-    background: "images/chapters/ch6_bg.png",
+    background: getChapterBackgroundUrl("bg-cha7"),
   },
 ];
 
@@ -102,3 +104,14 @@ export function loadProgress() {
     return null;
   }
 }
+
+// 初始游戏状态
+export const initialState = {
+  wealth: 0,
+  reputation: 0,
+  saltProgress: 0,
+  saltChanges: [],
+  learningProgress: 0,
+  governmentRelation: 0,
+  attributes: {}, // 确保attributes对象存在
+};

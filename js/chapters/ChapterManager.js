@@ -6,6 +6,7 @@ import { chapter4 } from "./chapter4.js";
 import { chapter5 } from "./chapter5.js";
 import { chapter6 } from "./chapter6.js";
 import { chapter7 } from "./chapter7.js";
+import { getEndingImageUrl } from "../config/resourceConfig.js";
 
 export class ChapterManager {
   constructor(game) {
@@ -28,21 +29,21 @@ export class ChapterManager {
         title: "富贵茶商",
         description:
           "你一生专注茶业，虽未踏足更高仕途，却也自成一方富贵。最终将母亲接到杭州，共享平稳安乐的岁月。",
-        image: "images/backgrounds/endings/ending-1.png",
+        image: getEndingImageUrl("ending-1"),
       },
       {
         id: "ending-2",
         title: "落寞回乡",
         description:
           "十年扬州客，终成一场盐引黄粱梦。商路险恶，群雄逐利，你始终难以立足。两鬓染霜后，终于收拾行囊，踏上回乡之路。",
-        image: "images/backgrounds/endings/ending-2.png",
+        image: getEndingImageUrl("ending-2"),
       },
       {
         id: "ending-3",
-        title: "",
+        title: "书香渐息",
         description:
-          "纵然商路尚在，铺面人来人往，家中却迟迟无人金榜题名。少了庙堂之荫，家业也只得困守一隅。",
-        image: "images/backgrounds/endings/ending-3.png",
+          "商路依旧繁忙，铺面人来人往，然而家族始终缺少庙堂荫护，家业也只能困守一隅，风光。",
+        image: getEndingImageUrl("ending-3"),
       },
 
       {
@@ -50,7 +51,7 @@ export class ChapterManager {
         title: "朱楼倾覆",
         description:
           "再富丽的朱楼，也禁不起积重难返。终究因家道衰落而轰然坍塌，昔日繁华只余断瓦残垣。",
-        image: "images/backgrounds/endings/ending-4.png",
+        image: getEndingImageUrl("ending-4"),
       },
     ];
   }
@@ -88,7 +89,7 @@ export class ChapterManager {
           this.showEnding({
             title: "游戏结束",
             description: "感谢您的游玩，故事已经结束。",
-            image: "images/backgrounds/endings/ending-1.png",
+            image: getEndingImageUrl("final-scene"),
           });
         } else {
           // 否则进入下一章
@@ -138,17 +139,40 @@ export class ChapterManager {
 
   // 获取章节属性
   getChapterAttributes() {
-    return this.game.progress.attributes[this.currentChapter] || {};
+    // 确保 attributes 对象存在
+    if (!this.game.progress.attributes) {
+      this.game.progress.attributes = {};
+    }
+
+    return (
+      this.game.progress.attributes[this.currentChapter] || {
+        wealth: 0,
+        reputation: 0,
+      }
+    );
   }
 
   // 更新章节属性
-  updateAttributes(state) {
-    this.game.progress.attributes[this.currentChapter] = state;
+  updateAttributes(changes) {
+    // 确保 attributes 对象存在
+    if (!this.game.progress.attributes) {
+      this.game.progress.attributes = {};
+    }
+
+    // 直接使用传入的完整状态对象，而不是只保存部分属性
+    this.game.progress.attributes[this.currentChapter] = { ...changes };
+
+    console.log("属性已更新:", {
+      chapter: this.currentChapter,
+      attributes: this.game.progress.attributes[this.currentChapter],
+    });
+    // this.game.saveProgress()
   }
 
   // 检查第二章监测点
   checkChapter2Progress(eventIndex, attributes) {
-    if (eventIndex === 20) {
+    if (eventIndex === 19) {
+      console.log("检查第二章监测点", attributes.saltProgress);
       if (attributes.saltProgress < 8) {
         return this.endings.find((e) => e.id === "ending-2");
       }
@@ -159,9 +183,9 @@ export class ChapterManager {
   // 检查第三章监测点
   checkChapter3Progress(eventIndex, attributes) {
     // 普通学力结局判定
-    if (eventIndex === 19) {
+    if (eventIndex === 18) {
       console.log("检查第三章监测点", attributes.learningProgress);
-      if (attributes.learningProgress < 20) {
+      if (attributes.learningProgress < 18) {
         return this.endings.find((e) => e.id === "ending-3"); // 学力不足结局
       } else {
         // 创建一个特殊对象来标记需要进入下一章
@@ -217,7 +241,7 @@ export class ChapterManager {
         this.showEnding({
           title: "游戏结束",
           description: "感谢您的游玩，故事已经结束。",
-          image: "images/backgrounds/endings/ending-1.png",
+          image: getEndingImageUrl("final-scene"),
         });
       } else {
         // 否则进入下一章
@@ -302,25 +326,5 @@ export class ChapterManager {
 
     // 切换到卡牌场景
     this.game.setScene(this.game.cardScene, "card");
-  }
-
-  // 获取当前章节属性
-  getChapterAttributes() {
-    return (
-      this.game.progress.attributes[this.currentChapter] || {
-        wealth: 0,
-        reputation: 0,
-      }
-    );
-  }
-
-  // 更新属性
-  updateAttributes(changes) {
-    const currentAttributes = this.getChapterAttributes();
-    this.game.progress.attributes[this.currentChapter] = {
-      wealth: currentAttributes.wealth + (changes.wealth || 0),
-      reputation: currentAttributes.reputation + (changes.reputation || 0),
-    };
-    // this.game.saveProgress()
   }
 }

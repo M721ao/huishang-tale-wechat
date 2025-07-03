@@ -5,25 +5,25 @@ export const chapter2 = {
   storyScript: [
     {
       text: "天下三分明月夜，二分无赖是扬州",
-      background: "images/backgrounds/chapter2/cha2-1.png",
+      background: "bg-cha2",
       character: null,
       position: "center",
     },
     {
       text: "在你到来之前，已有数不清的徽州商人在这里发了大财",
-      background: "images/backgrounds/chapter2/cha2-1.png",
+      background: "bg-cha2",
       character: null,
       position: "center",
     },
     {
       text: "也有不少客居的山陕商人，实力强劲，堪称巨鳄",
-      background: "images/backgrounds/chapter2/cha2-1.png",
+      background: "bg-cha2",
       character: null,
       position: "center",
     },
     {
       text: "首先，获得盐引在扬州站稳脚跟吧",
-      background: "images/backgrounds/chapter2/cha2-1.png",
+      background: "bg-cha2",
       character: null,
       position: "center",
     },
@@ -484,9 +484,11 @@ export const chapter2 = {
       choices: [
         {
           text: "我此生虽辛苦，却无悔于心",
+          nextChapter: true,
         },
         {
           text: "这灯火扬州，我也算留下一笔",
+          nextChapter: true,
         },
       ],
     },
