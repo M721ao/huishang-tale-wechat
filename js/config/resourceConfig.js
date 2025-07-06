@@ -52,6 +52,12 @@ class ResourceConfig {
       // 音频文件
       "audio/bgm.mp3":
         "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/bgm.mp3",
+
+      // 章节选择页面背景
+      "chapter-select-bg":
+        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/selector.png",
+      "chapter-title":
+        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/chapter-title.png",
     };
   }
 

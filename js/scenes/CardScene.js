@@ -42,6 +42,41 @@ export class CardScene {
       5: this.createPattern("#FDF5E6", "#8B7355"), // 第五章：象牙白配棕色
       6: this.createPattern("#F0F8FF", "#2F4F4F"), // 第六章：淡蓝配深青灰
     };
+
+    // 章节目标配置
+    this.chapterObjectives = {
+      1: {
+        title: "第一章目标",
+        description: "前世不修，身在徽州。十三四岁，往外一丢。",
+      },
+      2: {
+        title: "第二章目标",
+        description:
+          "在扬州盐业中立足，积累盐引进度。需要达到足够的盐业进度才能在激烈的商业竞争中生存下来。",
+      },
+      3: {
+        title: "第三章目标",
+        description:
+          '平衡商业与学问，积累学力进度。需要达到18点学力进度才能避免"书香渐息"的结局，为家族赢得更好的未来。',
+      },
+      4: {
+        title: "第四章目标",
+        description:
+          '在政治风云中谨慎行事，维护与政府的关系。需要达到50点政府关系才能避免"朱楼倾覆"的悲惨结局。',
+      },
+      // 5: {
+      //   title: "第五章目标",
+      //   description: "在商业帝国的巅峰时期，做出关键决策，决定家族的最终命运。",
+      // },
+      // 6: {
+      //   title: "第六章目标",
+      //   description:
+      //     "面对时代变迁，在传统与革新之间找到平衡，为家族寻找新的出路。",
+      // },
+    };
+
+    // 目标弹窗显示状态
+    this.objectiveShown = false;
   }
 
   // 初始化事件和状态
@@ -52,8 +87,26 @@ export class CardScene {
     this.currentEventIndex = 0;
     this.chapterTitle = chapterInfo.title;
     this.chapterNumber = chapterInfo.chapterNumber || chapterInfo.number; // 兼容两种命名方式
+    this.objectiveShown = false;
+
     // console.log('初始化章节号:', this.chapterNumber)
     this.loadEventImages();
+
+    // 显示章节目标弹窗
+    this.showObjectiveDialog();
+  }
+
+  // 显示章节目标弹窗
+  showObjectiveDialog() {
+    const objective = this.chapterObjectives[this.chapterNumber];
+    if (objective && this.game.dialog) {
+      const content = `${objective.title}\n\n${objective.description}`;
+      this.game.dialog.show(content, () => {
+        this.objectiveShown = true;
+      });
+    } else {
+      this.objectiveShown = true;
+    }
   }
 
   // 获取默认卡牌图片
@@ -100,6 +153,11 @@ export class CardScene {
 
   // 处理触摸开始
   handleTouchStart(e) {
+    // 如果目标弹窗还在显示，不处理卡牌触摸事件
+    if (!this.objectiveShown || this.game.dialog.visible) {
+      return;
+    }
+
     if (this.currentEventIndex >= this.events.length) return;
 
     const touch = e.touches[0];
@@ -110,17 +168,27 @@ export class CardScene {
 
   // 处理触摸移动
   handleTouchMove(e) {
+    // 如果目标弹窗还在显示，不处理卡牌触摸事件
+    if (!this.objectiveShown || this.game.dialog.visible) {
+      return;
+    }
+
     if (!this.isDragging) return;
 
     const touch = e.touches[0];
     this.dragOffset = touch.clientX - this.dragStartX;
 
     // 限制拖动范围
-    this.dragOffset = Math.max(Math.min(this.dragOffset, 150), -150);
+    this.dragOffset = Math.max(Math.min(this.dragOffset, 120), -120);
   }
 
   // 处理触摸结束
   handleTouchEnd() {
+    // 如果目标弹窗还在显示，不处理卡牌触摸事件
+    if (!this.objectiveShown || this.game.dialog.visible) {
+      return;
+    }
+
     console.log("触摸结束:", {
       isDragging: this.isDragging,
       dragOffset: this.dragOffset,
@@ -172,32 +240,6 @@ export class CardScene {
         this.events = this.events.filter((ev) => ev.id !== "event21");
       }
     }
-
-    // // 第三章 抓周仪式特殊处理
-    // if (
-    //   this.chapterNumber === 3 &&
-    //   ["event1", "event2", "event3", "event4", "event5"].includes(event.id)
-    // ) {
-    //   if (choice === "left") {
-    //     if (this.game && this.game.dialog) {
-    //       const message =
-    //         event.id !== "event5"
-    //           ? "父亲温柔地把算盘放回地上，请你再选一次"
-    //           : "父亲一声叹气：为夫盼你不复贾竖子之道";
-    //       this.game.dialog.show(message, () => {});
-    //     } else {
-    //       console.error("无法获取 Dialog 实例");
-    //     }
-    //   } else {
-    //     // 如果选择朱子，则直接跳到 event6
-    //     const nextEventIndex = this.events.findIndex(
-    //       (ev) => ev.id === "event6"
-    //     );
-    //     if (nextEventIndex !== -1) {
-    //       this.currentEventIndex = nextEventIndex - 1; // 设置为目标索引前一个，因为 handleTouchEnd 会自增
-    //     }
-    //   }
-    // }
 
     // 更新游戏状态
     if (choiceObj.effects) {
@@ -476,7 +518,11 @@ export class CardScene {
       // 没有滑动或滑动距离很小，显示提示
       ctx.fillStyle = "#999999";
       ctx.font = this.uiHelper.getFont(14, "FangSong");
-      ctx.fillText("左右滑动选择", x, y + this.cardHeight * 0.3);
+      ctx.fillText(
+        "请长按卡牌，左右滑动进行选择",
+        x,
+        y + this.cardHeight * 0.3
+      );
     }
   }
 
@@ -562,7 +608,7 @@ export class CardScene {
   // 绘制章节标题
   drawChapterTitle() {
     const ctx = this.ctx;
-    const y = 50; // 将y位置设置为固定值，确保标题可见
+    const y = 64; // 将y位置设置为固定值，确保标题可见
 
     // 绘制标题
     ctx.fillStyle = "#5C3317";
@@ -577,7 +623,7 @@ export class CardScene {
     const y = this.height - 40;
 
     // 根据拖动状态显示不同提示
-    let hintText = "左右滑动选择选项";
+    let hintText = "请长按卡牌，左右滑动进行选择";
 
     if (this.dragOffset < -20) {
       hintText = "← 向左滑动选择";
@@ -593,21 +639,33 @@ export class CardScene {
   }
 
   draw() {
+    // 绘制背景和标题
+    this.drawBackground();
+    this.drawChapterTitle();
+
     if (this.currentEventIndex >= this.events.length) {
       // 所有事件已完成
       this.drawEndScreen();
       return;
     }
 
-    // 绘制背景和标题
-    this.drawBackground();
-    this.drawChapterTitle();
-
     const currentEvent = this.events[this.currentEventIndex];
     this.drawCard(currentEvent);
 
     // 绘制底部提示
     this.drawHint();
+
+    // 如果目标弹窗还没显示完，在底部显示提示
+    if (!this.objectiveShown && this.game.dialog.visible) {
+      const ctx = this.ctx;
+      ctx.save();
+      ctx.fillStyle = "rgba(0, 0, 0, 0.3)";
+      ctx.font = this.uiHelper.getFont(14, "FangSong");
+      ctx.textAlign = "center";
+      ctx.textBaseline = "bottom";
+      ctx.fillText("请先阅读章节目标", this.width / 2, this.height - 60);
+      ctx.restore();
+    }
   }
 
   // 绘制结束画面

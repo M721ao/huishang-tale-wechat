@@ -8,7 +8,7 @@ export class Dialog {
     this.content = "";
     this.onClose = null;
     this.startTime = 0;
-    this.duration = 1500; // 缩短到1.5秒
+    this.duration = 5000;
     this.alpha = 0; // 用于淡入淡出效果
   }
 

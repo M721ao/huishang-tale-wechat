@@ -31,9 +31,9 @@ export class PrologueScene {
 
     // 固定在底部的说明文字
     this.footerText = [
-      "黄山市前身徽州府，下辖歙县、黟县、休宁县、",
-      "祁门县、绩溪县和婺源县（现属江西省）。",
-      "黄山是徽商的故乡，徽商从这里走向全国。",
+      "黄山市古称徽州府，下辖歙、黟、休、祁、绩、婺六县。",
+      "这里山多田少，却孕育出纵横天下的徽商，",
+      "他们肩挑一枚铜钱，行走千里商道，书写出百年的荣枯传奇。",
     ];
     this.lineHeight = 50;
     this.totalHeight = this.scrollingLines.length * this.lineHeight;
@@ -359,7 +359,7 @@ export class PrologueScene {
     // 检查是否全部文字已显示
     if (
       this.currentTextIndex >= this.scrollingLines.length &&
-      Date.now() - this.startTime >= 5000 &&
+      Date.now() - this.startTime >= 8000 &&
       !this.finished
     ) {
       this.finished = true;

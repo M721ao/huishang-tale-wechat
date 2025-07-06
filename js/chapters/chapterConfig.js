@@ -4,49 +4,50 @@ import { getChapterBackgroundUrl } from "../config/resourceConfig.js";
 export const chapters = [
   {
     id: 1,
-    title: "第一章：寄命于商",
-    description: "主角来到徽州，开始经商之路",
+    title: "寄命于商",
+    description: "徽州人离乡谋生，把命运托付于商贾之道。",
     unlocked: true,
     background: getChapterBackgroundUrl("bg-cha1"),
   },
   {
     id: 2,
-    title: "第二章：盐引争锋",
-    description: "逐步涉足盐业贸易",
+    title: "盐引争锋",
+    description: "盐业之利滚滚，徽商于盐引间激烈争夺，各显手段。",
     unlocked: false,
     background: getChapterBackgroundUrl("bg-cha2"),
   },
   {
     id: 3,
-    title: "第三章：儒贾之道",
-    description: "拓展茶叶贸易版图",
+    title: "诗书商道",
+    description: "盐利之外，家中诗书传世，士商并重的风雅悄然扎根。",
     unlocked: false,
     background: getChapterBackgroundUrl("bg-cha3"),
   },
   {
     id: 4,
-    title: "第四章：无徽不成镇",
-    description: "与其他商家建立联盟",
+    title: "无徽不成镇",
+    description: "商路四通八达，哪有繁镇不见徽商身影？",
     unlocked: false,
     background: getChapterBackgroundUrl("bg-cha4"),
   },
   {
     id: 5,
-    title: "第五章：风雨飘摇",
-    description: "参与漕运贸易的机遇与挑战",
+    title: "风雨飘摇",
+    description: "战火与政局骤变，家业在动荡中摇曳如浮萍。",
     unlocked: false,
     background: getChapterBackgroundUrl("bg-cha5"),
   },
   {
     id: 6,
-    title: "第六章：红顶落幕",
-    description: "建立徽商会馆，扩大影响力",
+    title: "红顶落幕",
+    description: "红顶商人风光不再，徽帮亦渐失旧日荣光。",
     unlocked: false,
     background: getChapterBackgroundUrl("bg-cha6"),
   },
   {
     id: 7,
-    title: "第六章：金字招牌",
+    title: "金字招牌",
+    description: "虽经百年兴衰，犹有老字号在市井传唱徽味。",
     unlocked: false,
     background: getChapterBackgroundUrl("bg-cha7"),
   },
@@ -70,7 +71,29 @@ export function getUnlockedChapters() {
   return chapters.filter((chapter) => chapter.unlocked);
 }
 
-// 保存游戏进度
+// 保存完整的游戏进度
+export function saveGameProgress(progress) {
+  try {
+    wx.setStorageSync("gameProgress", progress);
+    console.log("游戏进度保存成功");
+  } catch (error) {
+    console.error("保存游戏进度失败:", error);
+  }
+}
+
+// 加载完整的游戏进度
+export function loadGameProgress() {
+  try {
+    const progress = wx.getStorageSync("gameProgress");
+    console.log("游戏进度加载成功");
+    return progress;
+  } catch (error) {
+    console.error("加载游戏进度失败:", error);
+    return null;
+  }
+}
+
+// 保存章节解锁状态
 export function saveProgress() {
   try {
     wx.setStorageSync("gameProgress", {
@@ -83,7 +106,7 @@ export function saveProgress() {
   }
 }
 
-// 加载游戏进度
+// 加载章节解锁状态
 export function loadProgress() {
   try {
     const progress = wx.getStorageSync("gameProgress");

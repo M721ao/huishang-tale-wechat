@@ -1,5 +1,5 @@
 export const chapter2 = {
-  title: "第二章 盐引之争",
+  title: "第二章 盐引争锋",
 
   // 故事场景脚本
   storyScript: [
@@ -82,7 +82,7 @@ export const chapter2 = {
         "从徽州前辈处得知不少有用信息，盐引获取后还需支盐贩盐，你需要资金提前准备",
       choices: [
         {
-          text: "抵押妻子陪嫁",
+          text: "抵押妻子的嫁妆",
           saltChange: 0.5,
         },
         {
@@ -331,11 +331,9 @@ export const chapter2 = {
       choices: [
         {
           text: "坚持高价赎回",
-          result: "你不惜重金，终于物归原主",
         },
         {
           text: "妻子体恤你生意不易，称算了",
-          result: "你从善如流，妻子也不再提起此事",
         },
       ],
     },

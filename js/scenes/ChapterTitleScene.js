@@ -47,35 +47,35 @@ export class ChapterTitleScene {
     switch (this.currentChapter) {
       case 1:
         this.subtitle = subtitle || "徽商缘起";
-        this.backgroundImage.src = getBackgroundUrl("bg-cha1");
+        this.backgroundImage.src = getBackgroundUrl("chapter-title");
         break;
       case 2:
         this.subtitle = subtitle || "盐引之争";
-        this.backgroundImage.src = getBackgroundUrl("bg-cha2");
+        this.backgroundImage.src = getBackgroundUrl("chapter-title");
         break;
       case 3:
         this.subtitle = subtitle || "诗书商道";
-        this.backgroundImage.src = getBackgroundUrl("bg-cha3");
+        this.backgroundImage.src = getBackgroundUrl("chapter-title");
         break;
       case 4:
         this.subtitle = subtitle || "无徽不成镇";
-        this.backgroundImage.src = getBackgroundUrl("bg-cha4");
+        this.backgroundImage.src = getBackgroundUrl("chapter-title");
         break;
       case 5:
         this.subtitle = subtitle || "风雨飘摇";
-        this.backgroundImage.src = getBackgroundUrl("bg-cha5");
+        this.backgroundImage.src = getBackgroundUrl("chapter-title");
         break;
       case 6:
         this.subtitle = subtitle || "红顶落幕";
-        this.backgroundImage.src = getBackgroundUrl("bg-cha6");
+        this.backgroundImage.src = getBackgroundUrl("chapter-title");
         break;
       case 7:
         this.subtitle = subtitle || "金字招牌";
-        this.backgroundImage.src = getBackgroundUrl("bg-cha7");
+        this.backgroundImage.src = getBackgroundUrl("chapter-title");
         break;
       default:
         this.subtitle = subtitle || "";
-        this.backgroundImage.src = getBackgroundUrl("bg-cha7");
+        this.backgroundImage.src = getBackgroundUrl("chapter-title");
     }
 
     this.startTime = Date.now();

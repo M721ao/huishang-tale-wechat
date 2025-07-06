@@ -1,6 +1,8 @@
 import {
   loadProgress,
   saveProgress,
+  saveGameProgress,
+  loadGameProgress,
   initialState,
 } from "./js/chapters/chapterConfig.js";
 import { getAudioUrl, getImageUrl } from "./js/config/resourceConfig.js";
@@ -13,6 +15,7 @@ import { Dialog } from "./js/components/Dialog.js";
 import { ChapterTitleScene } from "./js/scenes/ChapterTitleScene.js";
 import { ChapterManager } from "./js/chapters/ChapterManager.js";
 import { UserManager } from "./js/utils/UserManager.js";
+import { ChapterSelectScene } from "./js/scenes/ChapterSelectScene.js";
 // 移除测试工具引用，避免在真机环境中出现window未定义错误
 // import "./js/utils/cosTest.js"; // 导入COS测试工具
 // import "./js/utils/serverTest.js"; // 导入服务器测试工具
@@ -59,6 +62,11 @@ class Game {
     this.storyScene = new StoryScene(ctx, windowWidth, windowHeight);
     this.cardScene = new CardScene(this, ctx, windowWidth, windowHeight);
     this.endingScene = new EndingScene(ctx, windowWidth, windowHeight);
+    this.chapterSelectScene = new ChapterSelectScene(
+      ctx,
+      windowWidth,
+      windowHeight
+    );
 
     // 初始化弹窗
     this.dialog = new Dialog(ctx, windowWidth, windowHeight);
@@ -99,11 +107,25 @@ class Game {
       }
     });
 
+    // 设置章节选择回调
+    this.titleScene.setOnChapterSelect(() => {
+      this.setScene(this.chapterSelectScene, "chapterSelect");
+    });
+
     // 设置游客模式回调
     this.titleScene.setOnGuestMode(() => {
       if (this.userManager) {
         this.userManager.enableGuestMode();
       }
+    });
+
+    // 设置章节选择场景的回调
+    this.chapterSelectScene.setOnChapterSelect((chapter) => {
+      this.startSelectedChapter(chapter);
+    });
+
+    this.chapterSelectScene.setOnBack(() => {
+      this.setScene(this.titleScene, "title");
     });
   }
 
@@ -145,10 +167,19 @@ class Game {
       if (typeof this.currentScene.cleanup === "function") {
         this.currentScene.cleanup();
       }
+      // 停用当前场景
+      if (typeof this.currentScene.deactivate === "function") {
+        this.currentScene.deactivate();
+      }
     }
 
     this.currentScene = scene;
     this.currentSceneType = type;
+
+    // 激活新场景
+    if (typeof scene.activate === "function") {
+      scene.activate();
+    }
 
     // 如果是章节切换，保存游戏进度
     if (type === "chapterTitle" && this.chapterManager && this.userManager) {
@@ -162,7 +193,7 @@ class Game {
     }
 
     this.progress.currentScene = type;
-    saveProgress(this.progress);
+    saveGameProgress(this.progress);
 
     console.log("Scene switched successfully");
   }
@@ -175,16 +206,14 @@ class Game {
       storyProgress: 0,
       attributes: {},
     };
-    saveProgress(this.progress);
+    saveGameProgress(this.progress);
     this.setScene(this.titleScene, "title");
   }
 
   // 启动游戏
   start() {
-    // 设置初始场景
+    console.log("游戏开始");
     this.setScene(this.titleScene, "title");
-
-    // 检查登录状态，更新按钮显示
     this.updateLoginUI();
   }
 
@@ -212,6 +241,15 @@ class Game {
       this.titleScene.updateButtonText("继续游戏");
       this.titleScene.showGuestButton(false); // 隐藏游客模式按钮
 
+      // 检查是否有游戏进度，有进度才显示章节选择按钮
+      const userProgress = this.userManager.getGameProgress();
+      const hasProgress = userProgress && userProgress.currentChapter > 0;
+
+      // 只在有游戏进度时显示章节选择按钮
+      if (this.titleScene.chapterSelectButton) {
+        this.titleScene.chapterSelectButton.visible = hasProgress;
+      }
+
       if (status.isGuestMode) {
         console.log("当前为游客模式");
       }
@@ -219,13 +257,20 @@ class Game {
       // 未登录，显示"开始游戏"按钮
       this.titleScene.updateButtonText("开始游戏");
       this.titleScene.showGuestButton(true); // 显示游客模式按钮
+
+      // 未登录时隐藏章节选择按钮
+      if (this.titleScene.chapterSelectButton) {
+        this.titleScene.chapterSelectButton.visible = false;
+      }
     }
   }
 
   // 开始主游戏
   startMainGame() {
     // 设置引子文字
-    this.prologueScene.setText("前世不修 生在徽州 十三四岁 往外一丢");
+    this.prologueScene.setText(
+      "黄山市古称徽州府，下辖歙、黟、休、祁、绩、婺六县。这里山多田少，却孕育出纵横天下的徽商，他们肩挑一枚铜钱，行走千里商道，书写出百年的荣枯传奇。"
+    );
     this.setScene(this.prologueScene, "prologue");
 
     // 设置引子结束后的回调
@@ -233,7 +278,7 @@ class Game {
       // 引子结束后，设置章节为1并开始第一章
       this.progress.currentChapter = 1;
       this.chapterManager.currentChapter = 1;
-      saveProgress(this.progress);
+      saveGameProgress(this.progress);
       this.chapterManager.startChapterTitle();
     });
   }
@@ -380,6 +425,29 @@ class Game {
       this.dialog.draw();
     }
   }
+
+  // 启动选定的章节
+  startSelectedChapter(chapter) {
+    console.log("启动选定章节:", chapter);
+
+    // 设置当前章节
+    this.progress.currentChapter = chapter.id;
+    this.chapterManager.currentChapter = chapter.id;
+
+    // 重置属性，为新章节做准备
+    this.progress.attributes = {};
+
+    // 保存进度
+    saveGameProgress(this.progress);
+
+    // 如果用户已登录，同步到服务器
+    if (this.userManager && this.userManager.isLoggedIn) {
+      this.userManager.saveGameProgress(chapter.id);
+    }
+
+    // 启动章节标题场景
+    this.chapterManager.startChapterTitle();
+  }
 }
 
 // 创建游戏实例
@@ -413,7 +481,7 @@ wx.onTouchMove((e) => {
 
 wx.onTouchEnd((e) => {
   if (game.currentScene && game.currentScene.handleTouchEnd) {
-    game.currentScene.handleTouchEnd();
+    game.currentScene.handleTouchEnd(e);
   }
 });
 

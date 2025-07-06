@@ -1,5 +1,5 @@
 export const chapter1 = {
-  title: "第一章 徽商缘起",
+  title: "第一章 寄命于商",
 
   storyScript: [
     {

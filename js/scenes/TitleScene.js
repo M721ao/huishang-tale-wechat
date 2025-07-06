@@ -20,22 +20,61 @@ export class TitleScene {
       height: 50,
     };
 
+    // 章节选择文字链接配置（改为类似游客模式的样式）
+    this.chapterSelectButton = {
+      text: "章节选择",
+      x: width / 2,
+      y: height * 0.75,
+      visible: false, // 默认不显示
+      color: "#dbd9d7",
+    };
+
     // 游客模式文字链接配置
     this.guestText = {
       text: "游客模式",
       x: width / 2,
-      y: height * 0.78,
+      y: height * 0.75,
       visible: false, // 默认不显示，需要时再显示
-      color: "#8B4513", // 使用主按钮的棕色
+      color: "#dbd9d7",
     };
 
     // 加载封面图片
     this.coverImage = wx.createImage();
     this.coverImage.src = getImageUrl("game-cover");
+
+    // 防止触摸事件穿透
+    this.isActive = false;
+    this.activationTime = 0;
+  }
+
+  // 激活场景
+  activate() {
+    this.isActive = true;
+    this.activationTime = Date.now();
+    console.log("TitleScene activated");
+  }
+
+  // 停用场景
+  deactivate() {
+    this.isActive = false;
+    console.log("TitleScene deactivated");
   }
 
   // 处理点击事件
   handleTap(x, y) {
+    // 检查场景是否激活
+    if (!this.isActive) {
+      console.log("TitleScene未激活，忽略点击事件");
+      return;
+    }
+
+    // 检查场景激活时间，防止事件穿透
+    const currentTime = Date.now();
+    if (currentTime - this.activationTime < 200) {
+      console.log("TitleScene刚激活，忽略点击事件以防止穿透");
+      return;
+    }
+
     // 检查主按钮点击
     const btn = this.button;
     if (
@@ -46,6 +85,20 @@ export class TitleScene {
     ) {
       if (this.onStart) {
         this.onStart();
+      }
+    }
+
+    // 检查章节选择文字链接点击
+    const chapterSelectBtn = this.chapterSelectButton;
+    if (
+      chapterSelectBtn.visible &&
+      x >= chapterSelectBtn.x - 60 &&
+      x <= chapterSelectBtn.x + 60 &&
+      y >= chapterSelectBtn.y - 20 &&
+      y <= chapterSelectBtn.y + 20
+    ) {
+      if (this.onChapterSelect) {
+        this.onChapterSelect();
       }
     }
 
@@ -69,6 +122,11 @@ export class TitleScene {
     this.onStart = callback;
   }
 
+  // 设置章节选择回调
+  setOnChapterSelect(callback) {
+    this.onChapterSelect = callback;
+  }
+
   // 设置游客模式回调
   setOnGuestMode(callback) {
     this.onGuestMode = callback;
@@ -77,6 +135,13 @@ export class TitleScene {
   // 更新按钮文本
   updateButtonText(text) {
     this.button.text = text;
+  }
+
+  // 显示/隐藏章节选择文字链接
+  showChapterSelectButton(visible) {
+    if (this.chapterSelectButton) {
+      this.chapterSelectButton.visible = visible;
+    }
   }
 
   // 显示/隐藏游客模式文字
@@ -100,6 +165,11 @@ export class TitleScene {
 
     // 绘制主按钮
     this.drawButton(ctx, button, button.text);
+
+    // 如果章节选择文字链接可见，绘制章节选择文字链接
+    if (this.chapterSelectButton && this.chapterSelectButton.visible) {
+      this.drawChapterSelectText(ctx);
+    }
 
     // 如果游客模式文字可见，绘制游客模式文字
     if (this.guestText && this.guestText.visible) {
@@ -173,6 +243,33 @@ export class TitleScene {
     if (color === "#D4AF37") return "#8B4513"; // 金色变棕色
     if (color === "#5F9EA0") return "#2F4F4F"; // 青绿色变深青绿色
     return color; // 默认返回原色
+  }
+
+  // 绘制章节选择文字链接
+  drawChapterSelectText(ctx) {
+    ctx.save();
+    ctx.fillStyle = this.chapterSelectButton.color;
+    ctx.font = this.uiHelper.getFont(18, "FangSong");
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    // 添加下划线效果
+    const textWidth = ctx.measureText(this.chapterSelectButton.text).width;
+    const x = this.chapterSelectButton.x;
+    const y = this.chapterSelectButton.y;
+
+    // 绘制文字
+    ctx.fillText(this.chapterSelectButton.text, x, y);
+
+    // 绘制下划线
+    ctx.beginPath();
+    ctx.moveTo(x - textWidth / 2, y + 12);
+    ctx.lineTo(x + textWidth / 2, y + 12);
+    ctx.strokeStyle = this.chapterSelectButton.color;
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    ctx.restore();
   }
 
   // 绘制游客模式文字
