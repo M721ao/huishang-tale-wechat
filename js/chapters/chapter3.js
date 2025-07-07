@@ -19,11 +19,11 @@ export const chapter3 = {
       choices: [
         {
           text: "算盘",
-          learningProgress: -1,
+          learningProgress: 0,
         },
         {
           text: "朱子",
-          learningProgress: 10,
+          learningProgress: 8,
           nextId: "event6",
         },
       ],
@@ -55,7 +55,7 @@ export const chapter3 = {
         },
         {
           text: "朱子",
-          learningProgress: 2,
+          learningProgress: 3,
           nextId: "event6",
         },
       ],
@@ -126,7 +126,7 @@ export const chapter3 = {
       id: "event8",
       description: "在书院中，你决定付出几分心力？",
       choices: [
-        { text: "马马虎虎，聊以应付", learningProgress: 0 },
+        { text: "马马虎虎，聊以应付", learningProgress: -1 },
         { text: "全力以赴，手不释卷", learningProgress: 2 },
       ],
     },
@@ -154,7 +154,7 @@ export const chapter3 = {
       title: "父亲箴言",
       description: "在父亲膝下的时光，他常告诫你：“毋效贾竖子为也”。",
       choices: [
-        { text: "生意好啊，衣食无忧，书生哪管用", learningProgress: 0 },
+        { text: "生意好啊，衣食无忧，书生哪管用", learningProgress: -1 },
         { text: "父亲有理，书香门第方为正道", learningProgress: 1 },
       ],
     },
@@ -163,7 +163,7 @@ export const chapter3 = {
       title: "同窗砥砺",
       description: "回乡后，好友缠你共习举文，备考县试。",
       choices: [
-        { text: "架不住软磨硬泡，终是应了", learningProgress: 2 },
+        { text: "架不住软磨硬泡，终是应了", learningProgress: 1 },
         { text: "欣然允诺，废寝忘食共研", learningProgress: 2 },
       ],
     },
@@ -181,8 +181,8 @@ export const chapter3 = {
       title: "举人之路",
       description: "三年后，你又中举人。你见父亲年迈——",
       choices: [
-        { text: "毅然接管生意", learningProgress: 0 },
-        { text: "进京，搏那一第", learningProgress: 2 },
+        { text: "毅然接管生意", learningProgress: -2 },
+        { text: "先准备进京赶考", learningProgress: 2 },
       ],
     },
     {
@@ -199,7 +199,7 @@ export const chapter3 = {
       description: "投宿京城数日，几位公子邀你同往勾栏听曲。",
       choices: [
         { text: "去去去，逍遥痛快", learningProgress: 0 },
-        { text: "书卷在心，更要抓紧复习", learningProgress: 2 },
+        { text: "书卷在心，更要抓紧复习", learningProgress: 1 },
       ],
     },
     {
@@ -208,7 +208,7 @@ export const chapter3 = {
       description: "街头偶遇徽州同乡被欺凌。",
       choices: [
         { text: "挺身而出替他解围", learningProgress: 1 },
-        { text: "低眉敛首，不招是非", learningProgress: 2 },
+        { text: "低眉敛首，不招是非", learningProgress: 0 },
       ],
     },
     {

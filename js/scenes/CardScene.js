@@ -1,6 +1,7 @@
 // 卡牌场景
 import { getUIHelper } from "../utils/UIHelper.js";
 import { getImageUrl } from "../config/resourceConfig.js";
+import { resourceConfig } from "../config/resourceConfig.js";
 
 export class CardScene {
   constructor(game, ctx, width, height) {
@@ -33,36 +34,42 @@ export class CardScene {
     // 加载图片资源
     this.cardImages = {};
 
-    // 初始化背景纹理
-    this.patterns = {
-      1: this.createPattern("#FDFBF7", "#8B4513"), // 第一章：宣纸白配深棕色
-      2: this.createPattern("#F0F8FF", "#4682B4"), // 第二章：青花瓷蓝配钢青色
-      3: this.createPattern("#F5F5DC", "#556B2F"), // 第三章：米色配橄榄绿
-      4: this.createPattern("#FFF5EE", "#CD5C5C"), // 第四章：贝壳白配印度红
-      5: this.createPattern("#FDF5E6", "#8B7355"), // 第五章：象牙白配棕色
-      6: this.createPattern("#F0F8FF", "#2F4F4F"), // 第六章：淡蓝配深青灰
+    // 加载章节选择器背景图片
+    this.backgroundImage = wx.createImage();
+    this.backgroundImage.src =
+      resourceConfig.getResourceUrl("chapter-select-bg");
+    this.backgroundLoaded = false;
+
+    this.backgroundImage.onload = () => {
+      this.backgroundLoaded = true;
+    };
+
+    this.backgroundImage.onerror = () => {
+      console.warn("卡牌场景背景图片加载失败");
+      this.backgroundLoaded = false;
     };
 
     // 章节目标配置
     this.chapterObjectives = {
       1: {
-        title: "第一章目标",
-        description: "前世不修，身在徽州。十三四岁，往外一丢。",
+        title: "",
+        description:
+          "前世不修，身在徽州。十三四岁，往外一丢。你已年满十四，是时候外出闯荡，加油！",
       },
       2: {
-        title: "第二章目标",
+        title: "",
         description:
-          "在扬州盐业中立足，积累盐引进度。需要达到足够的盐业进度才能在激烈的商业竞争中生存下来。",
+          "机遇与风险并存，积累足够的盐业资本，在这场激烈的商战中站稳脚跟，避免被淘汰出局",
       },
       3: {
-        title: "第三章目标",
+        title: "",
         description:
-          '平衡商业与学问，积累学力进度。需要达到18点学力进度才能避免"书香渐息"的结局，为家族赢得更好的未来。',
+          "徽商素贾好儒，常借仕途以荫家族。你肩挑众望，愿一举登科，光耀门楣",
       },
       4: {
-        title: "第四章目标",
+        title: "",
         description:
-          '在政治风云中谨慎行事，维护与政府的关系。需要达到50点政府关系才能避免"朱楼倾覆"的悲惨结局。',
+          "盐商与官府历来唇齿相依，却也暗藏刀光。在这场潜流涌动的政治角力里，必须谨慎应对，维系足够的政府关系，才能保家业安稳。",
       },
       // 5: {
       //   title: "第五章目标",
@@ -100,35 +107,24 @@ export class CardScene {
   showObjectiveDialog() {
     const objective = this.chapterObjectives[this.chapterNumber];
     if (objective && this.game.dialog) {
-      const content = `${objective.title}\n\n${objective.description}`;
-      this.game.dialog.show(content, () => {
-        this.objectiveShown = true;
+      this.game.dialog.show({
+        title: "章节目标",
+        content: objective.description,
+        showButton: true,
+        buttonText: "我知道了",
+        onClose: () => {
+          this.objectiveShown = true;
+        },
       });
     } else {
       this.objectiveShown = true;
     }
   }
 
-  // 获取默认卡牌图片
-  getDefaultCardImage() {
-    const defaultImages = {
-      1: "card-1",
-      2: "card-2",
-      3: "card-3",
-      4: "card-4",
-      // 5: "card-5",
-      // 6: "card-6",
-    };
-    return defaultImages[this.chapterNumber] || "card-1";
-  }
-
   // 加载事件图片
   loadEventImages() {
-    // 创建默认图片
-    const defaultImage = wx.createImage();
-    defaultImage.src = getImageUrl(this.getDefaultCardImage());
-
-    this.events.forEach((event) => {
+    this.events.forEach((event, index) => {
+      // 如果事件已经配置了图片，直接使用
       if (
         event.image &&
         typeof event.image === "string" &&
@@ -138,17 +134,27 @@ export class CardScene {
         img.src = getImageUrl(event.image);
         this.cardImages[event.id] = img;
       } else {
-        this.cardImages[event.id] = defaultImage;
-        if (event.image) {
-          console.log(
-            "CardScene: 无效的事件图片路径:",
-            event.image,
-            "for event:",
-            event.id
-          );
-        }
+        // 否则根据章节和事件索引循环分配图片
+        const imageKey = this.getEventImageByChapter(index);
+        const img = wx.createImage();
+        img.src = getImageUrl(imageKey);
+        this.cardImages[event.id] = img;
       }
     });
+  }
+
+  // 根据章节循环分配图片
+  getEventImageByChapter(eventIndex) {
+    // 每个章节使用4张图片循环
+    const imageIndex = (eventIndex % 4) + 1;
+
+    // 各章节使用专属图片
+    const imageKey = `chapter${this.chapterNumber}-card-${imageIndex}`;
+
+    console.log(
+      `章节 ${this.chapterNumber} 事件 ${eventIndex} -> 图片: ${imageKey}`
+    );
+    return imageKey;
   }
 
   // 处理触摸开始
@@ -271,16 +277,16 @@ export class CardScene {
       }
     }
 
-    // 特殊处理第三章的学力进度
+    // 特殊处理第三章的学业进度
     if (this.chapterNumber === 3) {
       if (typeof choiceObj.learningProgress !== "undefined") {
-        // 初始化学力进度
+        // 初始化学进度
         if (!this.gameState.learningProgress) {
           this.gameState.learningProgress = 0;
         }
-        // 累加学力进度
+        // 累加学业进度
         this.gameState.learningProgress += choiceObj.learningProgress;
-        console.log("更新学力进度:", this.gameState.learningProgress);
+        console.log("更新学业进度:", this.gameState.learningProgress);
       }
     }
 
@@ -392,12 +398,50 @@ export class CardScene {
     ctx.fill();
     ctx.stroke();
 
-    // 绘制事件图片（正方形区域，内容居中裁剪）
+    // 绘制事件图片（正方形区域，内容居中裁剪，带虚化边缘）
     const maxImgHeight = this.cardHeight * 0.45;
     const maxImgWidth = this.cardWidth * 0.7;
     const squareSize = Math.min(maxImgWidth, maxImgHeight);
     const img = this.cardImages[event.id];
     if (img && img.width && img.height) {
+      // 保存当前状态
+      ctx.save();
+
+      // 创建圆角遮罩
+      const imgX = x - squareSize / 2;
+      const imgY = y - this.cardHeight * 0.45;
+      const imgRadius = 12;
+
+      ctx.beginPath();
+      ctx.moveTo(imgX + imgRadius, imgY);
+      ctx.lineTo(imgX + squareSize - imgRadius, imgY);
+      ctx.arcTo(
+        imgX + squareSize,
+        imgY,
+        imgX + squareSize,
+        imgY + imgRadius,
+        imgRadius
+      );
+      ctx.lineTo(imgX + squareSize, imgY + squareSize - imgRadius);
+      ctx.arcTo(
+        imgX + squareSize,
+        imgY + squareSize,
+        imgX + squareSize - imgRadius,
+        imgY + squareSize,
+        imgRadius
+      );
+      ctx.lineTo(imgX + imgRadius, imgY + squareSize);
+      ctx.arcTo(
+        imgX,
+        imgY + squareSize,
+        imgX,
+        imgY + squareSize - imgRadius,
+        imgRadius
+      );
+      ctx.lineTo(imgX, imgY + imgRadius);
+      ctx.arcTo(imgX, imgY, imgX + imgRadius, imgY, imgRadius);
+      ctx.clip();
+
       // 计算原图中正方形裁剪区域
       const srcSize = Math.min(img.width, img.height);
       const srcX = (img.width - srcSize) / 2;
@@ -407,12 +451,73 @@ export class CardScene {
         srcX,
         srcY,
         srcSize,
-        srcSize, // 裁剪原图正方形
-        x - squareSize / 2,
-        y - this.cardHeight * 0.45,
+        srcSize,
+        imgX,
+        imgY,
         squareSize,
         squareSize
       );
+
+      // 恢复状态
+      ctx.restore();
+
+      // 绘制从中心向四周的虚化效果
+      ctx.save();
+
+      // 创建矩形遮罩区域
+      ctx.beginPath();
+      ctx.moveTo(imgX + imgRadius, imgY);
+      ctx.lineTo(imgX + squareSize - imgRadius, imgY);
+      ctx.arcTo(
+        imgX + squareSize,
+        imgY,
+        imgX + squareSize,
+        imgY + imgRadius,
+        imgRadius
+      );
+      ctx.lineTo(imgX + squareSize, imgY + squareSize - imgRadius);
+      ctx.arcTo(
+        imgX + squareSize,
+        imgY + squareSize,
+        imgX + squareSize - imgRadius,
+        imgY + squareSize,
+        imgRadius
+      );
+      ctx.lineTo(imgX + imgRadius, imgY + squareSize);
+      ctx.arcTo(
+        imgX,
+        imgY + squareSize,
+        imgX,
+        imgY + squareSize - imgRadius,
+        imgRadius
+      );
+      ctx.lineTo(imgX, imgY + imgRadius);
+      ctx.arcTo(imgX, imgY, imgX + imgRadius, imgY, imgRadius);
+      ctx.clip();
+
+      // 创建从中心向四周的径向渐变
+      const centerX = imgX + squareSize / 2;
+      const centerY = imgY + squareSize / 2;
+      const maxRadius = Math.sqrt(
+        Math.pow(squareSize / 2, 2) + Math.pow(squareSize / 2, 2)
+      );
+
+      const gradient = ctx.createRadialGradient(
+        centerX,
+        centerY,
+        maxRadius * 0.3,
+        centerX,
+        centerY,
+        maxRadius * 0.8
+      );
+      gradient.addColorStop(0, "rgba(255, 255, 255, 0)"); // 中心完全透明
+      gradient.addColorStop(0.7, "rgba(255, 255, 255, 0.3)"); // 70%处开始虚化
+      gradient.addColorStop(1, cardColors.background); // 边缘完全遮盖
+
+      ctx.fillStyle = gradient;
+      ctx.fillRect(imgX, imgY, squareSize, squareSize);
+
+      ctx.restore();
     }
 
     // 绘制标题
@@ -505,104 +610,126 @@ export class CardScene {
     ctx.font = this.uiHelper.getFont(16, "FangSong");
     ctx.textAlign = "center";
 
+    const choiceY = y + this.cardHeight * 0.3;
+
     // 根据拖动方向显示对应选项
     if (this.dragOffset < -20) {
-      // 向左滑动，显示左侧选项
-      ctx.fillStyle = "#4CAF50";
-      ctx.fillText(leftChoice.text, x, y + this.cardHeight * 0.3);
+      // 向左滑动，显示左侧选项 - 朱红色主题
+      this.drawChoiceWithBackground(
+        ctx,
+        leftChoice.text,
+        x,
+        choiceY,
+        "#DC143C",
+        "rgba(0, 0, 0, 0.1)"
+      );
     } else if (this.dragOffset > 20) {
-      // 向右滑动，显示右侧选项
-      ctx.fillStyle = "#4CAF50";
-      ctx.fillText(rightChoice.text, x, y + this.cardHeight * 0.3);
+      // 向右滑动，显示右侧选项 - 墨绿色主题
+      this.drawChoiceWithBackground(
+        ctx,
+        rightChoice.text,
+        x,
+        choiceY,
+        "#2E8B57",
+        "rgba(0, 0, 0, 0.1)"
+      );
     } else {
       // 没有滑动或滑动距离很小，显示提示
       ctx.fillStyle = "#999999";
       ctx.font = this.uiHelper.getFont(14, "FangSong");
-      ctx.fillText(
-        "请长按卡牌，左右滑动进行选择",
-        x,
-        y + this.cardHeight * 0.3
-      );
+      ctx.fillText("长按卡牌左右滑动查看选项", x, choiceY);
     }
+  }
+
+  // 绘制带背景的选项文字
+  drawChoiceWithBackground(ctx, text, x, y, textColor, backgroundColor) {
+    // 测量文字尺寸
+    const metrics = ctx.measureText(text);
+    const textWidth = metrics.width;
+    const textHeight = 20;
+
+    // 计算背景矩形尺寸和位置 - 增加更多padding
+    const padding = 20;
+    const bgWidth = textWidth + padding * 2;
+    const bgHeight = textHeight + padding * 1.2;
+    const bgX = x - bgWidth / 2;
+    const bgY = y - textHeight / 2 - padding * 0.6;
+
+    // 绘制黑色半透明背景
+    ctx.fillStyle = backgroundColor;
+    ctx.beginPath();
+    const radius = 12;
+    ctx.moveTo(bgX + radius, bgY);
+    ctx.lineTo(bgX + bgWidth - radius, bgY);
+    ctx.arcTo(bgX + bgWidth, bgY, bgX + bgWidth, bgY + radius, radius);
+    ctx.lineTo(bgX + bgWidth, bgY + bgHeight - radius);
+    ctx.arcTo(
+      bgX + bgWidth,
+      bgY + bgHeight,
+      bgX + bgWidth - radius,
+      bgY + bgHeight,
+      radius
+    );
+    ctx.lineTo(bgX + radius, bgY + bgHeight);
+    ctx.arcTo(bgX, bgY + bgHeight, bgX, bgY + bgHeight - radius, radius);
+    ctx.lineTo(bgX, bgY + radius);
+    ctx.arcTo(bgX, bgY, bgX + radius, bgY, radius);
+    ctx.fill();
+
+    // 添加金色边框装饰
+    ctx.strokeStyle = "rgba(255, 215, 0, 0.1)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // 绘制文字
+    ctx.fillStyle = textColor;
+    ctx.font = this.uiHelper.getFont(16, "FangSong", true);
+    ctx.fillText(text, x, y);
   }
 
   // 绘制自动换行文本
   drawWrappedText(ctx, text, x, y, maxWidth, lineHeight) {
-    // 使用自适应行高
-    const adaptiveLineHeight = this.uiHelper.getLineHeight(lineHeight);
     const words = text.split("");
     let line = "";
-    let posY = y;
+    let currentY = y;
 
     for (let i = 0; i < words.length; i++) {
       const testLine = line + words[i];
       const metrics = ctx.measureText(testLine);
+      const testWidth = metrics.width;
 
-      if (metrics.width > maxWidth && i > 0) {
-        ctx.fillText(line, x, posY);
+      if (testWidth > maxWidth && i > 0) {
+        ctx.fillText(line, x, currentY);
         line = words[i];
-        posY += adaptiveLineHeight;
+        currentY += lineHeight;
       } else {
         line = testLine;
       }
     }
-
-    ctx.fillText(line, x, posY);
-  }
-
-  // 绘制场景
-  // 创建背景纹理
-  createPattern(color1, color2) {
-    const size = 80;
-    const canvas = wx.createCanvas();
-    canvas.width = size;
-    canvas.height = size;
-    const patternCtx = canvas.getContext("2d");
-
-    // 绘制中国传统纹理背景
-    patternCtx.fillStyle = color1;
-    patternCtx.fillRect(0, 0, size, size);
-
-    // 绘制云纹纹理
-    patternCtx.strokeStyle = color2;
-    patternCtx.lineWidth = 1;
-    patternCtx.globalAlpha = 0.15;
-
-    // 绘制简化的云纹图案
-    const drawCloudPattern = (x, y) => {
-      patternCtx.beginPath();
-      patternCtx.moveTo(x, y + 10);
-      patternCtx.quadraticCurveTo(x + 5, y, x + 10, y + 5);
-      patternCtx.quadraticCurveTo(x + 15, y, x + 20, y + 10);
-      patternCtx.quadraticCurveTo(x + 15, y + 15, x + 10, y + 12);
-      patternCtx.quadraticCurveTo(x + 5, y + 15, x, y + 10);
-      patternCtx.stroke();
-    };
-
-    // 在四个角落绘制云纹
-    drawCloudPattern(10, 10);
-    drawCloudPattern(size - 30, 10);
-    drawCloudPattern(10, size - 30);
-    drawCloudPattern(size - 30, size - 30);
-
-    // 在中心区域绘制细密的云纹装饰
-    patternCtx.globalAlpha = 0.08;
-    for (let i = 0; i < 3; i++) {
-      for (let j = 0; j < 3; j++) {
-        const x = 20 + i * 20;
-        const y = 20 + j * 20;
-        drawCloudPattern(x, y);
-      }
-    }
-
-    return this.ctx.createPattern(canvas, "repeat");
+    ctx.fillText(line, x, currentY);
   }
 
   // 绘制背景
   drawBackground() {
-    const pattern = this.patterns[this.chapterNumber] || this.patterns[1];
-    this.ctx.fillStyle = pattern;
-    this.ctx.fillRect(0, 0, this.width, this.height);
+    const ctx = this.ctx;
+
+    // 使用章节选择器的背景图片
+    if (this.backgroundLoaded) {
+      ctx.drawImage(this.backgroundImage, 0, 0, this.width, this.height);
+
+      // 添加半透明遮罩以确保卡牌内容清晰可见
+      ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+      ctx.fillRect(0, 0, this.width, this.height);
+    } else {
+      // 备用渐变背景（如果图片未加载）
+      const gradient = ctx.createLinearGradient(0, 0, 0, this.height);
+      gradient.addColorStop(0, "#2c1810");
+      gradient.addColorStop(0.3, "#3d2817");
+      gradient.addColorStop(0.7, "#1f1208");
+      gradient.addColorStop(1, "#0f0804");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, this.width, this.height);
+    }
   }
 
   // 绘制章节标题
@@ -623,7 +750,7 @@ export class CardScene {
     const y = this.height - 40;
 
     // 根据拖动状态显示不同提示
-    let hintText = "请长按卡牌，左右滑动进行选择";
+    let hintText = "长按卡牌左右滑动查看选项";
 
     if (this.dragOffset < -20) {
       hintText = "← 向左滑动选择";
@@ -642,6 +769,9 @@ export class CardScene {
     // 绘制背景和标题
     this.drawBackground();
     this.drawChapterTitle();
+
+    // 绘制数值显示（标题下方）
+    this.drawStatusChanges();
 
     if (this.currentEventIndex >= this.events.length) {
       // 所有事件已完成
@@ -682,5 +812,103 @@ export class CardScene {
 
     ctx.font = this.uiHelper.getFont(18, "FangSong");
     ctx.fillText("点击继续...", this.width / 2, this.height * 0.8);
+  }
+
+  // 绘制数值变化展示
+  drawStatusChanges() {
+    // 第一章不显示数值
+    if (this.chapterNumber === 1) return;
+
+    const ctx = this.ctx;
+
+    // 获取当前章节的关键数值
+    const statusInfo = this.getChapterStatusInfo();
+    if (!statusInfo) return;
+
+    // 收集需要显示的当前数值
+    const currentValues = {};
+
+    // 各章节特殊数值
+    if (this.chapterNumber === 2 && this.gameState.saltProgress !== undefined) {
+      currentValues.saltProgress = this.gameState.saltProgress;
+    }
+    if (
+      this.chapterNumber === 3 &&
+      this.gameState.learningProgress !== undefined
+    ) {
+      currentValues.learningProgress = this.gameState.learningProgress;
+    }
+    if (
+      this.chapterNumber === 4 &&
+      this.gameState.governmentRelation !== undefined
+    ) {
+      currentValues.governmentRelation = this.gameState.governmentRelation;
+    }
+
+    // 过滤出需要显示的数值
+    const displayValues = {};
+    Object.keys(currentValues).forEach((key) => {
+      if (statusInfo.keys.includes(key)) {
+        displayValues[key] = currentValues[key];
+      }
+    });
+
+    if (Object.keys(displayValues).length === 0) return;
+
+    // 计算位置 - 标题下方固定位置
+    const boxWidth = 120;
+    const boxHeight = 40;
+    const boxX = this.width / 2 - boxWidth / 2;
+    const boxY = 85;
+
+    ctx.save();
+
+    // 绘制数值项 - 居中显示
+    Object.keys(displayValues).forEach((key) => {
+      const value = displayValues[key] || 0;
+      const statusName = statusInfo.names[key] || key;
+
+      // 绘制数值名称和数值在同一行
+      ctx.fillStyle = "#1a1a1a";
+      ctx.font = this.uiHelper.getFont(14, "FangSong", true);
+      ctx.textAlign = "center";
+      ctx.fillText(
+        `${statusName}: ${value}`,
+        boxX + boxWidth / 2,
+        boxY + boxHeight / 2 + 5
+      );
+    });
+
+    ctx.restore();
+  }
+
+  // 获取章节状态信息配置
+  getChapterStatusInfo() {
+    const statusConfig = {
+      1: {
+        keys: [], // 第一章不显示数值
+        names: {},
+      },
+      2: {
+        keys: ["saltProgress"],
+        names: {
+          saltProgress: "盐业资本",
+        },
+      },
+      3: {
+        keys: ["learningProgress"],
+        names: {
+          learningProgress: "学业进展",
+        },
+      },
+      4: {
+        keys: ["governmentRelation"],
+        names: {
+          governmentRelation: "政府关系",
+        },
+      },
+    };
+
+    return statusConfig[this.chapterNumber];
   }
 }

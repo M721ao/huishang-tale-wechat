@@ -35,7 +35,7 @@ export class ChapterManager {
         id: "ending-2",
         title: "落寞回乡",
         description:
-          "十年扬州客，终成一场盐引黄粱梦。商路险恶，群雄逐利，你始终难以立足。两鬓染霜后，终于收拾行囊，踏上回乡之路。",
+          "十年扬州客，终成一场黄粱梦。商路险恶，群雄逐利，你始终难以立足。两鬓染霜后，终于收拾行囊，踏上回乡之路。",
         image: getEndingImageUrl("ending-2"),
       },
       {
@@ -173,7 +173,7 @@ export class ChapterManager {
   checkChapter2Progress(eventIndex, attributes) {
     if (eventIndex === 19) {
       console.log("检查第二章监测点", attributes.saltProgress);
-      if (attributes.saltProgress < 8) {
+      if (attributes.saltProgress < 8.5) {
         return this.endings.find((e) => e.id === "ending-2");
       }
     }
@@ -182,11 +182,11 @@ export class ChapterManager {
 
   // 检查第三章监测点
   checkChapter3Progress(eventIndex, attributes) {
-    // 普通学力结局判定
+    // 普通学业进展结局判定
     if (eventIndex === 18) {
       console.log("检查第三章监测点", attributes.learningProgress);
       if (attributes.learningProgress < 18) {
-        return this.endings.find((e) => e.id === "ending-3"); // 学力不足结局
+        return this.endings.find((e) => e.id === "ending-3"); // 学业进展不足结局
       } else {
         // 创建一个特殊对象来标记需要进入下一章
         return { nextChapter: true };
@@ -288,13 +288,25 @@ export class ChapterManager {
           console.log("显示选择结果:", choiceData.result);
           this.game.dialog.show(choiceData.result, () => {
             if (ending) {
-              this.showEnding(ending);
+              // 检查是否是进入下一章节的信号
+              if (ending.nextChapter) {
+                this.currentChapter++;
+                this.startChapterTitle();
+              } else {
+                // 显示结局解释弹窗，然后显示结局
+                this.showEndingExplanation(ending, state, () => {
+                  this.showEnding(ending);
+                });
+              }
             } else if (choiceData.ending) {
               const choiceEnding = this.endings.find(
                 (e) => e.id === choiceData.ending
               );
               if (choiceEnding) {
-                this.showEnding(choiceEnding);
+                // 显示结局解释弹窗，然后显示结局
+                this.showEndingExplanation(choiceEnding, state, () => {
+                  this.showEnding(choiceEnding);
+                });
               }
             } else if (choiceData.nextChapter) {
               this.currentChapter++;
@@ -307,14 +319,20 @@ export class ChapterManager {
             this.currentChapter++;
             this.startChapterTitle();
           } else {
-            this.showEnding(ending);
+            // 显示结局解释弹窗，然后显示结局
+            this.showEndingExplanation(ending, state, () => {
+              this.showEnding(ending);
+            });
           }
         } else if (choiceData && choiceData.ending) {
           const choiceEnding = this.endings.find(
             (e) => e.id === choiceData.ending
           );
           if (choiceEnding) {
-            this.showEnding(choiceEnding);
+            // 显示结局解释弹窗，然后显示结局
+            this.showEndingExplanation(choiceEnding, state, () => {
+              this.showEnding(choiceEnding);
+            });
           }
         } else if (choiceData && choiceData.nextChapter) {
           this.currentChapter++;
@@ -326,5 +344,43 @@ export class ChapterManager {
 
     // 切换到卡牌场景
     this.game.setScene(this.game.cardScene, "card");
+  }
+
+  // 获取结局解释文本
+  getEndingExplanation(endingId, attributes) {
+    const explanations = {
+      "ending-1":
+        "你选择了安稳的茶业道路，错过了徽商即将在盐业掀起的风云变化。",
+      "ending-2":
+        "你虽握盐引在手，却疏于经营人脉与资财，未能为日后奠下厚实根基，终难立足于扬州这片商潮之地",
+      "ending-3": "你未能及第入仕，为家族赢得庇荫。",
+      "ending-4":
+        "贩卖私盐成了压垮骆驼的最后一根稻草，政局多变、暗潮汹涌，你终未能在这场博弈中全身而退。",
+    };
+    return explanations[endingId] || "你的选择决定了这个结局。";
+  }
+
+  // 显示结局前的解释弹窗
+  showEndingExplanation(ending, attributes, callback) {
+    console.log("showEndingExplanation called:", {
+      ending: ending.id,
+      callback: typeof callback,
+    });
+    const explanation = this.getEndingExplanation(ending.id, attributes);
+    console.log("Explanation:", explanation);
+
+    this.game.dialog.show({
+      title: "进入结局",
+      content: explanation,
+      showButton: true,
+      buttonText: "我知道了",
+      onClose: () => {
+        console.log("Dialog onClose callback triggered");
+        if (callback) {
+          console.log("Calling ending callback");
+          callback();
+        }
+      },
+    });
   }
 }

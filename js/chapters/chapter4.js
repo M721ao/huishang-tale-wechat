@@ -84,7 +84,7 @@ export const chapter4 = {
         },
         {
           text: "不愿攀附权贵，只求本分",
-          governmentRelation: -10,
+          governmentRelation: 0,
         },
       ],
     },
@@ -160,7 +160,7 @@ export const chapter4 = {
         },
         {
           text: "沿用历年旧戏稳妥为上",
-          governmentRelation: 0,
+          governmentRelation: -10,
         },
       ],
     },
@@ -174,8 +174,8 @@ export const chapter4 = {
           governmentRelation: 10,
         },
         {
-          text: "仅备薄礼致贺，不多参与",
-          governmentRelation: 0,
+          text: "备薄礼致贺，不多参与",
+          governmentRelation: -10,
         },
       ],
     },
@@ -189,7 +189,7 @@ export const chapter4 = {
           governmentRelation: 20,
         },
         {
-          text: "略表心意，避免过于显眼",
+          text: "跟随捐输，避免过于显眼",
           governmentRelation: 10,
         },
       ],
@@ -235,14 +235,14 @@ export const chapter4 = {
         },
         {
           text: "实在拮据，无力再捐",
-          governmentRelation: -10,
+          governmentRelation: 0,
         },
       ],
     },
     {
       id: "event12",
       title: "修建祠堂",
-      description: "族中耆老倡议修建宗祠以显门第，需倾注数年之财力。",
+      description: "族中耆老倡议修建宗祠以显门第，需倾注数年之营收。",
       choices: [
         {
           text: "同意，彰显家声",
@@ -257,15 +257,16 @@ export const chapter4 = {
     {
       id: "event13",
       title: "对联之争",
-      description: "途经江苏新安镇，闻当地人议悦来集门上一副对联太甚。",
+      description:
+        "途经江苏新安镇，闻当地人议论文昌阁楹联“分黄山半点秀气，镇东海一郡文风”。",
       choices: [
         {
-          text: "略表认同，觉得确有失妥",
-          governmentRelation: 0,
+          text: "提笔改之为“分黄山秀气，振东海文风”",
+          governmentRelation: 10,
         },
         {
-          text: "只觉此人小题大作",
-          governmentRelation: 0,
+          text: "只觉此地之人小题大作",
+          governmentRelation: -10,
         },
       ],
     },
@@ -295,7 +296,7 @@ export const chapter4 = {
         },
         {
           text: "教其自立，方能自持门户",
-          governmentRelation: 0,
+          governmentRelation: 20,
         },
       ],
     },
@@ -340,7 +341,7 @@ export const chapter4 = {
         },
         {
           text: "实在囊空如洗，婉拒捐输",
-          governmentRelation: -10,
+          governmentRelation: -20,
         },
       ],
     },
@@ -355,7 +356,7 @@ export const chapter4 = {
         },
         {
           text: "法不责众，断然拒付",
-          governmentRelation: -20,
+          governmentRelation: -30,
         },
       ],
     },

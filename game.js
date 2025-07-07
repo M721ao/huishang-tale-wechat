@@ -79,7 +79,7 @@ class Game {
     this.chapterManager = new ChapterManager(this);
 
     // 初始化背景音乐
-    this.initBGM();
+    // this.initBGM();
 
     // 延迟设置回调，确保UserManager完全初始化
     setTimeout(() => {
@@ -130,22 +130,22 @@ class Game {
   }
 
   // 初始化背景音乐
-  initBGM() {
-    if (!this.bgmAudio) {
-      this.bgmAudio = wx.createInnerAudioContext();
-      this.bgmAudio.src = getAudioUrl("audio/bgm.mp3");
-      this.bgmAudio.loop = true;
-      this.bgmAudio.volume = 0.5;
-      // 先尝试直接播放
-      this.bgmAudio.play();
-      // 兼容微信自动播放策略：如未成功，首次用户交互后再播放
-      const tryPlay = () => {
-        this.bgmAudio.play();
-        wx.offTouchStart(tryPlay); // 只绑定一次
-      };
-      wx.onTouchStart(tryPlay);
-    }
-  }
+  // initBGM() {
+  //   if (!this.bgmAudio) {
+  //     this.bgmAudio = wx.createInnerAudioContext();
+  //     this.bgmAudio.src = getAudioUrl("audio/bgm.mp3");
+  //     this.bgmAudio.loop = true;
+  //     this.bgmAudio.volume = 0.5;
+  //     // 先尝试直接播放
+  //     this.bgmAudio.play();
+  //     // 兼容微信自动播放策略：如未成功，首次用户交互后再播放
+  //     const tryPlay = () => {
+  //       this.bgmAudio.play();
+  //       wx.offTouchStart(tryPlay); // 只绑定一次
+  //     };
+  //     wx.onTouchStart(tryPlay);
+  //   }
+  // }
 
   // 切换场景
   setScene(scene, type) {
@@ -466,6 +466,12 @@ function gameLoop() {
 
 // 触摸事件处理
 wx.onTouchStart((e) => {
+  // 优先检查Dialog是否需要处理触摸事件
+  if (game.dialog && game.dialog.visible) {
+    // Dialog显示时，不传递事件给场景
+    return;
+  }
+
   if (game.currentScene && game.currentScene.handleTouchStart) {
     game.currentScene.handleTouchStart(e);
   } else if (game.currentScene && game.currentScene.handleTap) {
@@ -474,12 +480,27 @@ wx.onTouchStart((e) => {
 });
 
 wx.onTouchMove((e) => {
+  // 优先检查Dialog是否需要处理触摸事件
+  if (game.dialog && game.dialog.visible) {
+    // Dialog显示时，不传递事件给场景
+    return;
+  }
+
   if (game.currentScene && game.currentScene.handleTouchMove) {
     game.currentScene.handleTouchMove(e);
   }
 });
 
 wx.onTouchEnd((e) => {
+  // 优先检查Dialog是否需要处理触摸事件
+  if (game.dialog && game.dialog.visible) {
+    const touch = e.changedTouches[0];
+    const handled = game.dialog.handleTouch(touch.clientX, touch.clientY);
+    if (handled) {
+      return; // Dialog处理了事件，不传递给场景
+    }
+  }
+
   if (game.currentScene && game.currentScene.handleTouchEnd) {
     game.currentScene.handleTouchEnd(e);
   }

@@ -37,7 +37,7 @@ export const chapter2 = {
       choices: [
         {
           text: "直接前往盐运司衙门",
-          saltChange: 0,
+          saltChange: 0.5,
           nextId: "event2",
         },
         {
@@ -83,11 +83,11 @@ export const chapter2 = {
       choices: [
         {
           text: "抵押妻子的嫁妆",
-          saltChange: 0.5,
+          saltChange: 1,
         },
         {
           text: "寻求高利贷款",
-          saltChange: 0.5,
+          saltChange: 1,
         },
       ],
     },
@@ -98,7 +98,7 @@ export const chapter2 = {
       choices: [
         {
           text: "把他再介绍去杭州的茶庄",
-          saltChange: 0.5,
+          saltChange: 0,
         },
         {
           text: "多个人帮忙也好",
@@ -161,7 +161,7 @@ export const chapter2 = {
         },
         {
           text: "愤然离席",
-          saltChange: 0,
+          saltChange: -0.5,
           nextId: "event12",
         },
       ],
@@ -172,11 +172,11 @@ export const chapter2 = {
       choices: [
         {
           text: "相信，询问价格",
-          saltChange: 0.5,
+          saltChange: 0,
         },
         {
           text: "有点怪，来都来了问问价",
-          saltChange: 0.5,
+          saltChange: 0,
         },
       ],
     },
@@ -190,7 +190,7 @@ export const chapter2 = {
         },
         {
           text: "你心动了，告辞回去筹款",
-          saltChange: 0,
+          saltChange: -0.5,
         },
       ],
     },
@@ -215,11 +215,11 @@ export const chapter2 = {
       choices: [
         {
           text: "产生退缩之意",
-          saltChange: -0.5,
+          saltChange: -2,
         },
         {
           text: "绝不可半途放弃",
-          saltChange: 0.5,
+          saltChange: 1,
         },
       ],
     },
@@ -269,15 +269,15 @@ export const chapter2 = {
     },
     {
       id: "event17",
-      description: "你遇到一位红颜知己，她告诉你下个月或许有获得盐引的机会",
+      description: "你遇到一位红颜知己，她宽慰你下个月或许有获得盐引的机会",
       choices: [
         {
           text: "一笑而过",
-          saltChange: 0,
+          saltChange: 0.5,
         },
         {
           text: "记在心里",
-          saltChange: 1,
+          saltChange: 0,
         },
       ],
     },
@@ -291,7 +291,7 @@ export const chapter2 = {
         },
         {
           text: "资金紧张，算了",
-          saltChange: 1,
+          saltChange: 0.5,
         },
       ],
     },
@@ -344,11 +344,9 @@ export const chapter2 = {
       choices: [
         {
           text: "如数偿还",
-          result: "守信还债，声誉渐隆",
         },
         {
           text: "暂缓处理",
-          result: "暂缓还款，信用蒙尘",
         },
       ],
     },
@@ -359,11 +357,9 @@ export const chapter2 = {
       choices: [
         {
           text: "包揽全部费用",
-          result: "你慷慨解囊，学子感恩铭记",
         },
         {
           text: "手头紧，介绍给同乡会",
-          result: "你尽力斡旋，略感歉疚",
         },
       ],
     },
@@ -374,11 +370,9 @@ export const chapter2 = {
       choices: [
         {
           text: "趁火打劫",
-          result: "你乘虚而入，获利颇丰但名声受损",
         },
         {
           text: "派人护航",
-          result: "你仗义出手，赢得友商敬重",
         },
       ],
     },
@@ -388,11 +382,9 @@ export const chapter2 = {
       choices: [
         {
           text: "组织乡勇抵抗",
-          result: "你奋起保盐，声威大震",
         },
         {
           text: "花钱买平安",
-          result: "你花重金保全，但士气低迷",
         },
       ],
     },
@@ -404,11 +396,9 @@ export const chapter2 = {
       choices: [
         {
           text: "联名作保",
-          result: "你挺身而出，风险共担",
         },
         {
           text: "撇清关系",
-          result: "你避责为上，惹来非议",
         },
       ],
     },
@@ -418,11 +408,9 @@ export const chapter2 = {
       choices: [
         {
           text: "重金打点",
-          result: "你用金钱摆平风波，但真相难辨",
         },
         {
           text: "如实呈报",
-          result: "你自信无愧，静待清查结果",
         },
       ],
     },
@@ -432,11 +420,9 @@ export const chapter2 = {
       choices: [
         {
           text: "大力资助，全部顶配",
-          result: "你厚植桑梓，乡人感念不已",
         },
         {
           text: "点到为止即可",
-          result: "你量力而为，进退有度",
         },
       ],
     },
