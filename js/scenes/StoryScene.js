@@ -12,27 +12,27 @@ export class StoryScene {
     this.uiHelper = getUIHelper();
 
     // 文字显示区域设置
-    this.textAreaHeight = height * 0.28; // 降低文字区域高度从0.35到0.28
-    this.textAreaY = height - this.textAreaHeight;
-    this.padding = 25; // 增加内边距
+    this.textAreaHeight = height * 0.25; // 保持文字区域高度
+    this.textAreaY = height - this.textAreaHeight - 35; // 再上移15像素
+    this.padding = 20; // 减小内边距
 
     // 文字动画设置
     this.currentText = "";
     this.targetText = "";
-    this.textSpeed = 1.5; // 稍微减慢打字速度
+    this.textSpeed = 1.5;
     this.isTyping = false;
-    this.textOpacity = 0; // 文字透明度动画
+    this.textOpacity = 0;
 
     // 当前剧情进度
     this.currentScriptIndex = 0;
     this.currentScript = null;
 
     // 角色名称显示区域
-    this.nameBoxWidth = 180; // 增加名称框宽度
-    this.nameBoxHeight = 45; // 增加名称框高度
+    this.nameBoxWidth = 180;
+    this.nameBoxHeight = 45;
     this.nameBoxX = this.padding;
-    this.nameBoxY = this.textAreaY - this.nameBoxHeight - 10; // 增加间距
-    this.nameOpacity = 0; // 名称透明度动画
+    this.nameBoxY = this.textAreaY - this.nameBoxHeight - 10;
+    this.nameOpacity = 0;
 
     // 角色立绘动画
     this.characterOpacity = 0;
@@ -47,6 +47,7 @@ export class StoryScene {
     // 点击提示动画
     this.clickHintOpacity = 0;
     this.clickHintTimer = 0;
+    this.clickHintScale = 1;
 
     // 回调函数
     this.onFinishCallback = null;
@@ -176,10 +177,17 @@ export class StoryScene {
     // 更新点击提示动画
     if (!this.isTyping && this.currentText === this.targetText) {
       this.clickHintTimer += 1;
-      if (this.clickHintTimer > 60) {
-        // 1秒后开始显示提示，减少闪动频率
+      if (this.clickHintTimer > 30) {
+        // 减少等待时间到0.5秒
         this.clickHintOpacity =
-          0.4 + 0.15 * Math.sin(this.clickHintTimer * 0.05); // 降低频率和幅度
+          0.4 + 0.15 * Math.sin(this.clickHintTimer * 0.05);
+      }
+    } else if (this.currentText.length > 10) {
+      // 当显示超过10个字时就开始显示提示
+      this.clickHintTimer += 1;
+      if (this.clickHintTimer > 30) {
+        this.clickHintOpacity =
+          0.3 + 0.1 * Math.sin(this.clickHintTimer * 0.05);
       }
     } else {
       this.clickHintTimer = 0;
@@ -194,101 +202,141 @@ export class StoryScene {
     // 清空画布
     ctx.clearRect(0, 0, width, height);
 
-    // 绘制背景（完全原色显示，无任何遮罩）
+    // 绘制背景
     if (this.backgroundImage) {
-      // 确保背景图片完全原色显示，不使用透明度
       ctx.save();
-      ctx.globalAlpha = 1.0; // 强制完全不透明
-      // 计算背景图片的显示区域（不包含文字区域）
-      const bgHeight = height - this.textAreaHeight;
-      ctx.drawImage(this.backgroundImage, 0, 0, width, bgHeight);
-      ctx.restore();
-    } else {
-      // 默认渐变背景
-      const gradient = ctx.createLinearGradient(
-        0,
-        0,
-        0,
-        height - this.textAreaHeight
+
+      // 计算保持宽高比的缩放和位置
+      const scale = Math.max(
+        width / this.backgroundImage.width,
+        height / this.backgroundImage.height
       );
-      gradient.addColorStop(0, "#1a1a2e");
-      gradient.addColorStop(1, "#16213e");
+
+      const scaledWidth = this.backgroundImage.width * scale;
+      const scaledHeight = this.backgroundImage.height * scale;
+      const x = (width - scaledWidth) / 2;
+      const y = (height - scaledHeight) / 2;
+
+      // 绘制背景图片
+      ctx.globalAlpha = this.backgroundOpacity;
+      ctx.drawImage(this.backgroundImage, x, y, scaledWidth, scaledHeight);
+
+      // 添加轻微的暗色叠加，增加层次感
+      ctx.fillStyle = "rgba(0, 0, 0, 0.15)";
+      ctx.fillRect(0, 0, width, height);
+
+      // 添加渐变阴影效果
+      const gradient = ctx.createLinearGradient(0, height * 0.5, 0, height);
+      gradient.addColorStop(0, "rgba(0, 0, 0, 0)");
+      gradient.addColorStop(1, "rgba(0, 0, 0, 0.5)");
       ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, width, height - this.textAreaHeight);
+      ctx.fillRect(0, height * 0.5, width, height * 0.5);
+
+      ctx.restore();
     }
 
-    // 绘制立绘
+    // 绘制对话框背景
+    ctx.save();
+    ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+    this.drawRoundedRect(
+      ctx,
+      this.padding,
+      this.textAreaY,
+      width - this.padding * 2,
+      this.textAreaHeight,
+      12
+    );
+    ctx.fill();
+
+    // 添加对话框装饰
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+    ctx.lineWidth = 2;
+    this.drawRoundedRect(
+      ctx,
+      this.padding + 5,
+      this.textAreaY + 5,
+      width - this.padding * 2 - 10,
+      this.textAreaHeight - 10,
+      10
+    );
+    ctx.stroke();
+
+    // 绘制角色立绘
     if (this.characterImage) {
       ctx.save();
       ctx.globalAlpha = this.characterOpacity;
 
-      const charWidth = height * 0.85;
-      const charHeight = height * 0.85;
-      let charX = 0;
+      // 计算立绘位置和大小
+      const charHeight = height * 0.8;
+      const charWidth =
+        (this.characterImage.width / this.characterImage.height) * charHeight;
+      let charX;
 
+      // 根据位置设置X坐标
       switch (this.currentPosition) {
         case "left":
-          charX = -charWidth * 0.25;
+          charX = -charWidth * 0.2;
           break;
         case "right":
-          charX = width - charWidth * 0.75;
+          charX = width - charWidth * 0.8;
           break;
         default: // center
           charX = (width - charWidth) / 2;
       }
 
+      const charY = height - charHeight;
+
       // 应用缩放动画
       const scaledWidth = charWidth * this.characterScale;
       const scaledHeight = charHeight * this.characterScale;
-      const scaledX = charX + (charWidth - scaledWidth) / 2;
-      const scaledY = height - charHeight + (charHeight - scaledHeight) / 2;
+      const scaleOffsetX = (charWidth - scaledWidth) / 2;
+      const scaleOffsetY = (charHeight - scaledHeight) / 2;
 
       ctx.drawImage(
         this.characterImage,
-        scaledX,
-        scaledY,
+        charX + scaleOffsetX,
+        charY + scaleOffsetY,
         scaledWidth,
         scaledHeight
       );
       ctx.restore();
     }
 
-    // 绘制文字区域（古典中国风，简洁优雅）
-    // 深色半透明背景
-    ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
-    ctx.fillRect(0, this.textAreaY, width, this.textAreaHeight);
-
-    // 淡金色细边框
-    ctx.strokeStyle = "rgba(212, 175, 55, 0.6)";
-    ctx.lineWidth = 1;
-    ctx.strokeRect(0, this.textAreaY, width, this.textAreaHeight);
-
-    // 绘制角色名称框（古典风格）
+    // 绘制角色名称框
     if (this.currentCharacter) {
       ctx.save();
       ctx.globalAlpha = this.nameOpacity;
 
-      // 名称框背景（深棕色半透明）
-      ctx.fillStyle = "rgba(101, 67, 33, 0.9)";
+      // 绘制名称框背景
+      ctx.fillStyle = "rgba(0, 0, 0, 0.8)";
       this.drawRoundedRect(
         ctx,
         this.nameBoxX,
         this.nameBoxY,
         this.nameBoxWidth,
         this.nameBoxHeight,
+        8
+      );
+      ctx.fill();
+
+      // 添加名称框装饰
+      ctx.strokeStyle = "rgba(255, 215, 0, 0.6)";
+      ctx.lineWidth = 2;
+      this.drawRoundedRect(
+        ctx,
+        this.nameBoxX + 3,
+        this.nameBoxY + 3,
+        this.nameBoxWidth - 6,
+        this.nameBoxHeight - 6,
         6
       );
-
-      // 淡金色边框
-      ctx.strokeStyle = "rgba(212, 175, 55, 0.8)";
-      ctx.lineWidth = 1.5;
       ctx.stroke();
 
       // 绘制角色名称
-      ctx.fillStyle = "#F4ECE4";
-      ctx.font = this.uiHelper.getFont(22, "FangSong", true);
+      ctx.font = this.uiHelper.getFont(20, "FangSong", true);
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
+      ctx.fillStyle = "#F4ECE4";
       ctx.fillText(
         this.currentCharacter,
         this.nameBoxX + this.nameBoxWidth / 2,
@@ -297,28 +345,54 @@ export class StoryScene {
       ctx.restore();
     }
 
-    // 绘制对话文字
-    ctx.save();
-    ctx.globalAlpha = this.textOpacity;
-    ctx.textAlign = "left";
-    ctx.textBaseline = "top";
-    this.drawWrappedText(
-      this.currentText,
-      this.padding + 15,
-      this.textAreaY + this.padding + 10,
-      width - (this.padding + 15) * 2
-    );
-    ctx.restore();
+    // 绘制对话文本
+    if (this.currentText) {
+      ctx.save();
+      ctx.globalAlpha = this.textOpacity;
+      this.drawWrappedText(
+        this.currentText,
+        this.padding * 2,
+        this.textAreaY + this.padding * 2,
+        width - this.padding * 4
+      );
+      ctx.restore();
+    }
 
     // 绘制点击提示
     if (this.clickHintOpacity > 0) {
       ctx.save();
       ctx.globalAlpha = this.clickHintOpacity;
-      ctx.fillStyle = "#F4ECE4";
+
+      // 绘制提示文字和箭头
       ctx.font = this.uiHelper.getFont(16, "FangSong");
-      ctx.textAlign = "center";
-      ctx.textBaseline = "bottom";
-      ctx.fillText("点击继续", width / 2, height - 15);
+      ctx.textAlign = "right";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "#FFFFFF";
+
+      // 调整提示位置到对话框内部
+      const tipX = width - this.padding * 3;
+      const tipY = this.textAreaY + this.textAreaHeight - this.padding * 1.5;
+
+      // 绘制文字
+      ctx.fillText("点击继续", tipX - 10, tipY);
+
+      // 绘制简单的箭头
+      ctx.beginPath();
+      const arrowX = tipX + 5;
+      const arrowSize = 8;
+
+      // 箭头动画
+      const bounce = Math.sin(this.clickHintTimer * 0.1) * 3;
+
+      ctx.moveTo(arrowX + bounce, tipY);
+      ctx.lineTo(arrowX + arrowSize + bounce, tipY);
+      ctx.lineTo(arrowX + arrowSize + bounce, tipY - arrowSize / 2);
+      ctx.lineTo(arrowX + arrowSize * 2 + bounce, tipY);
+      ctx.lineTo(arrowX + arrowSize + bounce, tipY + arrowSize / 2);
+      ctx.lineTo(arrowX + arrowSize + bounce, tipY);
+      ctx.closePath();
+      ctx.fill();
+
       ctx.restore();
     }
   }
@@ -344,10 +418,10 @@ export class StoryScene {
     const { ctx } = this;
     const words = text.split("");
     let line = "";
-    let lineHeight = 38; // 增加行高
+    let lineHeight = 38;
     let currentY = y;
 
-    ctx.font = this.uiHelper.getFont(20, "FangSong"); // 增大字号
+    ctx.font = this.uiHelper.getFont(20, "FangSong");
 
     for (let i = 0; i < words.length; i++) {
       const testLine = line + words[i];

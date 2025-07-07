@@ -10,13 +10,7 @@ export const chapter4 = {
       position: "center",
     },
     {
-      text: "承蒙祖上余荫，又为扩展商路，今日我便迎娶江家小姐。",
-      background: "bg-cha4",
-      character: null,
-      position: "center",
-    },
-    {
-      text: "提到江家，不免要说起那段旧事。",
+      text: "又为扩展商路，今日便是我迎娶江家小姐之日。",
       background: "bg-cha4",
       character: null,
       position: "center",
@@ -28,13 +22,7 @@ export const chapter4 = {
       position: "center",
     },
     {
-      text: "百姓争相涌入盐店抢购，岂料盐商干脆关门停业。",
-      background: "bg-cha4",
-      character: null,
-      position: "center",
-    },
-    {
-      text: "民怨四起，几至哗变。",
+      text: "百姓争相涌入盐店抢购，岂料盐商干脆关门停业。民怨四起，几至哗变。",
       background: "bg-cha4",
       character: null,
       position: "center",
@@ -58,7 +46,7 @@ export const chapter4 = {
       position: "center",
     },
     {
-      text: "五年前，乾隆帝南巡，首次驻跸扬州，江春等盐商趋前接驾。",
+      text: "五年前，乾隆帝南巡，首次驻跸扬州，以江春为首的徽州盐商趋前接驾。",
       background: "bg-cha4",
       character: null,
       position: "center",
