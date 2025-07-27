@@ -35,6 +35,9 @@ class Game {
     this.currentSceneType = "title";
     this.currentScene = null;
 
+    // 处理分享参数
+    this.handleShareParams();
+
     // 安全地加载游戏进度
     let savedProgress = null;
     try {
@@ -85,6 +88,27 @@ class Game {
     setTimeout(() => {
       this.setupTitleSceneCallbacks();
     }, 100);
+  }
+
+  handleShareParams() {
+    const url = wx.getLaunchOptionsSync().query;
+    if (url && (url.from === "share" || url.from === "timeline")) {
+      const chapter = url.chapter ? parseInt(url.chapter, 10) : 0;
+      const shareSource = url.from === "timeline" ? "朋友圈" : "好友分享";
+
+      if (chapter > 0) {
+        this.progress.currentChapter = chapter;
+        this.chapterManager.currentChapter = chapter;
+        saveGameProgress(this.progress);
+        console.log(`从${shareSource}链接加载章节:`, chapter);
+      } else {
+        console.log(`${shareSource}链接未携带章节信息，从标题场景开始`);
+      }
+
+      // 记录分享来源，可用于统计分析
+      this.shareSource = url.from;
+      console.log("分享来源:", shareSource);
+    }
   }
 
   setupTitleSceneCallbacks() {
@@ -510,4 +534,87 @@ wx.onTouchEnd((e) => {
 coverImage.onload = () => {
   game.start();
   gameLoop();
+
+  // 初始化微信分享功能
+  initWeChatShare();
 };
+
+// 微信分享功能初始化
+function initWeChatShare() {
+  // 显示当前页面的转发按钮和朋友圈分享按钮
+  wx.showShareMenu({
+    withShareTicket: true,
+    menus: ["shareAppMessage", "shareTimeline"], // 同时显示转发和朋友圈分享
+    success: (res) => {
+      console.log("分享菜单显示成功");
+    },
+    fail: (err) => {
+      console.error("分享菜单显示失败:", err);
+    },
+  });
+
+  // 设置转发内容（分享给好友/群聊）
+  wx.onShareAppMessage(() => {
+    // 根据游戏当前状态生成不同的分享标题
+    const getShareTitle = () => {
+      if (game && game.progress) {
+        const currentChapter = game.progress.currentChapter;
+        if (currentChapter === 0) {
+          return "快来体验这个精彩的互动故事游戏！";
+        } else if (currentChapter > 0) {
+          return `我已经通关第${currentChapter}章了，你也来挑战一下吧！`;
+        }
+      }
+      return "一起来玩这个有趣的互动故事游戏吧！";
+    };
+
+    return {
+      title: getShareTitle(),
+      imageUrl: "", // 可以设置分享图片路径，比如: 'images/share-cover.jpg'
+      query: `from=share&chapter=${game?.progress?.currentChapter || 0}`, // 携带分享来源和章节信息
+      success: (res) => {
+        console.log("分享成功");
+        // 分享成功后的逻辑
+        if (res.shareTickets && res.shareTickets.length > 0) {
+          console.log("分享到群聊成功，shareTicket:", res.shareTickets[0]);
+        }
+
+        // 可以在这里添加分享奖励逻辑
+        // 例如：给玩家一些游戏内奖励
+      },
+      fail: (err) => {
+        console.error("分享失败:", err);
+      },
+    };
+  });
+
+  // 设置朋友圈分享内容
+  wx.onShareTimeline(() => {
+    // 生成朋友圈分享标题
+    const getTimelineTitle = () => {
+      if (game && game.progress) {
+        const currentChapter = game.progress.currentChapter;
+        if (currentChapter === 0) {
+          return "发现了一个超棒的互动故事游戏，剧情丰富，选择很重要！";
+        } else if (currentChapter > 0) {
+          return `刚通关了这个互动故事游戏的第${currentChapter}章，每个选择都影响剧情走向，太有意思了！`;
+        }
+      }
+      return "推荐一个很棒的互动故事游戏，每个选择都会影响结局！";
+    };
+
+    return {
+      title: getTimelineTitle(),
+      imageUrl: "", // 可以设置朋友圈分享图片，建议使用正方形图片
+      query: `from=timeline&chapter=${game?.progress?.currentChapter || 0}`, // 携带朋友圈分享来源
+      success: (res) => {
+        console.log("朋友圈分享成功");
+        // 朋友圈分享成功后的逻辑
+        // 可以在这里添加分享奖励
+      },
+      fail: (err) => {
+        console.error("朋友圈分享失败:", err);
+      },
+    };
+  });
+}

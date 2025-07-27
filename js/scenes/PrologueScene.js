@@ -16,7 +16,7 @@ export class PrologueScene {
 
     // 加载背景图片
     this.backgroundImage = wx.createImage();
-    this.backgroundImage.src = getBackgroundUrl("card-4");
+    this.backgroundImage.src = getBackgroundUrl("prologue.png");
 
     // 滚动的文字
     this.scrollingLines = [];

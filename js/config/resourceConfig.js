@@ -8,26 +8,26 @@ class ResourceConfig {
         "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/cover.png",
 
       // 章节背景
+      "chapter-title":
+        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/%E5%9C%A8%E5%9C%B0%E5%9B%BE%E7%89%87/%E7%A4%BE%E5%8C%BA%E8%A7%92%E8%90%BD1.JPG",
       "bg-cha1":
-        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/cha1-1.png",
+        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/%E5%9C%A8%E5%9C%B0%E5%9B%BE%E7%89%87/%E7%AF%81%E5%A2%A9%E8%80%81%E7%89%8C%E5%9D%8A.jpg",
       "bg-cha2":
-        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/cha2-1.png",
+        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/%E5%9C%A8%E5%9C%B0%E5%9B%BE%E7%89%87/%E6%B7%B1%E6%B8%A1%E9%95%871.jpg",
       "bg-cha3":
-        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/cha3.png",
+        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/%E5%9C%A8%E5%9C%B0%E5%9B%BE%E7%89%87/%E7%AF%81%E5%A2%A9%E7%9A%84%E5%B7%B7%E5%AD%90.jpg",
       "bg-cha4":
-        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/cha4.png",
+        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/%E5%9C%A8%E5%9C%B0%E5%9B%BE%E7%89%87/%E6%AD%99%E5%8E%BF%E6%B1%AA%E6%BB%A1%E7%94%B0.jpg",
       "bg-cha5":
-        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/cha5.png",
+        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/%E5%9C%A8%E5%9C%B0%E5%9B%BE%E7%89%87/%E7%A2%A7%E5%B1%B1%E6%9D%91%E7%A8%BB%E7%94%B0.jpg",
       "bg-cha6":
-        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/cha6.png",
+        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/%E5%9C%A8%E5%9C%B0%E5%9B%BE%E7%89%87/%E7%A4%BE%E5%8C%BA%E8%A7%92%E8%90%BD3.JPG",
       "bg-cha7":
-        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/cha7.png",
+        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/%E5%9C%A8%E5%9C%B0%E5%9B%BE%E7%89%87/%E7%A2%A7%E5%B1%B1%E6%9D%91.jpg",
 
       // 引子背景
       "prologue.png":
-        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/prologue.png",
-      "card-4":
-        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/card%2Ffour.png",
+        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/%E5%9C%A8%E5%9C%B0%E5%9B%BE%E7%89%87/%E5%8D%97%E6%BA%AA%E5%8D%97.jpg",
 
       // 结局图片
       "ending-1":
@@ -39,7 +39,7 @@ class ResourceConfig {
       "ending-4":
         "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/ending-4.png",
       "final-scene":
-        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/final.png",
+        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/%E5%9C%A8%E5%9C%B0%E5%9B%BE%E7%89%87/%E7%A2%A7%E5%B1%B1%E6%9D%91%E8%B7%AF.jpg",
 
       // 音频文件
       "audio/bgm.mp3":
@@ -48,8 +48,6 @@ class ResourceConfig {
       // 章节选择页面背景
       "chapter-select-bg":
         "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/selector.png",
-      "chapter-title":
-        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/chapter-title.png",
 
       // 第一章卡牌图片
       "chapter1-card-1":
