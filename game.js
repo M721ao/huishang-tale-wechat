@@ -35,9 +35,6 @@ class Game {
     this.currentSceneType = "title";
     this.currentScene = null;
 
-    // 处理分享参数
-    this.handleShareParams();
-
     // 安全地加载游戏进度
     let savedProgress = null;
     try {
@@ -53,6 +50,9 @@ class Game {
       storyProgress: 0,
       attributes: {}, // 每章节的属性
     };
+    
+    // 保存分享参数，稍后处理
+    this.shareParams = wx.getLaunchOptionsSync().query;
 
     // 初始化场景
     this.titleScene = new TitleScene(ctx, windowWidth, windowHeight);
@@ -80,6 +80,9 @@ class Game {
 
     // 初始化章节管理器
     this.chapterManager = new ChapterManager(this);
+    
+    // 现在可以安全地处理分享参数
+    this.handleShareParams();
 
     // 初始化背景音乐
     // this.initBGM();
@@ -91,12 +94,12 @@ class Game {
   }
 
   handleShareParams() {
-    const url = wx.getLaunchOptionsSync().query;
+    const url = this.shareParams;
     if (url && (url.from === "share" || url.from === "timeline")) {
       const chapter = url.chapter ? parseInt(url.chapter, 10) : 0;
       const shareSource = url.from === "timeline" ? "朋友圈" : "好友分享";
 
-      if (chapter > 0) {
+      if (chapter > 0 && this.chapterManager) {
         this.progress.currentChapter = chapter;
         this.chapterManager.currentChapter = chapter;
         saveGameProgress(this.progress);

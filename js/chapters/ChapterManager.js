@@ -42,7 +42,7 @@ export class ChapterManager {
         id: "ending-3",
         title: "书香渐息",
         description:
-          "商路依旧繁忙，铺面人来人往，然而家族始终缺少庙堂荫护，家业也只能困守一隅，风光。",
+          "商路依旧繁忙，铺面人来人往，然而家族始终缺少庙堂荫护，家业也只能困守一隅，不复往日风光。",
         image: getEndingImageUrl("ending-3"),
       },
 
