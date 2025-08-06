@@ -13,15 +13,15 @@ class ResourceConfig {
       "bg-cha1":
         "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/%E5%9C%A8%E5%9C%B0%E5%9B%BE%E7%89%87/%E7%AF%81%E5%A2%A9%E8%80%81%E7%89%8C%E5%9D%8A.jpg",
       "bg-cha2":
-        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/%E5%9C%A8%E5%9C%B0%E5%9B%BE%E7%89%87/%E6%B7%B1%E6%B8%A1%E9%95%871.jpg",
+        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/8.6%E5%9B%BE%E7%89%87%E6%9B%BF%E6%8D%A2/cha2.jpeg",
       "bg-cha3":
-        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/%E5%9C%A8%E5%9C%B0%E5%9B%BE%E7%89%87/%E7%AF%81%E5%A2%A9%E7%9A%84%E5%B7%B7%E5%AD%90.jpg",
+        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/8.6%E5%9B%BE%E7%89%87%E6%9B%BF%E6%8D%A2/cha3.jpg",
       "bg-cha4":
-        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/%E5%9C%A8%E5%9C%B0%E5%9B%BE%E7%89%87/%E6%AD%99%E5%8E%BF%E6%B1%AA%E6%BB%A1%E7%94%B0.jpg",
+        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/8.6%E5%9B%BE%E7%89%87%E6%9B%BF%E6%8D%A2/cha4.jpeg",
       "bg-cha5":
-        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/%E5%9C%A8%E5%9C%B0%E5%9B%BE%E7%89%87/%E7%A2%A7%E5%B1%B1%E6%9D%91%E7%A8%BB%E7%94%B0.jpg",
+        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/8.6%E5%9B%BE%E7%89%87%E6%9B%BF%E6%8D%A2/cha5.jpg",
       "bg-cha6":
-        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/%E5%9C%A8%E5%9C%B0%E5%9B%BE%E7%89%87/%E7%A4%BE%E5%8C%BA%E8%A7%92%E8%90%BD3.JPG",
+        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/8.6%E5%9B%BE%E7%89%87%E6%9B%BF%E6%8D%A2/cha6.jpeg",
       "bg-cha7":
         "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/%E5%9C%A8%E5%9C%B0%E5%9B%BE%E7%89%87/%E7%A2%A7%E5%B1%B1%E6%9D%91.jpg",
 
@@ -39,7 +39,7 @@ class ResourceConfig {
       "ending-4":
         "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/ending-4.png",
       "final-scene":
-        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/%E5%9C%A8%E5%9C%B0%E5%9B%BE%E7%89%87/%E7%A2%A7%E5%B1%B1%E6%9D%91%E8%B7%AF.jpg",
+        "https://huishangwuyu-1320493202.cos.ap-nanjing.myqcloud.com/8.6%E5%9B%BE%E7%89%87%E6%9B%BF%E6%8D%A2/ending.JPG",
 
       // 音频文件
       "audio/bgm.mp3":

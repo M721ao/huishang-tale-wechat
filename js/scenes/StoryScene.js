@@ -79,6 +79,59 @@ export class StoryScene {
     this.onFinishCallback = null;
   }
 
+  // 彻底重置画布变换状态
+  _resetCanvas() {
+    const { ctx } = this;
+    if (!ctx) return;
+    
+    try {
+      // 方法1：使用setTransform重置变换矩阵
+      if (ctx.setTransform) {
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+      }
+      
+      // 方法2：使用resetTransform重置
+      if (ctx.resetTransform) {
+        ctx.resetTransform();
+      }
+      
+      // 方法3：使用save/restore重置状态
+      ctx.save();
+      ctx.restore();
+      
+      // 方法4：重置所有可能的变换属性
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.filter = 'none';
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'low';
+      ctx.strokeStyle = '#000000';
+      ctx.fillStyle = '#000000';
+      ctx.shadowBlur = 0;
+      ctx.shadowColor = 'rgba(0, 0, 0, 0)';
+      ctx.shadowOffsetX = 0;
+      ctx.shadowOffsetY = 0;
+      ctx.lineCap = 'butt';
+      ctx.lineJoin = 'miter';
+      ctx.lineWidth = 1;
+      ctx.miterLimit = 10;
+      ctx.font = '10px sans-serif';
+      ctx.textAlign = 'start';
+      ctx.textBaseline = 'alphabetic';
+      ctx.direction = 'inherit';
+    } catch (e) {
+      console.error('重置画布状态失败:', e);
+    }
+  }
+  
+  // 初始化场景
+  init(storyScript, onFinish) {
+    // 初始化时重置画布状态
+    this._resetCanvas();
+    this.loadScript(storyScript);
+    this.onFinishCallback = onFinish;
+  }
+
   // 加载剧情脚本
   loadScript(script) {
     this.currentScript = script;
@@ -93,6 +146,8 @@ export class StoryScene {
 
   // 显示下一段对话
   showNextDialogue() {
+    // 切换对话前重置画布状态
+    this._resetCanvas();
     if (
       !this.currentScript ||
       this.currentScriptIndex >= this.currentScript.length
@@ -142,8 +197,10 @@ export class StoryScene {
     }
   }
 
-  // 处理点击事件
-  handleTap() {
+  // 处理触摸事件
+  handleTouchStart(e) {
+    // 触摸开始前重置画布状态
+    this._resetCanvas();
     if (this.isTyping) {
       // 如果正在打字，则直接显示完整文本
       this.currentText = this.targetText;
@@ -219,6 +276,9 @@ export class StoryScene {
   // 绘制场景
   draw() {
     const { ctx, width, height } = this;
+
+    // 每次绘制前彻底重置画布变换
+    this._resetCanvas();
 
     // 清空画布
     ctx.clearRect(0, 0, width, height);

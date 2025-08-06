@@ -16,6 +16,16 @@ export class EndingScene {
     this.onFinish = null;
     this.alpha = 0;
     this.startTime = 0;
+    
+    // 社区互动按钮
+    this.communityUrl = null;
+    this.showCommunityButton = false; // 默认不显示按钮
+    this.communityButtonX = 0;
+    this.communityButtonY = 0;
+    this.communityButtonWidth = 0;
+    this.communityButtonHeight = 0;
+    this.communityButtonHovered = false;
+    this.buttonAnimTimer = 0;
 
     // 创建中国风背景纹理
     this.backgroundPattern = this.createBackgroundPattern();
@@ -69,13 +79,24 @@ export class EndingScene {
   }
 
   // 初始化结局
-  init(title, description, imagePath, onFinish) {
+  init(title, description, imagePath, onFinish, communityUrl) {
     this.title = title;
     this.description = description;
     this.imagePath = imagePath;
     this.onFinish = onFinish;
     this.alpha = 0;
     this.startTime = Date.now();
+    
+    // 设置社区链接（如果提供）
+    if (communityUrl) {
+      this.communityUrl = communityUrl;
+      this.showCommunityButton = true;
+    } else {
+      // 如果没有提供社区链接，确保不显示按钮
+      this.communityUrl = null;
+      this.showCommunityButton = false;
+    }
+    console.log('结局场景初始化，是否显示社区按钮:', this.showCommunityButton);
 
     // 只有在 imagePath 有效时才加载结局图片
     if (imagePath && typeof imagePath === "string" && imagePath.trim() !== "") {
@@ -234,6 +255,11 @@ export class EndingScene {
       contentWidth,
       contentHeight
     );
+    
+    // 绘制社区互动按钮
+    if (this.showCommunityButton) {
+      this.drawCommunityButton(ctx, contentX, contentY, contentWidth, contentHeight);
+    }
   }
 
   // 绘制顶部装饰
@@ -330,6 +356,51 @@ export class EndingScene {
     ctx.globalAlpha = 1;
   }
 
+  // 绘制社区互动按钮 - 简约古朴风格
+  drawCommunityButton(ctx, x, y, width, height) {
+    // 计算按钮位置和大小
+    this.communityButtonWidth = width * 0.5;
+    this.communityButtonHeight = 50;
+    this.communityButtonX = x + (width - this.communityButtonWidth) / 2;
+    this.communityButtonY = y + height * 0.8;
+    
+    // 绘制按钮背景
+    ctx.save();
+    
+    // 使用纸质纹理色调
+    ctx.fillStyle = '#F5F2E9'; // 浅色纸质背景
+    ctx.strokeStyle = '#8B4513'; // 深棕色边框
+    ctx.lineWidth = 2;
+    
+    // 圆角矩形按钮
+    const radius = 8;
+    ctx.beginPath();
+    ctx.moveTo(this.communityButtonX + radius, this.communityButtonY);
+    ctx.lineTo(this.communityButtonX + this.communityButtonWidth - radius, this.communityButtonY);
+    ctx.quadraticCurveTo(this.communityButtonX + this.communityButtonWidth, this.communityButtonY, this.communityButtonX + this.communityButtonWidth, this.communityButtonY + radius);
+    ctx.lineTo(this.communityButtonX + this.communityButtonWidth, this.communityButtonY + this.communityButtonHeight - radius);
+    ctx.quadraticCurveTo(this.communityButtonX + this.communityButtonWidth, this.communityButtonY + this.communityButtonHeight, this.communityButtonX + this.communityButtonWidth - radius, this.communityButtonY + this.communityButtonHeight);
+    ctx.lineTo(this.communityButtonX + radius, this.communityButtonY + this.communityButtonHeight);
+    ctx.quadraticCurveTo(this.communityButtonX, this.communityButtonY + this.communityButtonHeight, this.communityButtonX, this.communityButtonY + this.communityButtonHeight - radius);
+    ctx.lineTo(this.communityButtonX, this.communityButtonY + radius);
+    ctx.quadraticCurveTo(this.communityButtonX, this.communityButtonY, this.communityButtonX + radius, this.communityButtonY);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+    
+    // 绘制按钮文字
+    ctx.fillStyle = '#5C3317'; // 深棕色文字
+    ctx.font = this.uiHelper.getFont(18, 'FangSong', true);
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('前往社区互动', 
+      this.communityButtonX + this.communityButtonWidth / 2, 
+      this.communityButtonY + this.communityButtonHeight / 2
+    );
+    
+    ctx.restore();
+  }
+  
   // 绘制底部装饰
   drawBottomDecoration(ctx, x, y, width, height) {
     const bottomY = y + height * 0.9;
@@ -377,10 +448,93 @@ export class EndingScene {
     ctx.fillText(line, x, posY);
   }
 
-  // 处理点击
-  handleTap() {
-    if (this.onFinish) {
-      this.onFinish();
+  // 检查点击是否在按钮区域内
+  isPointInButton(x, y) {
+    return (
+      this.showCommunityButton &&
+      x >= this.communityButtonX &&
+      x <= this.communityButtonX + this.communityButtonWidth &&
+      y >= this.communityButtonY &&
+      y <= this.communityButtonY + this.communityButtonHeight
+    );
+  }
+  
+  // 处理点击事件
+  handleTap(x, y) {
+    // 直接使用传入的坐标
+    const touchX = x;
+    const touchY = y;
+    
+    console.log('点击坐标:', touchX, touchY);
+    console.log('按钮坐标:', this.communityButtonX, this.communityButtonY, 
+              this.communityButtonX + this.communityButtonWidth, 
+              this.communityButtonY + this.communityButtonHeight);
+    console.log('是否显示按钮:', this.showCommunityButton);
+    
+    // 检查是否点击了社区按钮
+    if (this.showCommunityButton && this.isPointInButton(touchX, touchY)) {
+      console.log('点击社区互动按钮，跳转到:', this.communityUrl);
+      
+      try {
+        // 使用微信API打开腾讯文档小程序
+        // 腾讯文档需要特定格式的path参数才能直接打开文档
+        // 构建完整的path参数
+        const docId = this.communityUrl.split('/doc/')[1]?.split('?')[0];
+        if (!docId) {
+          console.error('无法从URL中提取文档ID:', this.communityUrl);
+          throw new Error('无效的文档链接');
+        }
+        
+        // 构建完整的腾讯文档小程序path
+        const encodedUrl = encodeURIComponent(this.communityUrl);
+        const path = `pages/detail/detail?url=${encodedUrl}&qqdocurl=${encodedUrl}`;
+        
+        console.log('跳转腾讯文档，完整path:', path);
+        
+        wx.navigateToMiniProgram({
+          appId: 'wxd45c635d754dbf59', // 腾讯文档小程序的appId
+          path: path,
+          envVersion: 'release', // 正式版
+          success: (res) => {
+            console.log('跳转腾讯文档成功', res);
+          },
+          fail: (err) => {
+            console.error('跳转腾讯文档失败', err);
+            // 备用方案：复制链接到剪贴板
+            wx.setClipboardData({
+              data: this.communityUrl,
+              success: () => {
+                wx.showToast({
+                  title: '社区链接已复制到剪贴板',
+                  icon: 'none',
+                  duration: 2000
+                });
+              }
+            });
+          }
+        });
+      } catch (error) {
+        console.error('跳转失败，可能是开发环境或API不支持', error);
+        // 备用方案：复制链接到剪贴板
+        wx.setClipboardData({
+          data: this.communityUrl,
+          success: () => {
+            wx.showToast({
+              title: '社区链接已复制到剪贴板',
+              icon: 'none',
+              duration: 2000
+            });
+          }
+        });
+      }
+      
+      // 阻止事件继续传播，避免触发返回主页面
+      return;
+    } else {
+      // 点击其他区域，执行原有逻辑
+      if (this.onFinish) {
+        this.onFinish();
+      }
     }
   }
 }

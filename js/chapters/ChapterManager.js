@@ -88,7 +88,7 @@ export class ChapterManager {
         if (this.currentChapter >= Object.keys(this.chapters).length) {
           this.showEnding({
             title: "游戏结束",
-            description: "感谢您的游玩，故事已经结束。",
+            description: "欢迎点击移步茶摊，参与更多社区互动！",
             image: getEndingImageUrl("final-scene"),
           });
         } else {
@@ -114,12 +114,22 @@ export class ChapterManager {
   // 显示结局
   showEnding(ending) {
     console.log("显示结局:", ending);
+    
+    // 判断是否为最终结局（游戏真正结束）
+    const isFinalEnding = ending.title === "游戏结束" && 
+                        ending.description === "欢迎点击移步茶摊，参与更多社区互动！";
+    
+    // 只在最终结局时传入社区互动链接
+    const communityUrl = isFinalEnding ? "https://docs.qq.com/doc/DSXVrRkpmZWR3TUJy" : null;
+    
+    console.log("是否为最终结局:", isFinalEnding, "是否显示社区按钮:", !!communityUrl);
+    
     this.game.endingScene.init(
       ending.title,
       ending.description,
       ending.image,
       () => {
-        // 结局后重置游戏进度为章节1
+        // 结局后重置游戏进度为章色1
         console.log("结局结束，重置游戏进度");
         this.currentChapter = 1;
         this.game.progress.currentChapter = 1;
@@ -132,7 +142,8 @@ export class ChapterManager {
 
         // 返回标题场景
         this.game.setScene(this.game.titleScene, "title");
-      }
+      },
+      communityUrl // 只在最终结局时传入社区互动链接，否则为null
     );
     this.game.setScene(this.game.endingScene, "ending");
   }
